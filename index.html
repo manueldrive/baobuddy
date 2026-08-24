@@ -211,7 +211,6 @@ function savePersisted() {
     customChores: state.customChores,
     bunColors: state.bunColors,
     nextChoreId: state.nextChoreId,
-    parentMode: state.parentMode,
     lastActiveDate: state.lastActiveDate
   });
 }
@@ -246,7 +245,6 @@ function initPersistence() {
       if (saved.customChores) state.customChores = saved.customChores;
       if (saved.bunColors) state.bunColors = saved.bunColors;
       if (saved.nextChoreId) state.nextChoreId = saved.nextChoreId;
-      if (saved.parentMode !== undefined) state.parentMode = saved.parentMode;
       if (saved.lastActiveDate) state.lastActiveDate = saved.lastActiveDate;
     }
 
@@ -611,7 +609,7 @@ function renderKidChores(kidId, textOnSky, isMorning, squishSwitcherKid, squishB
     var done = !!state.done[key];
     var timer = ensureTimer(key, c.minutes);
     var showTimer = !!state.timerUI[key] && !done;
-    var accent = kid.accent;
+    var accent = bunColor.pleat;
 
     var doneBg = COMPLETE_BG;
     var doneShadowColor = COMPLETE_SHADOW;
@@ -949,7 +947,6 @@ document.getElementById("root").addEventListener("click", function (e) {
     render();
   } else if (action === "toggle-parent") {
     state.parentMode = !state.parentMode;
-    savePersisted();
     render();
   } else if (action === "toggle-fullscreen") {
     try {
