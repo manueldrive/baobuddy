@@ -120,7 +120,7 @@ var CHORE_LIBRARY = {
       { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD" },
       { id: "e3", label: "Shower",         minutes: 10, emoji: "\uD83D\uDEBF" },
       { id: "e4", label: "Brush teeth",    minutes: 2,  emoji: "\uD83E\uDEA5" },
-      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "\uD83C\uDF19" }
+      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "🥼" }
     ]
   },
   lina: {
@@ -137,7 +137,7 @@ var CHORE_LIBRARY = {
       { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD" },
       { id: "e3", label: "Shower",         minutes: 10, emoji: "\uD83D\uDEBF" },
       { id: "e4", label: "Brush teeth",    minutes: 2,  emoji: "\uD83E\uDEA5" },
-      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "\uD83C\uDF19" }
+      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "🥼" }
     ]
   }
 };
@@ -194,6 +194,7 @@ var state = {
   squishBanner: false,
   celebrateKid: null,
   bunColors: { miles: null, lina: null },
+  bunAccessories: { miles: null, lina: null }, // { type: "bow"|"cap", color: "#hex" } or null
   playModalFor: null,
   visualPreview: null, // "morning"|"afternoon"|"night"|null (null = live/real time) — parent-mode preview only, never persisted
   pokeBao: null,
@@ -225,6 +226,7 @@ function savePersisted() {
     weekly: state.weekly,
     customChores: state.customChores,
     bunColors: state.bunColors,
+    bunAccessories: state.bunAccessories,
     nextChoreId: state.nextChoreId,
     lastActiveDate: state.lastActiveDate
   });
@@ -259,6 +261,7 @@ function initPersistence() {
       if (saved.weekly) state.weekly = saved.weekly;
       if (saved.customChores) state.customChores = saved.customChores;
       if (saved.bunColors) state.bunColors = saved.bunColors;
+      if (saved.bunAccessories) state.bunAccessories = saved.bunAccessories;
       if (saved.nextChoreId) state.nextChoreId = saved.nextChoreId;
       if (saved.lastActiveDate) state.lastActiveDate = saved.lastActiveDate;
     }
@@ -642,10 +645,55 @@ var BUN_PALETTE = [
   { body: "#FFF3B0", pleat: "#FFE066", blush: "#FFB877", name: "Yellow" },
   { body: "#E0D4FF", pleat: "#C9B3FF", blush: "#FFB8D9", name: "Purple" }
 ];
+function darkenColor(hex, amt) {
+  var num = parseInt(hex.replace("#", ""), 16);
+  var r = Math.max(0, (num >> 16) - amt);
+  var g = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+  var b = Math.max(0, (num & 0x0000FF) - amt);
+  return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+}
+function accessoryHtml(accessory) {
+  if (!accessory || !accessory.type) return "";
+  var line = darkenColor(accessory.color, 45);
+  if (accessory.type === "bow") {
+    return '<g>' +
+      '<g transform="rotate(-15 38 22)">' +
+      '<ellipse cx="38" cy="22" rx="12" ry="8" fill="' + accessory.color + '"/>' +
+      '<path d="M29,19 Q33,22 29,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
+      '<path d="M47,19 Q43,22 47,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
+      '</g>' +
+      '<g transform="rotate(15 62 22)">' +
+      '<ellipse cx="62" cy="22" rx="12" ry="8" fill="' + accessory.color + '"/>' +
+      '<path d="M53,19 Q57,22 53,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
+      '<path d="M71,19 Q67,22 71,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
+      '</g>' +
+      '<circle cx="50" cy="23" r="5" fill="' + accessory.color + '"/>' +
+      '<path d="M47,20.5 L53,25.5" stroke="' + line + '" stroke-width="1" opacity="0.5"/>' +
+      '</g>';
+  }
+  if (accessory.type === "cap") {
+    return '<g>' +
+      '<path d="M22,30 Q22,10 50,10 Q78,10 78,30 Z" fill="' + accessory.color + '"/>' +
+      '<path d="M50,12 L50,29" stroke="' + line + '" stroke-width="1.1" opacity="0.4"/>' +
+      '<path d="M50,12 Q41,17 35,29" stroke="' + line + '" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.5"/>' +
+      '<path d="M50,12 Q59,17 65,29" stroke="' + line + '" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.5"/>' +
+      '<ellipse cx="76" cy="28" rx="16" ry="5" fill="' + accessory.color + '" transform="rotate(-8 76 28)"/>' +
+      '<path d="M64,26 Q76,29 89,27" stroke="' + line + '" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>' +
+      '<circle cx="50" cy="12" r="2.2" fill="' + accessory.color + '" opacity="0.7"/>' +
+      '</g>';
+  }
+  return "";
+}
+var ACCESSORY_TYPES = [
+  { type: "bow", label: "Bow", emoji: "\uD83C\uDF80" },
+  { type: "cap", label: "Cap", emoji: "\uD83E\uDDE2" }
+];
+var ACCESSORY_COLORS = ["#FF6B8A", "#5B7FFF", "#3FBF7F", "#FFD166", "#C9B3FF", "#3a2e2e"];
 function mascotSVG(kidId, size, mood) {
   var c = (state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId];
+  var accessory = state.bunAccessories && state.bunAccessories[kidId];
   return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100">' +
-    bunFace(c.body, c.pleat, c.blush, mood) + '</svg>';
+    bunFace(c.body, c.pleat, c.blush, mood) + accessoryHtml(accessory) + '</svg>';
 }
 
 function moodForKid(kId, isMorningNow) {
@@ -811,6 +859,28 @@ function renderKidChores(kidId, textOnSky, isMorning, squishSwitcherKid, squishB
           return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:36px;height:36px;border-radius:50%;background:' + p.body + ';border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
         }).join("");
       })() +
+      '</div>' +
+      '<div style="border-top:1px solid #eee;margin:16px 0 12px;padding-top:14px">' +
+      '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:12px;margin-bottom:10px">Add an accessory!</div>' +
+      '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px">' +
+      (function () {
+        var current = state.bunAccessories[kidId];
+        var buttons = ACCESSORY_TYPES.map(function (a) {
+          var isCurrent = current && current.type === a.type;
+          return '<button data-action="accessory-type" data-kid="' + kidId + '" data-type="' + a.type + '" style="border:none;border-radius:14px;padding:8px 14px;background:' + (isCurrent ? "#3a2e2e" : "#f2f0ee") + ';color:' + (isCurrent ? "white" : "#3a2e2e") + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;cursor:pointer">' + a.emoji + ' ' + a.label + '</button>';
+        }).join("");
+        buttons += '<button data-action="accessory-type" data-kid="' + kidId + '" data-type="" style="border:none;border-radius:14px;padding:8px 14px;background:' + (current ? "#f2f0ee" : "#3a2e2e") + ';color:' + (current ? "#3a2e2e" : "white") + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;cursor:pointer">None</button>';
+        return buttons;
+      })() +
+      '</div>' +
+      (state.bunAccessories[kidId]
+        ? '<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">' +
+          ACCESSORY_COLORS.map(function (color) {
+            var isCurrent = state.bunAccessories[kidId].color === color;
+            return '<button data-action="accessory-color" data-kid="' + kidId + '" data-color="' + color + '" style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
+          }).join("") +
+          '</div>'
+        : '') +
       '</div>' +
       '</div>' +
       '</div>';
@@ -1077,6 +1147,24 @@ document.getElementById("root").addEventListener("click", function (e) {
     state.bunColors[colorKid] = BUN_PALETTE[colorIndex];
     savePersisted();
     render();
+  } else if (action === "accessory-type") {
+    var accKid = el.dataset.kid;
+    var accType = el.dataset.type;
+    if (!accType) {
+      state.bunAccessories[accKid] = null;
+    } else {
+      var existingColor = state.bunAccessories[accKid] ? state.bunAccessories[accKid].color : ACCESSORY_COLORS[0];
+      state.bunAccessories[accKid] = { type: accType, color: existingColor };
+    }
+    savePersisted();
+    render();
+  } else if (action === "accessory-color") {
+    var accColorKid = el.dataset.kid;
+    if (state.bunAccessories[accColorKid]) {
+      state.bunAccessories[accColorKid].color = el.dataset.color;
+      savePersisted();
+      render();
+    }
   } else if (action === "toggle-parent") {
     state.parentMode = !state.parentMode;
     render();
