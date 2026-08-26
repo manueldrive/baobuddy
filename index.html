@@ -258,7 +258,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
 
-  /* Redesigned Footer Card: True Debit Card Ratio + Polished 2x2 Goals */
+  /* Redesigned Footer Card: True Debit Card Ratio + Radial Doughnut Dial 2x2 Goals */
   .footer-card { 
     margin-top: 16px; 
     background: white; 
@@ -295,13 +295,22 @@
   .goal-card-item {
     background: #FAF6F0;
     border: 1px solid #EADBCE;
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 10px 12px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     min-height: 64px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+  .donut-gauge-wrap {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+  .donut-gauge-wrap svg {
+    transform: rotate(-90deg);
   }
 
   .lock-btn { background: #ffffff33; border: none; border-radius: 999px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -412,19 +421,19 @@ var CHORE_LIBRARY = {
   }
 };
 
-// 4 Goals in Ascending Order ($4, $6, $8, $12)
+// 4 Goals in Ascending Order ($4, $6, $8, $10)
 var GOALS = {
   miles: [
     { emoji: "\uD83C\uDF66", label: "Ice Cream", cost: 4 },
     { emoji: "\uD83D\uDC2E", label: "Chick-fil-A", cost: 6 },
     { emoji: "\uD83D\uDECC", label: "Sleepover", cost: 8 },
-    { emoji: "\uD83C\uDFAF", label: "Target Toy", cost: 12 }
+    { emoji: "\uD83C\uDFAF", label: "Target Toy", cost: 10 }
   ],
   lina: [
     { emoji: "\uD83C\uDF66", label: "Ice Cream", cost: 4 },
     { emoji: "\uD83D\uDC2E", label: "Chick-fil-A", cost: 6 },
     { emoji: "\uD83D\uDECC", label: "Sleepover", cost: 8 },
-    { emoji: "\uD83C\uDFAF", label: "Target Toy", cost: 12 }
+    { emoji: "\uD83C\uDFAF", label: "Target Toy", cost: 10 }
   ]
 };
 
@@ -479,7 +488,7 @@ var state = {
   squishBanner: false,
   celebrateKid: null,
   bunColors: { miles: null, lina: null },
-  bunAccessories: { miles: null, lina: null },
+  bunAccessories: { miles: { type: "cap", color: "#2B2D42" }, lina: { type: "bow", color: "#FF4D6D" } },
   playModalFor: null,
   pokeBao: null,
   lastRenderedPeriod: null
@@ -620,7 +629,6 @@ function formatHourLabel(h24) {
   return h + ":00 " + ampm;
 }
 
-// Only format a label if the chore is NOT scheduled for all 7 days
 function getRestrictedDayTag(days) {
   if (!days || days.length === 0 || days.length === 7) return null;
   if (days.length === 5 && days.indexOf("sat") < 0 && days.indexOf("sun") < 0) return "Mon–Fri";
@@ -844,6 +852,10 @@ function iconPauseMini(size, color) {
   return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' + (color || "currentColor") + '">' +
     '<rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>';
 }
+function iconReset(size, color) {
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + (color || "currentColor") + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+}
 
 /* ---------------- sky decorations ---------------- */
 var STAR_FIELD = [
@@ -982,48 +994,54 @@ function darkenColor(hex, amt) {
   var b = Math.max(0, (num & 0x0000FF) - amt);
   return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
 }
-function accessoryHtml(accessory) {
+
+/* ---------------- Custom SVG Accessories ---------------- */
+function accessoryHtml(accessory, kidId) {
   if (!accessory || !accessory.type) return "";
-  var line = darkenColor(accessory.color, 45);
+  var baseColor = accessory.color || "#FF4D6D";
+  var darkShade = darkenColor(baseColor, 40);
+  var deeperShade = darkenColor(baseColor, 65);
+  var bunBody = ((state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId]).body;
+
   if (accessory.type === "bow") {
-    return '<g>' +
-      '<g transform="rotate(-15 38 22)">' +
-      '<ellipse cx="38" cy="22" rx="12" ry="8" fill="' + accessory.color + '"/>' +
-      '<path d="M29,19 Q33,22 29,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
-      '<path d="M47,19 Q43,22 47,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
-      '</g>' +
-      '<g transform="rotate(15 62 22)">' +
-      '<ellipse cx="62" cy="22" rx="12" ry="8" fill="' + accessory.color + '"/>' +
-      '<path d="M53,19 Q57,22 53,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
-      '<path d="M71,19 Q67,22 71,25" stroke="' + line + '" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.55"/>' +
-      '</g>' +
-      '<circle cx="50" cy="23" r="5" fill="' + accessory.color + '"/>' +
-      '<path d="M47,20.5 L53,25.5" stroke="' + line + '" stroke-width="1" opacity="0.5"/>' +
+    // Classic Swallowtail (Dovetail) Bow
+    return '<g id="bow-classic">' +
+      '<path d="M46,24 Q36,36 32,48 L37,45 L42,48 Q44,36 48,25 Z" fill="' + deeperShade + '"/>' +
+      '<path d="M54,24 Q64,36 68,48 L63,45 L58,48 Q56,36 52,25 Z" fill="' + darkShade + '"/>' +
+      '<g transform="rotate(-12 36 21)"><ellipse cx="36" cy="21" rx="13" ry="8" fill="' + baseColor + '"/></g>' +
+      '<g transform="rotate(12 64 21)"><ellipse cx="64" cy="21" rx="13" ry="8" fill="' + baseColor + '"/></g>' +
+      '<circle cx="50" cy="22" r="4.2" fill="' + deeperShade + '"/>' +
+      '<circle cx="49" cy="21" r="1.5" fill="#FFFFFF" opacity="0.6"/>' +
       '</g>';
   }
   if (accessory.type === "cap") {
-    return '<g>' +
-      '<path d="M22,30 Q22,10 50,10 Q78,10 78,30 Z" fill="' + accessory.color + '"/>' +
-      '<path d="M50,12 L50,29" stroke="' + line + '" stroke-width="1.1" opacity="0.4"/>' +
-      '<path d="M50,12 Q41,17 35,29" stroke="' + line + '" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.5"/>' +
-      '<path d="M50,12 Q59,17 65,29" stroke="' + line + '" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.5"/>' +
-      '<ellipse cx="76" cy="28" rx="16" ry="5" fill="' + accessory.color + '" transform="rotate(-8 76 28)"/>' +
-      '<path d="M64,26 Q76,29 89,27" stroke="' + line + '" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>' +
-      '<circle cx="50" cy="12" r="2.2" fill="' + accessory.color + '" opacity="0.7"/>' +
+    // Low-Set Backward Snapback
+    return '<g id="sb-reverse-low">' +
+      '<path d="M17,45 Q17,16 50,16 Q83,16 83,45 Z" fill="' + baseColor + '"/>' +
+      '<ellipse cx="50" cy="42" rx="33" ry="5" fill="' + darkShade + '"/>' +
+      '<path d="M36,46 Q36,32 50,32 Q64,32 64,46 Z" fill="' + bunBody + '"/>' +
+      '<rect x="33" y="42" width="34" height="4" rx="2" fill="#8D99AE"/>' +
+      '<circle cx="42" cy="44" r="0.9" fill="#FFFFFF"/>' +
+      '<circle cx="47" cy="44" r="0.9" fill="#FFFFFF"/>' +
+      '<circle cx="52" cy="44" r="0.9" fill="#FFFFFF"/>' +
+      '<circle cx="57" cy="44" r="0.9" fill="#FFFFFF"/>' +
+      '<circle cx="50" cy="16" r="3" fill="#EF233C"/>' +
       '</g>';
   }
   return "";
 }
+
 var ACCESSORY_TYPES = [
-  { type: "bow", label: "Bow", emoji: "\uD83C\uDF80" },
-  { type: "cap", label: "Cap", emoji: "\uD83E\uDDE2" }
+  { type: "bow", label: "Bow", emoji: "🎀" },
+  { type: "cap", label: "Snapback", emoji: "🧢" }
 ];
-var ACCESSORY_COLORS = ["#FF6B8A", "#5B7FFF", "#3FBF7F", "#FFD166", "#C9B3FF", "#3a2e2e"];
+var ACCESSORY_COLORS = ["#FF4D6D", "#2B2D42", "#5B7FFF", "#3FBF7F", "#FFB703", "#7209B7"];
+
 function mascotSVG(kidId, size, mood) {
   var c = (state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId];
   var accessory = state.bunAccessories && state.bunAccessories[kidId];
   return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100">' +
-    bunFace(c.body, c.pleat, c.blush, mood) + accessoryHtml(accessory) + '</svg>';
+    bunFace(c.body, c.pleat, c.blush, mood) + accessoryHtml(accessory, kidId) + '</svg>';
 }
 
 function moodForKid(kId, period) {
@@ -1275,7 +1293,6 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
     html += '<div class="chore-content">';
     html += '<div class="chore-label" style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:16.5px;color:' + (done ? doneTextColor : "#3a2e2e") + ';line-height:1.15">' + c.label + '</div>';
 
-    /* In Parent Mode: Clean, non-colliding action toolbar */
     if (state.parentMode) {
       html += '<div class="parent-card-actions">' +
         '<span style="font-size:11px;font-weight:800;color:#736763;margin-right:2px">' + c.minutes + 'm</span>' +
@@ -1319,9 +1336,8 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
       html += '<div class="chore-minutes" style="font-family:\'Nunito\',sans-serif;font-size:12px;font-weight:700;color:' + doneSubTextColor + ';margin-top:2px">' + (isExcused ? "Parent Excused" : c.minutes + " min") + '</div>';
     }
 
-    html += '</div>'; // end chore-content
+    html += '</div>';
 
-    /* Standardized Done Button */
     html += '<button class="done-btn" data-action="toggle-done" data-key="' + key + '" style="color:' + (done ? doneCheckColor : "#c9c2c2") + '" aria-label="Toggle done">' +
       (done ? iconCheckCircle(28, doneCheckColor) : iconCircle(28, "#c9c2c2")) + '</button>';
 
@@ -1404,7 +1420,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   return html;
 }
 
-/* ---------------- render Kid Balance (Forced Debit Card Ratio + Polished Goals) ---------------- */
+/* ---------------- render Kid Balance (Debit Card + Radial Doughnut Dial 2x2 Goals) ---------------- */
 function renderKidBalance(kidId) {
   var kid = KIDS[kidId];
   var balance = state.balance[kidId];
@@ -1434,22 +1450,26 @@ function renderKidBalance(kidId) {
     '</div>' +
     '</button>';
 
-  /* Redesigned 2x2 Goals Grid (Low to High: $4, $6, $8, $12) */
+  /* Radial Doughnut Dial 2x2 Goals Grid ($4, $6, $8, $10) */
   html += '<div class="goals-container-2x2">';
   GOALS[kidId].forEach(function (goal) {
     var saved = Math.min(goal.cost, balance);
     var goalPct = Math.min(100, Math.round((saved / goal.cost) * 100));
+    var radius = 14;
+    var circ = 2 * Math.PI * radius;
+    var offset = circ - (goalPct / 100) * circ;
+
     html += '<div class="goal-card-item">' +
-      '<div class="row-between" style="gap:4px">' +
-      '<div class="row" style="gap:6px">' +
-      '<span style="font-size:16px;line-height:1">' + goal.emoji + '</span>' +
-      '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:12.5px;color:#3a2e2e;line-height:1">' + goal.label + '</span>' +
+      '<div class="donut-gauge-wrap">' +
+      '<svg width="38" height="38" viewBox="0 0 36 36">' +
+      '<circle cx="18" cy="18" r="' + radius + '" fill="none" stroke="#EDE4D8" stroke-width="4"/>' +
+      '<circle cx="18" cy="18" r="' + radius + '" fill="none" stroke="' + kid.accent + '" stroke-width="4" stroke-dasharray="' + circ.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease"/>' +
+      '</svg>' +
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1">' + goal.emoji + '</div>' +
       '</div>' +
-      '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:10px;color:#8A7E78;background:#EAE3DA;padding:1px 5px;border-radius:6px">$' + goal.cost + '</span>' +
-      '</div>' +
-      '<div style="position:relative;background:#EDE4D8;border-radius:999px;height:12px;overflow:hidden;margin-top:4px">' +
-      '<div style="position:absolute;inset:0;width:' + goalPct + '%;background:' + kid.accent + ';border-radius:999px;transition:width 0.4s ease"></div>' +
-      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:8.5px;color:' + (goalPct > 50 ? "white" : "#3a2e2e") + '">$' + saved.toFixed(0) + ' / $' + goal.cost + '</div>' +
+      '<div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center">' +
+      '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:13px;color:#3a2e2e;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + goal.label + '</div>' +
+      '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;color:#8A7E78;margin-top:2px">$' + saved.toFixed(0) + ' / $' + goal.cost + '</div>' +
       '</div>' +
       '</div>';
   });
@@ -1625,7 +1645,6 @@ function render() {
   var activePeriod = currentPeriod();
   state.lastRenderedPeriod = activePeriod;
 
-  /* Live sky updates match either the parent's currently viewed phase or the real-time clock */
   var vp;
   if (state.parentMode && state.periodOverride) {
     vp = state.periodOverride;
@@ -1680,7 +1699,6 @@ function render() {
   });
   html += '</div>';
 
-  // Parent Controls Toolbar
   html += '<div class="row-between" style="margin-top:20px;opacity:0.85">' +
     '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;font-size:11px;color:' + textOnSky + ';opacity:0.6">Bao Buddy</div>' +
     '<div class="row" style="gap:8px">' +
