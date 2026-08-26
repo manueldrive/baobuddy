@@ -61,19 +61,25 @@
   .celebrate-pop { animation: celebratePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
   .kid-panel-content { position: relative; }
-  .shared-header { margin-bottom: 14px; }
+  .shared-header {
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    align-items: center;
+    justify-items: center;
+  }
   .row { display: flex; align-items: center; }
   .row-between { display: flex; justify-content: space-between; align-items: center; }
   .kid-btn { flex: 1; border: none; cursor: pointer; border-radius: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.2s ease; }
   
-  /* Chore Card & Drag/Drop styling */
+  /* Chore Card */
   .chore-card { 
     position: relative; 
     border-radius: 20px; 
-    padding: 14px 16px; 
+    padding: 12px 14px; 
     display: flex; 
     align-items: center; 
-    gap: 12px; 
+    gap: 10px; 
     transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease; 
   }
   .chore-card.dragging {
@@ -90,27 +96,83 @@
     cursor: grab;
     user-select: none;
     touch-action: none;
-    font-size: 18px;
-    color: #9C918C;
-    padding: 0 4px;
+    font-size: 16px;
+    color: #B4A9A4;
+    padding: 0 2px;
   }
   .drag-handle:active { cursor: grabbing; }
 
-  .icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .icon-box { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
   .chore-content { flex: 1; min-width: 0; }
-  .done-btn { background: none; border: none; cursor: pointer; flex-shrink: 0; }
+  .done-btn { background: none; border: none; cursor: pointer; flex-shrink: 0; padding: 0; }
   
+  /* Action Toolbar inside card for Parent Mode */
+  .parent-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .action-btn-pill {
+    border: none;
+    border-radius: 7px;
+    height: 24px;
+    padding: 0 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    transition: transform 0.1s ease;
+  }
+  .action-btn-pill:active { transform: scale(0.92); }
+
+  /* Compact Day Toggle Chips */
+  .day-chips-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 2px;
+  }
+  .day-chip-btn {
+    flex: 1;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid #D8CBBF;
+    background: #FAF6F0;
+    color: #736763;
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s ease;
+  }
+  .day-chip-btn.selected {
+    background: #3A2E2E;
+    color: white;
+    border-color: #3A2E2E;
+  }
+
   /* Ten-Frame Interactive Elements */
   .timer-pill-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     border: none;
     border-radius: 999px;
-    padding: 3px 9px;
+    padding: 3px 8px;
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
-    font-size: 12px;
+    font-size: 11.5px;
     cursor: pointer;
     transition: all 0.15s ease;
     box-shadow: 0 1px 2px rgba(0,0,0,0.06);
@@ -119,7 +181,7 @@
 
   .ten-frames-wrapper {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
     flex-wrap: wrap;
     margin-top: 5px;
@@ -128,14 +190,14 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 3px;
+    gap: 2.5px;
     background: #EDE4D8;
-    padding: 4px;
+    padding: 3.5px;
     border-radius: 8px;
-    width: 130px;
+    width: 120px;
   }
   .ten-frame-slot {
-    height: 14px;
+    height: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -149,8 +211,8 @@
     background: var(--kid-accent, #FF9B42);
   }
   .ten-frame-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: white;
     transition: transform 0.2s linear;
@@ -196,50 +258,93 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
 
-  /* Footer Card with Side-by-Side 2x2 Layout */
+  /* Redesigned Footer Card: True Debit Card Ratio + Polished 2x2 Goals */
   .footer-card { 
     margin-top: 16px; 
     background: white; 
-    border-radius: 22px; 
+    border-radius: 24px; 
     padding: 16px; 
     display: flex; 
-    flex-direction: row;
-    align-items: stretch;
+    flex-direction: column;
     gap: 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06); 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06); 
   }
-  .goals-grid-2x2 {
-    flex: 1.4;
+  .debit-card-box {
+    width: 100%;
+    aspect-ratio: 1.586 / 1;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 20px;
+    padding: 18px 20px;
+    color: #3A2E2E;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.6);
+  }
+  .goals-container-2x2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 8px 10px;
+    gap: 10px;
+    width: 100%;
+  }
+  .goal-card-item {
+    background: #FAF6F0;
+    border: 1px solid #EADBCE;
+    border-radius: 16px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 64px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
   }
 
   .lock-btn { background: #ffffff33; border: none; border-radius: 999px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .timer-btn { border: none; border-radius: 999px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
 
+  /* Responsive Rules */
+  .hide-mobile { display: none !important; }
   .kid-grid { display: block; }
   .kid-piece { display: none; }
   .kid-piece.active { display: block; }
   .wide-only { display: none; }
+
   @media (min-width: 700px) {
     #root { max-width: 1280px; }
+    .hide-mobile { display: flex !important; }
     .kid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px; }
     .kid-piece { display: block !important; min-width: 0; }
     .narrow-only { display: none !important; }
     .wide-only { display: flex !important; }
 
-    .chore-card { padding: 18px 20px !important; border-radius: 24px !important; }
-    .icon-box { width: 58px !important; height: 58px !important; border-radius: 16px !important; }
+    .chore-card { padding: 18px 20px !important; border-radius: 24px !important; gap: 14px !important; }
+    .icon-box { width: 56px !important; height: 56px !important; border-radius: 16px !important; }
     .chore-label { font-size: 20px !important; }
-    .chore-emoji { font-size: 34px !important; }
+    .chore-emoji { font-size: 32px !important; }
     .timer-pill-btn { font-size: 13px !important; padding: 4px 11px !important; }
-    .ten-frame-grid { width: 148px !important; gap: 4px !important; padding: 5px !important; }
+    .ten-frame-grid { width: 145px !important; gap: 4px !important; padding: 5px !important; }
     .ten-frame-slot { height: 16px !important; border-radius: 4px !important; }
     .ten-frame-dot { width: 7px !important; height: 7px !important; }
-    .balance-amount { font-size: 38px !important; }
-    .footer-card { padding: 20px !important; border-radius: 26px !important; gap: 16px !important; }
+    
+    .footer-card { 
+      flex-direction: row !important; 
+      align-items: stretch !important; 
+      padding: 20px !important; 
+      border-radius: 26px !important; 
+      gap: 16px !important; 
+    }
+    .debit-card-box { 
+      flex: 1.05 !important; 
+      width: auto !important; 
+      min-height: 150px !important; 
+      aspect-ratio: 1.586 / 1 !important; 
+    }
+    .goals-container-2x2 { flex: 1.35 !important; }
     .wide-mascot svg { width: 112px !important; height: 112px !important; }
     .moon-glow { width: 190px !important; height: 190px !important; }
   }
@@ -261,6 +366,7 @@ var KIDS = {
 
 var ALL_DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 var WEEKDAY_KEYS = ["mon", "tue", "wed", "thu", "fri"];
+var DAY_LABELS_MAP = { mon: "M", tue: "T", wed: "W", thu: "Th", fri: "F", sat: "Sa", sun: "Su" };
 
 var CHORE_LIBRARY = {
   miles: {
@@ -271,10 +377,7 @@ var CHORE_LIBRARY = {
       { id: "m4", label: "Eat breakfast", minutes: 10, emoji: "\uD83C\uDF73", days: ALL_DAYS },
       { id: "m5", label: "Put on shoes",  minutes: 2,  emoji: "\uD83D\uDC5F", days: ALL_DAYS }
     ],
-    afternoon: [
-      { id: "a1", label: "Quiet reading", minutes: 10, emoji: "\uD83D\uDCDA", days: ALL_DAYS },
-      { id: "a2", label: "Clean up toys", minutes: 5,  emoji: "\uD83E\uDDF8", days: ALL_DAYS }
-    ],
+    afternoon: [],
     evening: [
       { id: "e1", label: "Clean up toys",  minutes: 5,  emoji: "\uD83E\uDDF8", days: ALL_DAYS },
       { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD", days: ALL_DAYS },
@@ -309,7 +412,7 @@ var CHORE_LIBRARY = {
   }
 };
 
-// 4 Goals in Ascending Order ($4, $6, $8, $12) with Cow Emoji for Chick-fil-A
+// 4 Goals in Ascending Order ($4, $6, $8, $12)
 var GOALS = {
   miles: [
     { emoji: "\uD83C\uDF66", label: "Ice Cream", cost: 4 },
@@ -346,7 +449,7 @@ function defaultCustomChores() {
 var state = {
   kidId: "lina",
   parentMode: false,
-  periodOverride: null, // used in Parent Mode only to jump between phases
+  periodOverride: null,
   done: {},
   timerUI: {},
   timers: {},
@@ -382,7 +485,7 @@ var state = {
   lastRenderedPeriod: null
 };
 
-/* ---------------- Firebase Persistence & Clean-Slate Sanitizer ---------------- */
+/* ---------------- Firebase Persistence & Sanitizer ---------------- */
 var firebaseConfig = {
   apiKey: "AIzaSyDMxcuNZmdic9AZIL5uQwvGdxKnGW2Uq_c",
   authDomain: "bao-buddy.firebaseapp.com",
@@ -428,54 +531,27 @@ function isoWeekdayKey(d) {
   return map[d.getDay()] || null;
 }
 
-function sanitizeChoresState(savedChores, savedRotating) {
-  var out = defaultCustomChores();
-  if (savedChores) {
-    ["miles", "lina"].forEach(function(kid) {
-      if (savedChores[kid]) {
-        ["morning", "afternoon", "evening"].forEach(function(p) {
-          if (Array.isArray(savedChores[kid][p])) {
-            out[kid][p] = savedChores[kid][p].map(function(c) {
-              return {
-                id: c.id || ("c" + Math.random().toString(36).substr(2, 6)),
-                label: c.label || "Chore",
-                minutes: parseInt(c.minutes, 10) || 5,
-                emoji: c.emoji || "\u2B50",
-                days: (Array.isArray(c.days) && c.days.length > 0) ? c.days : ALL_DAYS.slice()
-              };
-            });
-          }
+function sanitizeChoresState(savedChores) {
+  if (!savedChores) return defaultCustomChores();
+  var out = {};
+  ["miles", "lina"].forEach(function(kid) {
+    out[kid] = {};
+    ["morning", "afternoon", "evening"].forEach(function(p) {
+      if (savedChores[kid] && Array.isArray(savedChores[kid][p])) {
+        out[kid][p] = savedChores[kid][p].map(function(c) {
+          return {
+            id: c.id || ("c" + Math.random().toString(36).substr(2, 6)),
+            label: c.label || "Chore",
+            minutes: parseInt(c.minutes, 10) || 5,
+            emoji: c.emoji || "\u2B50",
+            days: (Array.isArray(c.days) && c.days.length > 0) ? c.days : ALL_DAYS.slice()
+          };
         });
+      } else {
+        out[kid][p] = [];
       }
     });
-  }
-
-  out.lina.evening = out.lina.evening.filter(function(c) {
-    return c.label.toLowerCase() !== "homework" && !c.id.startsWith("rotating-");
   });
-
-  var linaAftLabels = out.lina.afternoon.map(function(c) { return c.label.toLowerCase(); });
-  var baselineAfternoonChores = [
-    { label: "Homework", minutes: 20, emoji: "\uD83D\uDCDA", days: WEEKDAY_KEYS },
-    { label: "Wipe bathroom sink", minutes: 4, emoji: "\uD83E\uDDFD", days: ["mon"] },
-    { label: "Feed Luna", minutes: 3, emoji: "\uD83D\uDC3E", days: ["tue"] },
-    { label: "Clean room", minutes: 8, emoji: "\uD83E\uDDF9", days: ["wed"] },
-    { label: "Put away clothes", minutes: 5, emoji: "\uD83E\uDDFA", days: ["thu"] },
-    { label: "Water plants", minutes: 3, emoji: "\uD83E\uDEB4", days: ["fri"] }
-  ];
-
-  baselineAfternoonChores.forEach(function(bc, idx) {
-    if (linaAftLabels.indexOf(bc.label.toLowerCase()) < 0) {
-      out.lina.afternoon.push({
-        id: "a" + (idx + 1),
-        label: bc.label,
-        minutes: bc.minutes,
-        emoji: bc.emoji,
-        days: bc.days
-      });
-    }
-  });
-
   return out;
 }
 
@@ -491,7 +567,7 @@ function initPersistence() {
       if (saved.balance) state.balance = saved.balance;
       if (saved.jars) state.jars = saved.jars;
       if (saved.weekly) state.weekly = saved.weekly;
-      state.customChores = sanitizeChoresState(saved.customChores, saved.rotatingChores);
+      state.customChores = sanitizeChoresState(saved.customChores);
       if (saved.timingSettings) state.timingSettings = saved.timingSettings;
       if (saved.bunColors) state.bunColors = saved.bunColors;
       if (saved.bunAccessories) state.bunAccessories = saved.bunAccessories;
@@ -544,19 +620,19 @@ function formatHourLabel(h24) {
   return h + ":00 " + ampm;
 }
 
-function formatDayTagsLabel(days) {
-  if (!days || days.length === 7) return "ALL";
-  if (days.length === 5 && days.indexOf("sat") < 0 && days.indexOf("sun") < 0) return "M-F";
-  return days.map(function(d) { return d.toUpperCase(); }).join(",");
+// Only format a label if the chore is NOT scheduled for all 7 days
+function getRestrictedDayTag(days) {
+  if (!days || days.length === 0 || days.length === 7) return null;
+  if (days.length === 5 && days.indexOf("sat") < 0 && days.indexOf("sun") < 0) return "Mon–Fri";
+  if (days.length === 2 && days.indexOf("sat") >= 0 && days.indexOf("sun") >= 0) return "Weekend";
+  return days.map(function(d) { return d.charAt(0).toUpperCase() + d.slice(1); }).join(", ");
 }
 
 function choresFor(kidId, period, dateObj) {
   var list = (state.customChores[kidId] && state.customChores[kidId][period]) || [];
-  
   if (state.parentMode && !dateObj) {
     return list;
   }
-
   var d = dateObj || new Date();
   var dayKey = isoWeekdayKey(d);
   return list.filter(function(c) {
@@ -1058,6 +1134,18 @@ function handleDragEnd() {
   draggedKid = null;
 }
 
+/* ---------------- Render Single Day-Chips Row ---------------- */
+function renderDayChipsHtml(prefixId, currentDays) {
+  var daysArr = currentDays || ALL_DAYS;
+  var html = '<div class="day-chips-row">';
+  ALL_DAYS.forEach(function(d) {
+    var isSel = daysArr.indexOf(d) >= 0;
+    html += '<button type="button" class="day-chip-btn' + (isSel ? ' selected' : '') + '" data-action="toggle-form-day" data-prefix="' + prefixId + '" data-day="' + d + '" id="' + prefixId + '-daybtn-' + d + '">' + DAY_LABELS_MAP[d] + '</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
 /* ---------------- render routines ---------------- */
 function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squishBannerKid, celebrateKid, pokeBaoKid) {
   var kid = KIDS[kidId];
@@ -1128,14 +1216,14 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   var COMPLETE_BG = bunColor.body;
   var COMPLETE_SHADOW = bunColor.pleat;
 
-  html += '<div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">';
+  html += '<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">';
   chores.forEach(function (c) {
     var key = choreKey(kidId, activePeriod, c.id);
     var status = getChoreStatus(today, key);
     var done = !!status;
     var isExcused = status === "excused";
     var timer = ensureTimer(key, c.minutes);
-    var showTimer = !!state.timerUI[key] && !done;
+    var showTimer = !state.parentMode && !done && !!state.timerUI[key];
     var accent = kid.accent;
 
     var doneBg = isExcused ? "#FFF3D6" : COMPLETE_BG;
@@ -1143,7 +1231,8 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
     var doneTextColor = "#3a2e2e";
     var doneSubTextColor = "#5a5252";
     var doneIconBg = "#ffffff70";
-    var doneCheckColor = "#3a2e2e";
+    var doneCheckColor = isExcused ? "#D97706" : "#3a2e2e";
+    var restrictedTag = getRestrictedDayTag(c.days);
 
     var isEditing = state.editingChore && state.editingChore.kidId === kidId && state.editingChore.period === activePeriod && state.editingChore.choreId === c.id;
 
@@ -1158,31 +1247,22 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
     if (isEditing) {
       var editIdBase = "chore-edit-" + kidId + "-" + activePeriod + "-" + c.id;
-      var currentDays = (c.days && c.days.length > 0) ? c.days : ALL_DAYS;
       html += '<div style="flex:1;display:flex;gap:8px;flex-direction:column">' +
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
-        '<input id="' + editIdBase + '-emoji" type="text" value="' + c.emoji + '" maxlength="4" style="width:44px;text-align:center;font-size:18px;padding:6px 4px;border-radius:10px;border:1px solid #ddd" />' +
-        '<input id="' + editIdBase + '-label" type="text" value="' + c.label + '" style="flex:1;min-width:100px;padding:6px 10px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
-        '<input id="' + editIdBase + '-minutes" type="number" value="' + c.minutes + '" min="1" max="99" style="width:52px;padding:6px 6px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
-        '<button data-action="chore-edit-save" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#3FBF7F;color:white;border:none;border-radius:10px;padding:8px 10px;cursor:pointer" aria-label="Save">\u2713</button>' +
-        '<button data-action="chore-edit-cancel" style="background:#f2f0ee;color:#3a2e2e;border:none;border-radius:10px;padding:8px 10px;cursor:pointer" aria-label="Cancel">\u2715</button>' +
+        '<div style="display:flex;gap:6px;align-items:center">' +
+        '<input id="' + editIdBase + '-emoji" type="text" value="' + c.emoji + '" maxlength="4" style="width:40px;text-align:center;font-size:18px;padding:6px 2px;border-radius:10px;border:1px solid #ddd" />' +
+        '<input id="' + editIdBase + '-label" type="text" value="' + c.label + '" style="flex:1;min-width:90px;padding:6px 8px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif;font-size:14px" />' +
+        '<input id="' + editIdBase + '-minutes" type="number" value="' + c.minutes + '" min="1" max="99" style="width:46px;padding:6px 4px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif;font-size:13px" />' +
+        '<button data-action="chore-edit-save" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#3FBF7F;color:white;border:none;border-radius:8px;padding:6px 9px;cursor:pointer" aria-label="Save">\u2713</button>' +
+        '<button data-action="chore-edit-cancel" style="background:#f2f0ee;color:#3a2e2e;border:none;border-radius:8px;padding:6px 9px;cursor:pointer" aria-label="Cancel">\u2715</button>' +
         '</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">' +
-        '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">' +
-        '<span style="font-size:11px;font-weight:800;color:#736763;margin-right:2px">Days:</span>' +
-        ALL_DAYS.map(function(d) {
-          var isChecked = currentDays.indexOf(d) >= 0 ? 'checked' : '';
-          return '<label style="font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:2px"><input type="checkbox" id="' + editIdBase + '-day-' + d + '" ' + isChecked + ' style="cursor:pointer">' + d.toUpperCase() + '</label>';
-        }).join(" ") +
-        '</div>' +
-        '<div style="display:flex;align-items:center;gap:4px">' +
+        renderDayChipsHtml(editIdBase, c.days) +
+        '<div style="display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:2px">' +
         '<span style="font-size:11px;font-weight:800;color:#736763">Phase:</span>' +
-        '<select id="' + editIdBase + '-phase" style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;border-radius:8px;border:1px solid #ddd;padding:3px 6px">' +
+        '<select id="' + editIdBase + '-phase" style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;border-radius:6px;border:1px solid #ddd;padding:2px 4px">' +
         '<option value="morning"' + (activePeriod === "morning" ? ' selected' : '') + '>🌅 Morning</option>' +
         '<option value="afternoon"' + (activePeriod === "afternoon" ? ' selected' : '') + '>☀️ Afternoon</option>' +
         '<option value="evening"' + (activePeriod === "evening" ? ' selected' : '') + '>🌙 Evening</option>' +
         '</select>' +
-        '</div>' +
         '</div>' +
         '</div>';
       html += '</div>';
@@ -1190,12 +1270,21 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
     }
 
     html += '<div class="icon-box" style="background:' + (done ? doneIconBg : "#ffffff") + '">' +
-      '<span class="chore-emoji" style="font-size:28px;line-height:1">' + c.emoji + '</span></div>';
+      '<span class="chore-emoji" style="font-size:26px;line-height:1">' + c.emoji + '</span></div>';
 
     html += '<div class="chore-content">';
-    html += '<div class="chore-label" style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:17px;color:' + (done ? doneTextColor : "#3a2e2e") + ';line-height:1.15">' + c.label + (isExcused ? ' <span style="font-size:13px">🎟️</span>' : '') + '</div>';
+    html += '<div class="chore-label" style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:16.5px;color:' + (done ? doneTextColor : "#3a2e2e") + ';line-height:1.15">' + c.label + '</div>';
 
-    if (!done) {
+    /* In Parent Mode: Clean, non-colliding action toolbar */
+    if (state.parentMode) {
+      html += '<div class="parent-card-actions">' +
+        '<span style="font-size:11px;font-weight:800;color:#736763;margin-right:2px">' + c.minutes + 'm</span>' +
+        (restrictedTag ? '<span style="font-size:9.5px;font-weight:800;color:#7A6E6A;background:#EDE4D8;padding:1px 5px;border-radius:5px">' + restrictedTag + '</span>' : '') +
+        '<button class="action-btn-pill" data-action="chore-pass" data-key="' + key + '" style="background:#FFF3D6;color:#D97706" title="Parent Pass (Excuse chore)">🎟️ Pass</button>' +
+        '<button class="action-btn-pill" data-action="chore-edit" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#f2f0ee;color:#3a2e2e" title="Edit chore">✏️</button>' +
+        '<button class="action-btn-pill" data-action="chore-delete" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#FF6B6B22;color:#E63946" title="Delete chore">✕</button>' +
+        '</div>';
+    } else if (!done) {
       var mm = Math.floor(timer.remainingSeconds / 60);
       var ss = timer.remainingSeconds % 60;
       var timeDisplay = mm + ":" + (ss < 10 ? "0" + ss : ss);
@@ -1217,10 +1306,6 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
           '</button>';
       }
 
-      if (state.parentMode && c.days) {
-        html += '<span style="font-size:10px;font-weight:800;color:#9C918C;background:#EDE4D8;padding:2px 6px;border-radius:6px">' + formatDayTagsLabel(c.days) + '</span>';
-      }
-
       html += '</div>';
 
       if (showTimer) {
@@ -1231,19 +1316,14 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
       html += '</div>';
     } else {
-      html += '<div class="chore-minutes" style="font-family:\'Nunito\',sans-serif;font-size:12.5px;font-weight:700;color:' + doneSubTextColor + ';margin-top:1px">' + (isExcused ? "Parent Excused 🎟️" : c.minutes + " min") + '</div>';
+      html += '<div class="chore-minutes" style="font-family:\'Nunito\',sans-serif;font-size:12px;font-weight:700;color:' + doneSubTextColor + ';margin-top:2px">' + (isExcused ? "Parent Excused" : c.minutes + " min") + '</div>';
     }
 
     html += '</div>'; // end chore-content
 
-    if (state.parentMode) {
-      html += '<button class="timer-btn" data-action="chore-pass" data-key="' + key + '" style="background:#FFF3D6;color:#D97706;margin-right:2px;font-size:15px" title="Parent Pass (Excuse chore)">🎟️</button>';
-      html += '<button class="timer-btn" data-action="chore-edit" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#ffffffcc;color:#3a2e2e;margin-right:2px" aria-label="Edit chore">\u270F\uFE0F</button>';
-      html += '<button class="timer-btn" data-action="chore-delete" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#FF6B6B;color:white;margin-right:4px" aria-label="Delete chore">\u2715</button>';
-    }
-
+    /* Standardized Done Button */
     html += '<button class="done-btn" data-action="toggle-done" data-key="' + key + '" style="color:' + (done ? doneCheckColor : "#c9c2c2") + '" aria-label="Toggle done">' +
-      (done ? (isExcused ? '<span style="font-size:24px">🎟️</span>' : iconCheckCircle(30, doneCheckColor)) : iconCircle(30, "#c9c2c2")) + '</button>';
+      (done ? iconCheckCircle(28, doneCheckColor) : iconCircle(28, "#c9c2c2")) + '</button>';
 
     html += '</div>';
   });
@@ -1252,18 +1332,13 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   if (state.parentMode) {
     var addIdBase = "chore-add-" + kidId + "-" + activePeriod;
     html += '<div style="margin-top:12px;background:#ffffffcc;border-radius:16px;padding:12px;display:flex;gap:8px;flex-direction:column">' +
-      '<div style="display:flex;gap:8px;align-items:center">' +
-      '<input id="' + addIdBase + '-emoji" type="text" placeholder="\uD83D\uDFE2" maxlength="4" style="width:44px;text-align:center;font-size:18px;padding:8px 4px;border-radius:10px;border:1px solid #ddd" />' +
-      '<input id="' + addIdBase + '-label" type="text" placeholder="Chore name" style="flex:1;min-width:100px;padding:8px 10px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
-      '<input id="' + addIdBase + '-minutes" type="number" placeholder="Min" min="1" max="99" style="width:56px;padding:8px 6px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
-      '<button data-action="chore-add" data-kid="' + kidId + '" data-period="' + activePeriod + '" style="background:' + kid.accent + ';color:white;border:none;border-radius:10px;padding:8px 16px;font-family:\'Baloo 2\',sans-serif;font-weight:700;cursor:pointer">Add</button>' +
+      '<div style="display:flex;gap:6px;align-items:center">' +
+      '<input id="' + addIdBase + '-emoji" type="text" placeholder="\uD83D\uDFE2" maxlength="4" style="width:40px;text-align:center;font-size:18px;padding:6px 2px;border-radius:10px;border:1px solid #ddd" />' +
+      '<input id="' + addIdBase + '-label" type="text" placeholder="Chore name" style="flex:1;min-width:100px;padding:6px 8px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif;font-size:14px" />' +
+      '<input id="' + addIdBase + '-minutes" type="number" placeholder="Min" min="1" max="99" style="width:50px;padding:6px 4px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif;font-size:13px" />' +
+      '<button data-action="chore-add" data-kid="' + kidId + '" data-period="' + activePeriod + '" style="background:' + kid.accent + ';color:white;border:none;border-radius:10px;padding:6px 14px;font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:14px;cursor:pointer">Add</button>' +
       '</div>' +
-      '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">' +
-      '<span style="font-size:11px;font-weight:800;color:#736763;margin-right:4px">Days:</span>' +
-      ALL_DAYS.map(function(d) {
-        return '<label style="font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:2px"><input type="checkbox" id="' + addIdBase + '-day-' + d + '" checked style="cursor:pointer">' + d.toUpperCase() + '</label>';
-      }).join(" ") +
-      '</div>' +
+      renderDayChipsHtml(addIdBase, ALL_DAYS) +
       '</div>';
   }
 
@@ -1329,6 +1404,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   return html;
 }
 
+/* ---------------- render Kid Balance (Forced Debit Card Ratio + Polished Goals) ---------------- */
 function renderKidBalance(kidId) {
   var kid = KIDS[kidId];
   var balance = state.balance[kidId];
@@ -1338,34 +1414,42 @@ function renderKidBalance(kidId) {
 
   html += '<div class="footer-card">';
   
-  /* Bao Bank Card (Left Side) */
-  html += '<button data-action="open-account" data-kid="' + kidId + '" style="border:none;cursor:pointer;text-align:left;flex:1.1;background:linear-gradient(135deg,' + bunColor.body + ',' + bunColor.pleat + ');border-radius:18px;padding:14px 16px;color:#3a2e2e;display:flex;flex-direction:column;justify-content:space-between;min-height:120px;position:relative;overflow:hidden">' +
-    '<div style="position:absolute;top:-40%;left:-20%;width:70%;height:220%;background:linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0) 60%);transform:rotate(12deg);pointer-events:none"></div>' +
-    '<div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative">' +
-    '<svg width="26" height="26" viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#F0D28A"/><circle cx="15" cy="15" r="14" fill="none" stroke="#D9B563" stroke-width="1.5"/>' +
-    '<path d="M15 6l2.4 6.4L24 15l-6.6 2.6L15 24l-2.4-6.4L6 15l6.6-2.6z" fill="#FFF6DF"/></svg>' +
-    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;letter-spacing:0.8px;opacity:0.75;text-transform:uppercase">Bao Bank</div>' +
+  /* Bao Bank Debit Card (Locked Aspect Ratio: 1.586 / 1) */
+  html += '<button class="debit-card-box" data-action="open-account" data-kid="' + kidId + '" style="background:linear-gradient(135deg,' + bunColor.body + ',' + bunColor.pleat + ');">' +
+    '<div style="position:absolute;top:-50%;left:-20%;width:80%;height:220%;background:linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 60%);transform:rotate(15deg);pointer-events:none"></div>' +
+    
+    '<div style="display:flex;justify-content:space-between;align-items:center;position:relative">' +
+    '<div style="display:flex;align-items:center;gap:6px">' +
+    '<svg width="22" height="22" viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#F0D28A"/><circle cx="15" cy="15" r="14" fill="none" stroke="#D9B563" stroke-width="1.5"/><path d="M15 6l2.4 6.4L24 15l-6.6 2.6L15 24l-2.4-6.4L6 15l6.6-2.6z" fill="#FFF6DF"/></svg>' +
+    '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#3a2e2e;opacity:0.85">Bao Bank</span>' +
     '</div>' +
-    '<div class="balance-amount" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:28px;margin:2px 0;position:relative;letter-spacing:0.5px">' + balanceStr + '</div>' +
-    '<div style="display:flex;justify-content:space-between;align-items:flex-end;position:relative">' +
-    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.85">' + kid.name + '</div>' +
-    '<svg width="24" height="16" viewBox="0 0 30 20"><circle cx="11" cy="10" r="8" fill="#3a2e2e22"/><circle cx="19" cy="10" r="8" fill="#3a2e2e33"/></svg>' +
+    '<div style="width:28px;height:20px;background:linear-gradient(135deg,#E6C575,#D1A949);border-radius:4px;box-shadow:inset 0 1px 1px rgba(255,255,255,0.6);border:1px solid #B89233"></div>' +
+    '</div>' +
+
+    '<div class="balance-amount" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:32px;margin:2px 0;position:relative;letter-spacing:0.5px;line-height:1">' + balanceStr + '</div>' +
+    
+    '<div style="display:flex;justify-content:space-between;align-items:center;position:relative">' +
+    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:#3a2e2e;opacity:0.9">' + kid.name + '</div>' +
+    '<svg width="28" height="18" viewBox="0 0 30 20"><circle cx="11" cy="10" r="8" fill="#3a2e2e22"/><circle cx="19" cy="10" r="8" fill="#3a2e2e33"/></svg>' +
     '</div>' +
     '</button>';
 
-  /* 2 x 2 Goals Grid (Right Side, Low to High: $4, $6, $8, $12) */
-  html += '<div class="goals-grid-2x2">';
+  /* Redesigned 2x2 Goals Grid (Low to High: $4, $6, $8, $12) */
+  html += '<div class="goals-container-2x2">';
   GOALS[kidId].forEach(function (goal) {
     var saved = Math.min(goal.cost, balance);
     var goalPct = Math.min(100, Math.round((saved / goal.cost) * 100));
-    html += '<div style="background:#FAF6F0;border:1px solid #EADBCE;border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;justify-content:space-between">' +
-      '<div class="row" style="gap:4px;margin-bottom:2px">' +
-      '<span style="font-size:13px">' + goal.emoji + '</span>' +
-      '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:11px;color:#3a2e2e;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + goal.label + '</span>' +
+    html += '<div class="goal-card-item">' +
+      '<div class="row-between" style="gap:4px">' +
+      '<div class="row" style="gap:6px">' +
+      '<span style="font-size:16px;line-height:1">' + goal.emoji + '</span>' +
+      '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:12.5px;color:#3a2e2e;line-height:1">' + goal.label + '</span>' +
       '</div>' +
-      '<div style="position:relative;background:#EDE4D8;border-radius:999px;height:12px;overflow:hidden">' +
+      '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:10px;color:#8A7E78;background:#EAE3DA;padding:1px 5px;border-radius:6px">$' + goal.cost + '</span>' +
+      '</div>' +
+      '<div style="position:relative;background:#EDE4D8;border-radius:999px;height:12px;overflow:hidden;margin-top:4px">' +
       '<div style="position:absolute;inset:0;width:' + goalPct + '%;background:' + kid.accent + ';border-radius:999px;transition:width 0.4s ease"></div>' +
-      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:8.5px;color:' + (goalPct > 50 ? "white" : "#3a2e2e") + '">$' + saved.toFixed(0) + '/$' + goal.cost + '</div>' +
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:8.5px;color:' + (goalPct > 50 ? "white" : "#3a2e2e") + '">$' + saved.toFixed(0) + ' / $' + goal.cost + '</div>' +
       '</div>' +
       '</div>';
   });
@@ -1571,13 +1655,13 @@ function render() {
 
   var html = decorationHtml;
   html += '<div style="position:relative;z-index:1">';
-  html += '<div class="row-between shared-header">' +
-    '<div style="width:36px"></div>' +
+  html += '<div class="shared-header">' +
+    '<div></div>' +
     '<div class="clock-el" data-clock-el style="display:inline-flex;align-items:baseline;gap:8px;background:#00000020;padding:12px 24px;border-radius:20px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.18)">' +
     '<span class="clock-time" data-clock-time style="font-family:\'Courier New\',monospace;font-weight:800;font-size:52px;color:' + textOnSky + ';letter-spacing:1px;text-shadow:0 0 16px ' + clockGlow + '">' + clockParts.hm + '</span>' +
     '<span class="clock-ampm" data-clock-ampm style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:16px;color:' + textOnSky + ';opacity:0.75">' + clockParts.ampm + '</span>' +
     '</div>' +
-    '<button class="lock-btn" data-action="toggle-fullscreen" style="color:' + textOnSky + '" aria-label="' + (isFullscreen ? "Exit full screen" : "Enter full screen") + '">' +
+    '<button class="lock-btn hide-mobile" data-action="toggle-fullscreen" style="color:' + textOnSky + '" aria-label="' + (isFullscreen ? "Exit full screen" : "Enter full screen") + '">' +
     (isFullscreen ? iconCompress(18) : iconExpand(18)) + '</button>' +
     '</div>';
 
@@ -1702,6 +1786,8 @@ document.getElementById("root").addEventListener("click", function (e) {
     state.timingsModalOpen = false;
     savePersisted();
     render();
+  } else if (action === "toggle-form-day") {
+    el.classList.toggle("selected");
   } else if (action === "squish-switcher") {
     state.squishSwitcher = el.dataset.kid;
     render();
@@ -1833,8 +1919,8 @@ document.getElementById("root").addEventListener("click", function (e) {
 
     var days = [];
     ALL_DAYS.forEach(function(d) {
-      var cb = document.getElementById(idBase + "-day-" + d);
-      if (cb && cb.checked) days.push(d);
+      var btn = document.getElementById(idBase + "-daybtn-" + d);
+      if (btn && btn.classList.contains("selected")) days.push(d);
     });
     if (days.length === 0) days = ALL_DAYS.slice();
 
@@ -1875,8 +1961,8 @@ document.getElementById("root").addEventListener("click", function (e) {
 
     var editDays = [];
     ALL_DAYS.forEach(function(d) {
-      var cb = document.getElementById(editIdBase + "-day-" + d);
-      if (cb && cb.checked) editDays.push(d);
+      var btn = document.getElementById(editIdBase + "-daybtn-" + d);
+      if (btn && btn.classList.contains("selected")) editDays.push(d);
     });
     if (editDays.length === 0) editDays = ALL_DAYS.slice();
 
@@ -1960,7 +2046,6 @@ setInterval(function () {
     return;
   }
 
-  // Live updates for 10-Frame slots, micro-action center dot scales & digital timestamps
   Object.keys(state.timers).forEach(function (key) {
     var t = state.timers[key];
     if (!t.running) return;
