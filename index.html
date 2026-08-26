@@ -61,15 +61,163 @@
   .celebrate-pop { animation: celebratePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
   .kid-panel-content { position: relative; }
-  .shared-header { margin-bottom: 18px; }
+  .shared-header { margin-bottom: 14px; }
   .row { display: flex; align-items: center; }
   .row-between { display: flex; justify-content: space-between; align-items: center; }
   .kid-btn { flex: 1; border: none; cursor: pointer; border-radius: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.2s ease; }
-  .chore-card { position: relative; border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: all 0.25s ease; }
+  
+  /* Chore Card & Drag/Drop styling */
+  .chore-card { 
+    position: relative; 
+    border-radius: 20px; 
+    padding: 14px 16px; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease; 
+  }
+  .chore-card.dragging {
+    opacity: 0.45;
+    transform: scale(0.98);
+  }
+  .chore-card.drag-over {
+    border: 2px dashed #3A2E2E;
+  }
+  .drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    font-size: 18px;
+    color: #9C918C;
+    padding: 0 4px;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
   .icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .chore-content { flex: 1; min-width: 0; }
   .done-btn { background: none; border: none; cursor: pointer; flex-shrink: 0; }
-  .footer-card { margin-top: 16px; background: white; border-radius: 22px; padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 16px rgba(0,0,0,0.06); height: 100%; }
+  
+  /* Ten-Frame Interactive Elements */
+  .timer-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .timer-pill-btn:active { transform: scale(0.95); }
+
+  .ten-frames-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 5px;
+  }
+  .ten-frame-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 3px;
+    background: #EDE4D8;
+    padding: 4px;
+    border-radius: 8px;
+    width: 130px;
+  }
+  .ten-frame-slot {
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    background: #FAF6F0;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+  }
+  .ten-frame-slot.active {
+    background: var(--kid-accent, #FF9B42);
+  }
+  .ten-frame-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s linear;
+  }
+
+  @keyframes activeSlotPulse {
+    0%, 100% { box-shadow: inset 0 0 0 0 rgba(255,255,255,0.7); }
+    50% { box-shadow: inset 0 0 4px 1px rgba(255,255,255,0.9); }
+  }
+  .ten-frame-slot.current-ticking {
+    animation: activeSlotPulse 1.5s ease-in-out infinite;
+  }
+
+  /* Phase Header Tabs (Parent Mode) */
+  .phase-pills-bar {
+    display: flex;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 4px;
+    border-radius: 16px;
+    margin-top: 14px;
+  }
+  .phase-tab-btn {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 6px 4px;
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    font-family: 'Nunito', sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+  .phase-tab-btn.active {
+    background: white;
+    color: #3A2E2E;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+
+  /* Footer Card with Side-by-Side 2x2 Layout */
+  .footer-card { 
+    margin-top: 16px; 
+    background: white; 
+    border-radius: 22px; 
+    padding: 16px; 
+    display: flex; 
+    flex-direction: row;
+    align-items: stretch;
+    gap: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06); 
+  }
+  .goals-grid-2x2 {
+    flex: 1.4;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px 10px;
+  }
+
   .lock-btn { background: #ffffff33; border: none; border-radius: 999px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .timer-btn { border: none; border-radius: 999px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
 
   .kid-grid { display: block; }
   .kid-piece { display: none; }
@@ -85,17 +233,18 @@
     .chore-card { padding: 18px 20px !important; border-radius: 24px !important; }
     .icon-box { width: 58px !important; height: 58px !important; border-radius: 16px !important; }
     .chore-label { font-size: 20px !important; }
-    .chore-minutes { font-size: 14px !important; }
     .chore-emoji { font-size: 34px !important; }
+    .timer-pill-btn { font-size: 13px !important; padding: 4px 11px !important; }
+    .ten-frame-grid { width: 148px !important; gap: 4px !important; padding: 5px !important; }
+    .ten-frame-slot { height: 16px !important; border-radius: 4px !important; }
+    .ten-frame-dot { width: 7px !important; height: 7px !important; }
     .balance-amount { font-size: 38px !important; }
-    .footer-card { padding: 20px !important; border-radius: 26px !important; }
+    .footer-card { padding: 20px !important; border-radius: 26px !important; gap: 16px !important; }
     .wide-mascot svg { width: 112px !important; height: 112px !important; }
     .moon-glow { width: 190px !important; height: 190px !important; }
   }
-  .confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 20px; }
+  .confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 20px; z-index: 3; }
   .confetti-piece { position: absolute; top: -10%; width: 7px; height: 7px; }
-  .timer-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-  .timer-btn { border: none; border-radius: 999px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
 </style>
 </head>
 <body>
@@ -110,63 +259,83 @@ var KIDS = {
   lina:  { name: "Lina",  age: 7, accent: "#5B7FFF", accent2: "#7DD8C6", mascot: "bao-lina" }
 };
 
+var ALL_DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+var WEEKDAY_KEYS = ["mon", "tue", "wed", "thu", "fri"];
+
 var CHORE_LIBRARY = {
   miles: {
     morning: [
-      { id: "m1", label: "Go potty",      minutes: 3,  emoji: "\uD83D\uDEBD" },
-      { id: "m2", label: "Get dressed",   minutes: 5,  emoji: "\uD83D\uDC55" },
-      { id: "m3", label: "Brush teeth",   minutes: 2,  emoji: "\uD83E\uDEA5" },
-      { id: "m4", label: "Eat breakfast", minutes: 10, emoji: "\uD83C\uDF73" },
-      { id: "m5", label: "Put on shoes",  minutes: 2,  emoji: "\uD83D\uDC5F" }
+      { id: "m1", label: "Go potty",      minutes: 3,  emoji: "\uD83D\uDEBD", days: ALL_DAYS },
+      { id: "m2", label: "Get dressed",   minutes: 5,  emoji: "\uD83D\uDC55", days: ALL_DAYS },
+      { id: "m3", label: "Brush teeth",   minutes: 2,  emoji: "\uD83E\uDEA5", days: ALL_DAYS },
+      { id: "m4", label: "Eat breakfast", minutes: 10, emoji: "\uD83C\uDF73", days: ALL_DAYS },
+      { id: "m5", label: "Put on shoes",  minutes: 2,  emoji: "\uD83D\uDC5F", days: ALL_DAYS }
+    ],
+    afternoon: [
+      { id: "a1", label: "Quiet reading", minutes: 10, emoji: "\uD83D\uDCDA", days: ALL_DAYS },
+      { id: "a2", label: "Clean up toys", minutes: 5,  emoji: "\uD83E\uDDF8", days: ALL_DAYS }
     ],
     evening: [
-      { id: "e1", label: "Clean up toys",  minutes: 5,  emoji: "\uD83E\uDDF8" },
-      { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD" },
-      { id: "e3", label: "Shower",         minutes: 10, emoji: "\uD83D\uDEBF" },
-      { id: "e4", label: "Brush teeth",    minutes: 2,  emoji: "\uD83E\uDEA5" },
-      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "🥼" }
+      { id: "e1", label: "Clean up toys",  minutes: 5,  emoji: "\uD83E\uDDF8", days: ALL_DAYS },
+      { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD", days: ALL_DAYS },
+      { id: "e3", label: "Shower",         minutes: 10, emoji: "\uD83D\uDEBF", days: ALL_DAYS },
+      { id: "e4", label: "Brush teeth",    minutes: 2,  emoji: "\uD83E\uDEA5", days: ALL_DAYS },
+      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "🥼", days: ALL_DAYS }
     ]
   },
   lina: {
     morning: [
-      { id: "m1", label: "Go potty",      minutes: 3,  emoji: "\uD83D\uDEBD" },
-      { id: "m2", label: "Get dressed",   minutes: 5,  emoji: "\uD83D\uDC55" },
-      { id: "m3", label: "Brush teeth",   minutes: 2,  emoji: "\uD83E\uDEA5" },
-      { id: "m4", label: "Eat breakfast", minutes: 10, emoji: "\uD83C\uDF73" },
-      { id: "m5", label: "Put on shoes",  minutes: 2,  emoji: "\uD83D\uDC5F" }
+      { id: "m1", label: "Go potty",      minutes: 3,  emoji: "\uD83D\uDEBD", days: ALL_DAYS },
+      { id: "m2", label: "Get dressed",   minutes: 5,  emoji: "\uD83D\uDC55", days: ALL_DAYS },
+      { id: "m3", label: "Brush teeth",   minutes: 2,  emoji: "\uD83E\uDEA5", days: ALL_DAYS },
+      { id: "m4", label: "Eat breakfast", minutes: 10, emoji: "\uD83C\uDF73", days: ALL_DAYS },
+      { id: "m5", label: "Put on shoes",  minutes: 2,  emoji: "\uD83D\uDC5F", days: ALL_DAYS }
+    ],
+    afternoon: [
+      { id: "a1", label: "Homework",          minutes: 20, emoji: "\uD83D\uDCDA", days: WEEKDAY_KEYS },
+      { id: "a2", label: "Wipe bathroom sink",minutes: 4,  emoji: "\uD83E\uDDFD", days: ["mon"] },
+      { id: "a3", label: "Feed Luna",         minutes: 3,  emoji: "\uD83D\uDC3E", days: ["tue"] },
+      { id: "a4", label: "Clean room",        minutes: 8,  emoji: "\uD83E\uDDF9", days: ["wed"] },
+      { id: "a5", label: "Put away clothes",  minutes: 5,  emoji: "\uD83E\uDDFA", days: ["thu"] },
+      { id: "a6", label: "Water plants",      minutes: 3,  emoji: "\uD83E\uDEB4", days: ["fri"] }
     ],
     evening: [
-      { id: "e0", label: "Homework",       minutes: 20, emoji: "\uD83D\uDCDA" },
-      { id: "e1", label: "Clean up toys",  minutes: 5,  emoji: "\uD83E\uDDF8" },
-      { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD" },
-      { id: "e3", label: "Shower",         minutes: 10, emoji: "\uD83D\uDEBF" },
-      { id: "e4", label: "Brush teeth",    minutes: 2,  emoji: "\uD83E\uDEA5" },
-      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "🥼" }
+      { id: "e1", label: "Clean up toys",  minutes: 5,  emoji: "\uD83E\uDDF8", days: ALL_DAYS },
+      { id: "e2", label: "Go potty",       minutes: 3,  emoji: "\uD83D\uDEBD", days: ALL_DAYS },
+      { id: "e3", label: "Shower",         minutes: 10, emoji: "\uD83D\uDEBF", days: ALL_DAYS },
+      { id: "e4", label: "Brush teeth",    minutes: 2,  emoji: "\uD83E\uDEA5", days: ALL_DAYS },
+      { id: "e5", label: "Put on pajamas", minutes: 3,  emoji: "🥼", days: ALL_DAYS }
     ]
   }
 };
 
+// 4 Goals in Ascending Order ($4, $6, $8, $12) with Cow Emoji for Chick-fil-A
 var GOALS = {
   miles: [
     { emoji: "\uD83C\uDF66", label: "Ice Cream", cost: 4 },
+    { emoji: "\uD83D\uDC2E", label: "Chick-fil-A", cost: 6 },
     { emoji: "\uD83D\uDECC", label: "Sleepover", cost: 8 },
     { emoji: "\uD83C\uDFAF", label: "Target Toy", cost: 12 }
   ],
   lina: [
     { emoji: "\uD83C\uDF66", label: "Ice Cream", cost: 4 },
+    { emoji: "\uD83D\uDC2E", label: "Chick-fil-A", cost: 6 },
     { emoji: "\uD83D\uDECC", label: "Sleepover", cost: 8 },
     { emoji: "\uD83C\uDFAF", label: "Target Toy", cost: 12 }
   ]
 };
 
 function cloneChoreList(list) {
-  return list.map(function (c) { return { id: c.id, label: c.label, minutes: c.minutes, emoji: c.emoji }; });
+  return list.map(function (c) { 
+    return { id: c.id, label: c.label, minutes: c.minutes, emoji: c.emoji, days: (c.days && c.days.length > 0) ? c.days.slice() : ALL_DAYS.slice() }; 
+  });
 }
 function defaultCustomChores() {
   var out = {};
   Object.keys(KIDS).forEach(function (kidId) {
     out[kidId] = {
       morning: cloneChoreList(CHORE_LIBRARY[kidId].morning),
+      afternoon: cloneChoreList(CHORE_LIBRARY[kidId].afternoon),
       evening: cloneChoreList(CHORE_LIBRARY[kidId].evening)
     };
   });
@@ -177,7 +346,7 @@ function defaultCustomChores() {
 var state = {
   kidId: "lina",
   parentMode: false,
-  periodOverride: null,
+  periodOverride: null, // used in Parent Mode only to jump between phases
   done: {},
   timerUI: {},
   timers: {},
@@ -191,21 +360,29 @@ var state = {
     lina:  { weekStart: null, days: { mon: false, tue: false, wed: false, thu: false, fri: false }, awarded: false }
   },
   customChores: defaultCustomChores(),
-  nextChoreId: 1,
+  timingSettings: {
+    morningStart: 5,
+    afternoonStart: 13,
+    eveningStart: 17
+  },
+  timingsModalOpen: false,
+  editingChore: null,
+  historyOpen: false,
+  selectedHistoryDate: null,
+  nextChoreId: 50,
   lastActiveDate: null,
   accountOpenFor: null,
   squishSwitcher: null,
   squishBanner: false,
   celebrateKid: null,
   bunColors: { miles: null, lina: null },
-  bunAccessories: { miles: null, lina: null }, // { type: "bow"|"cap", color: "#hex" } or null
+  bunAccessories: { miles: null, lina: null },
   playModalFor: null,
-  visualPreview: null, // "morning"|"afternoon"|"night"|null (null = live/real time) — parent-mode preview only, never persisted
   pokeBao: null,
   lastRenderedPeriod: null
 };
 
-/* ---------------- persistence (Firebase Realtime Database) ---------------- */
+/* ---------------- Firebase Persistence & Clean-Slate Sanitizer ---------------- */
 var firebaseConfig = {
   apiKey: "AIzaSyDMxcuNZmdic9AZIL5uQwvGdxKnGW2Uq_c",
   authDomain: "bao-buddy.firebaseapp.com",
@@ -229,6 +406,7 @@ function savePersisted() {
     jars: state.jars,
     weekly: state.weekly,
     customChores: state.customChores,
+    timingSettings: state.timingSettings,
     bunColors: state.bunColors,
     bunAccessories: state.bunAccessories,
     nextChoreId: state.nextChoreId,
@@ -246,10 +424,60 @@ function mondayOfWeek(d) {
   return todayDateString(monday);
 }
 function isoWeekdayKey(d) {
-  var map = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
+  var map = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat", 0: "sun" };
   return map[d.getDay()] || null;
 }
-var WEEKDAY_KEYS = ["mon", "tue", "wed", "thu", "fri"];
+
+function sanitizeChoresState(savedChores, savedRotating) {
+  var out = defaultCustomChores();
+  if (savedChores) {
+    ["miles", "lina"].forEach(function(kid) {
+      if (savedChores[kid]) {
+        ["morning", "afternoon", "evening"].forEach(function(p) {
+          if (Array.isArray(savedChores[kid][p])) {
+            out[kid][p] = savedChores[kid][p].map(function(c) {
+              return {
+                id: c.id || ("c" + Math.random().toString(36).substr(2, 6)),
+                label: c.label || "Chore",
+                minutes: parseInt(c.minutes, 10) || 5,
+                emoji: c.emoji || "\u2B50",
+                days: (Array.isArray(c.days) && c.days.length > 0) ? c.days : ALL_DAYS.slice()
+              };
+            });
+          }
+        });
+      }
+    });
+  }
+
+  out.lina.evening = out.lina.evening.filter(function(c) {
+    return c.label.toLowerCase() !== "homework" && !c.id.startsWith("rotating-");
+  });
+
+  var linaAftLabels = out.lina.afternoon.map(function(c) { return c.label.toLowerCase(); });
+  var baselineAfternoonChores = [
+    { label: "Homework", minutes: 20, emoji: "\uD83D\uDCDA", days: WEEKDAY_KEYS },
+    { label: "Wipe bathroom sink", minutes: 4, emoji: "\uD83E\uDDFD", days: ["mon"] },
+    { label: "Feed Luna", minutes: 3, emoji: "\uD83D\uDC3E", days: ["tue"] },
+    { label: "Clean room", minutes: 8, emoji: "\uD83E\uDDF9", days: ["wed"] },
+    { label: "Put away clothes", minutes: 5, emoji: "\uD83E\uDDFA", days: ["thu"] },
+    { label: "Water plants", minutes: 3, emoji: "\uD83E\uDEB4", days: ["fri"] }
+  ];
+
+  baselineAfternoonChores.forEach(function(bc, idx) {
+    if (linaAftLabels.indexOf(bc.label.toLowerCase()) < 0) {
+      out.lina.afternoon.push({
+        id: "a" + (idx + 1),
+        label: bc.label,
+        minutes: bc.minutes,
+        emoji: bc.emoji,
+        days: bc.days
+      });
+    }
+  });
+
+  return out;
+}
 
 function initPersistence() {
   dbRef.on("value", function (snapshot) {
@@ -259,11 +487,12 @@ function initPersistence() {
     var thisMonday = mondayOfWeek(now);
 
     if (saved) {
-      if (saved.done !== undefined) state.done = saved.done || {};
+      if (saved.done) state.done = saved.done;
       if (saved.balance) state.balance = saved.balance;
       if (saved.jars) state.jars = saved.jars;
       if (saved.weekly) state.weekly = saved.weekly;
-      if (saved.customChores) state.customChores = saved.customChores;
+      state.customChores = sanitizeChoresState(saved.customChores, saved.rotatingChores);
+      if (saved.timingSettings) state.timingSettings = saved.timingSettings;
       if (saved.bunColors) state.bunColors = saved.bunColors;
       if (saved.bunAccessories) state.bunAccessories = saved.bunAccessories;
       if (saved.nextChoreId) state.nextChoreId = saved.nextChoreId;
@@ -271,7 +500,6 @@ function initPersistence() {
     }
 
     if (state.lastActiveDate !== today) {
-      state.done = {};
       state.timers = {};
       state.timerUI = {};
       state.lastActiveDate = today;
@@ -291,60 +519,74 @@ function initPersistence() {
 
 function naturalPeriod() {
   var h = new Date().getHours();
-  return (h >= 4 && h < 14) ? "morning" : "evening";
+  var ts = state.timingSettings || { morningStart: 5, afternoonStart: 13, eveningStart: 17 };
+  if (h >= ts.morningStart && h < ts.afternoonStart) return "morning";
+  if (h >= ts.afternoonStart && h < ts.eveningStart) return "afternoon";
+  return "evening";
 }
-/* Separate from the chore period above — this drives the background's
-   look only, so the sky can still feel like a bright afternoon even
-   while the evening chore list is already showing (2-5pm), and only
-   goes properly dark with stars once it's actually night (5pm+). */
 function visualPeriod(now) {
   var h = now.getHours();
-  if (h >= 4 && h < 14) return "morning";
-  if (h >= 14 && h < 17) return "afternoon";
-  return "night";
+  var ts = state.timingSettings || { morningStart: 5, afternoonStart: 13, eveningStart: 17 };
+  if (h >= ts.morningStart && h < ts.afternoonStart) return "morning";
+  if (h >= ts.afternoonStart && h < ts.eveningStart) return "afternoon";
+  return "evening";
 }
 function currentPeriod() {
-  return state.periodOverride || naturalPeriod();
+  if (state.parentMode && state.periodOverride) {
+    return state.periodOverride;
+  }
+  return naturalPeriod();
 }
 
-var ROTATING_CHORES = [
-  { label: "Wipe bathroom sink", minutes: 4, emoji: "\uD83E\uDDFD" },
-  { label: "Feed Luna",          minutes: 3, emoji: "\uD83D\uDC3E" },
-  { label: "Clean room",         minutes: 8, emoji: "\uD83E\uDDF9" },
-  { label: "Put away clothes",   minutes: 5, emoji: "\uD83E\uDDFA" },
-  { label: "Water plants",       minutes: 3, emoji: "\uD83E\uDEB4" }
-];
-function weekdayIndex() {
-  var d = new Date().getDay();
-  return (d >= 1 && d <= 5) ? d - 1 : -1;
+function formatHourLabel(h24) {
+  var ampm = h24 >= 12 ? "PM" : "AM";
+  var h = h24 % 12 || 12;
+  return h + ":00 " + ampm;
 }
-function choresFor(kidId, period) {
-  var base = state.customChores[kidId][period];
-  var wIdx = weekdayIndex();
-  if (kidId === "lina" && period === "evening" && wIdx >= 0) {
-    var rotating = ROTATING_CHORES[wIdx];
-    return base.concat([
-      { id: "dc" + wIdx, label: rotating.label, minutes: rotating.minutes, emoji: rotating.emoji, auto: true }
-    ]);
+
+function formatDayTagsLabel(days) {
+  if (!days || days.length === 7) return "ALL";
+  if (days.length === 5 && days.indexOf("sat") < 0 && days.indexOf("sun") < 0) return "M-F";
+  return days.map(function(d) { return d.toUpperCase(); }).join(",");
+}
+
+function choresFor(kidId, period, dateObj) {
+  var list = (state.customChores[kidId] && state.customChores[kidId][period]) || [];
+  
+  if (state.parentMode && !dateObj) {
+    return list;
   }
-  return base;
+
+  var d = dateObj || new Date();
+  var dayKey = isoWeekdayKey(d);
+  return list.filter(function(c) {
+    return !c.days || c.days.length === 0 || c.days.indexOf(dayKey) >= 0;
+  });
 }
 
 function choreKey(kidId, period, choreId) {
   return kidId + "-" + period + "-" + choreId;
 }
+function getChoreStatus(dateStr, key) {
+  if (state.done[dateStr] && state.done[dateStr][key]) {
+    return state.done[dateStr][key];
+  }
+  return false;
+}
+function setChoreStatus(dateStr, key, val) {
+  if (!state.done[dateStr]) state.done[dateStr] = {};
+  if (val) {
+    state.done[dateStr][key] = val;
+  } else {
+    delete state.done[dateStr][key];
+  }
+}
+
 function ensureTimer(key, minutes) {
   if (!state.timers[key]) {
     state.timers[key] = { totalSeconds: minutes * 60, remainingSeconds: minutes * 60, running: false, endTimestamp: null };
   }
   return state.timers[key];
-}
-function formatClock(d) {
-  var h = d.getHours();
-  var m = d.getMinutes();
-  var ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  return h + ":" + (m < 10 ? "0" + m : m) + " " + ampm;
 }
 function formatClockParts(d) {
   var h = d.getHours();
@@ -354,7 +596,7 @@ function formatClockParts(d) {
   return { hm: h + ":" + (m < 10 ? "0" + m : m), ampm: ampm };
 }
 
-/* ---------------- sound ---------------- */
+/* ---------------- sound & fanfare ---------------- */
 function playChime() {
   try {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -373,6 +615,23 @@ function playChime() {
       osc.start(start);
       osc.stop(start + 0.4);
     });
+  } catch (e) { }
+}
+
+function playDotPop() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.05);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.08);
   } catch (e) { }
 }
 
@@ -483,28 +742,11 @@ function svgOpen(size, color, filled) {
   if (filled) return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' + (color || "currentColor") + '">';
   return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + (color || "currentColor") + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
 }
-function iconSun(size, color) {
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' + (color || "currentColor") + '" stroke="' + (color || "currentColor") + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<circle cx="12" cy="12" r="4.2"/><g fill="none">' +
-    '<path d="M12 2v2.4M12 19.6v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2.4M19.6 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>';
-}
-function iconMoon(size, color) {
-  return svgOpen(size, color, true) + '<path d="M20 14.5A8.5 8.5 0 019.5 4 8.5 8.5 0 1020 14.5z"/></svg>';
-}
 function iconCheckCircle(size, color) {
   return svgOpen(size, color) + '<circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 5-5"/></svg>';
 }
 function iconCircle(size, color) {
   return svgOpen(size, color) + '<circle cx="12" cy="12" r="9"/></svg>';
-}
-function iconPlay(size, color) {
-  return svgOpen(size, color, true) + '<path d="M6 4l14 8-14 8V4z"/></svg>';
-}
-function iconPause(size, color) {
-  return svgOpen(size, color, true) + '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
-}
-function iconReset(size, color) {
-  return svgOpen(size, color) + '<path d="M3 12a9 9 0 109-9 9 9 0 00-6.7 3"/><path d="M3 4v5h5"/></svg>';
 }
 function iconLock(size, color) {
   return svgOpen(size, color) + '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
@@ -518,8 +760,16 @@ function iconExpand(size, color) {
 function iconCompress(size, color) {
   return svgOpen(size, color) + '<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
 }
+function iconTimer(size, color) {
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + (color || "currentColor") + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/></svg>';
+}
+function iconPauseMini(size, color) {
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' + (color || "currentColor") + '">' +
+    '<rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>';
+}
 
-/* ---------------- sky decorations: sunrise glow, moon glow, twinkling stars ---------------- */
+/* ---------------- sky decorations ---------------- */
 var STAR_FIELD = [
   { x: 8, y: 10, size: 2,   delay: 0 },   { x: 20, y: 5,  size: 1.5, delay: 0.5 },
   { x: 35, y: 14, size: 2,  delay: 1.2 }, { x: 50, y: 4,  size: 1.5, delay: 0.3 },
@@ -569,11 +819,11 @@ function moonGlowHtml() {
   return '<div class="moon-glow" style="position:fixed;top:-50px;right:-50px;border-radius:50%;background:radial-gradient(circle, #EAE6FF66 0%, #B9C6FF3a 45%, transparent 70%);pointer-events:none;z-index:0"></div>';
 }
 
-/* ---------------- landscape: rolling hills + trees anchored to the bottom ---------------- */
+/* ---------------- landscape ---------------- */
 var LANDSCAPE_PALETTE = {
   morning:   { back: "#7FB5AA", front: "#3F7A6E", tree: "#2E5C52" },
   afternoon: { back: "#8FCB7C", front: "#5FA84A", tree: "#3D7A2E" },
-  night:     { back: "#2A3D74", front: "#1A2854", tree: "#141E42" }
+  evening:   { back: "#2A3D74", front: "#1A2854", tree: "#141E42" }
 };
 function treeHtml(leftPercent, treeColor) {
   return '<div style="position:fixed;left:' + leftPercent + '%;bottom:38px;width:36px;height:54px;transform:translateX(-50%);pointer-events:none;z-index:0">' +
@@ -586,7 +836,7 @@ function treeHtml(leftPercent, treeColor) {
     '</div>';
 }
 function landscapeHtml(vp) {
-  var p = LANDSCAPE_PALETTE[vp];
+  var p = LANDSCAPE_PALETTE[vp] || LANDSCAPE_PALETTE.evening;
   return '<div style="position:fixed;bottom:0;left:0;right:0;height:150px;pointer-events:none;overflow:hidden;z-index:0">' +
     '<svg width="100%" height="150" viewBox="0 0 400 150" preserveAspectRatio="none">' +
     '<path d="M0,90 C60,60 120,100 200,75 C280,50 340,90 400,70 L400,150 L0,150 Z" fill="' + p.back + '" opacity="0.55"/>' +
@@ -700,27 +950,129 @@ function mascotSVG(kidId, size, mood) {
     bunFace(c.body, c.pleat, c.blush, mood) + accessoryHtml(accessory) + '</svg>';
 }
 
-function moodForKid(kId, isMorningNow) {
-  var period = isMorningNow ? "morning" : "evening";
+function moodForKid(kId, period) {
   var kidChores = choresFor(kId, period);
-  var kidAllDone = kidChores.length > 0 && kidChores.every(function (c) { return !!state.done[choreKey(kId, period, c.id)]; });
+  var today = todayDateString(new Date());
+  var kidAllDone = kidChores.length > 0 && kidChores.every(function (c) { 
+    return !!getChoreStatus(today, choreKey(kId, period, c.id)); 
+  });
   if (kidAllDone) return "happy";
-  return isMorningNow ? "idle" : "sleepy";
+  return period === "evening" ? "sleepy" : "idle";
 }
 
-/* ---------------- render ---------------- */
-function renderKidChores(kidId, textOnSky, isMorning, squishSwitcherKid, squishBannerKid, celebrateKid, pokeBaoKid) {
+/* ---------------- 10-Frame Multi-Box Builder with Live Micro-Action ---------------- */
+function renderTenFrameBoxesHtml(key, minutes, remainingSeconds, isRunning) {
+  var remainingMin = Math.ceil(remainingSeconds / 60);
+  var activeSlotGlobal = remainingMin - 1;
+  
+  var secInMinute = remainingSeconds % 60;
+  if (secInMinute === 0 && remainingSeconds > 0) secInMinute = 60;
+  var subFraction = remainingSeconds > 0 ? (secInMinute / 60) : 0;
+  var microScale = (0.35 + 0.65 * subFraction).toFixed(2);
+
+  var frameCount = minutes > 10 ? Math.ceil(minutes / 10) : 1;
+  var html = '<div class="ten-frames-wrapper">';
+
+  for (var f = 0; f < frameCount; f++) {
+    html += '<div class="ten-frame-grid">';
+    for (var s = 0; s < 10; s++) {
+      var globalIdx = f * 10 + s;
+      var inTask = globalIdx < minutes;
+      var active = inTask && (globalIdx < remainingMin);
+      var isCurrentlyTicking = isRunning && (globalIdx === activeSlotGlobal);
+
+      var slotClasses = "ten-frame-slot";
+      if (active) slotClasses += " active";
+      if (isCurrentlyTicking) slotClasses += " current-ticking";
+
+      var dotScale = isCurrentlyTicking ? microScale : "1";
+      var dotHtml = active ? '<div class="ten-frame-dot" style="transform:scale(' + dotScale + ')"></div>' : '';
+
+      html += '<div id="slot-' + key + '-' + globalIdx + '" class="' + slotClasses + '">' + dotHtml + '</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ---------------- Drag & Drop Logic ---------------- */
+var draggedChoreId = null;
+var draggedPeriod = null;
+var draggedKid = null;
+
+function handleDragStart(e) {
+  var card = e.target.closest(".chore-card");
+  if (!card) return;
+  draggedChoreId = card.dataset.choreid;
+  draggedPeriod = card.dataset.period;
+  draggedKid = card.dataset.kid;
+  card.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", draggedChoreId);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  var card = e.target.closest(".chore-card");
+  if (card && card.dataset.choreid !== draggedChoreId) {
+    card.classList.add("drag-over");
+  }
+}
+
+function handleDragLeave(e) {
+  var card = e.target.closest(".chore-card");
+  if (card) card.classList.remove("drag-over");
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  var targetCard = e.target.closest(".chore-card");
+  document.querySelectorAll(".chore-card").forEach(function(c) {
+    c.classList.remove("dragging", "drag-over");
+  });
+  if (!targetCard || !draggedChoreId) return;
+
+  var targetChoreId = targetCard.dataset.choreid;
+  if (targetChoreId === draggedChoreId) return;
+
+  var list = state.customChores[draggedKid][draggedPeriod];
+  var fromIdx = list.findIndex(function(c) { return c.id === draggedChoreId; });
+  var toIdx = list.findIndex(function(c) { return c.id === targetChoreId; });
+
+  if (fromIdx >= 0 && toIdx >= 0) {
+    var movedItem = list.splice(fromIdx, 1)[0];
+    list.splice(toIdx, 0, movedItem);
+    savePersisted();
+    render();
+  }
+}
+
+function handleDragEnd() {
+  document.querySelectorAll(".chore-card").forEach(function(c) {
+    c.classList.remove("dragging", "drag-over");
+  });
+  draggedChoreId = null;
+  draggedPeriod = null;
+  draggedKid = null;
+}
+
+/* ---------------- render routines ---------------- */
+function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squishBannerKid, celebrateKid, pokeBaoKid) {
   var kid = KIDS[kidId];
-  var period = isMorning ? "morning" : "evening";
-  var chores = choresFor(kidId, period);
+  var today = todayDateString(new Date());
+  var chores = choresFor(kidId, activePeriod);
 
   var doneCount = 0;
   chores.forEach(function (c) {
-    if (state.done[choreKey(kidId, period, c.id)]) doneCount++;
+    if (getChoreStatus(today, choreKey(kidId, activePeriod, c.id))) doneCount++;
   });
-  var allDone = doneCount === chores.length;
+  var allDone = chores.length > 0 && doneCount === chores.length;
 
-  var html = '<div class="kid-panel-content">';
+  var ts = state.timingSettings || { morningStart: 5, afternoonStart: 13, eveningStart: 17 };
+
+  var html = '<div class="kid-panel-content" style="--kid-accent:' + kid.accent + '">';
 
   html += '<div class="row narrow-only" style="gap:12px">';
   Object.keys(KIDS).forEach(function (id) {
@@ -731,27 +1083,44 @@ function renderKidChores(kidId, textOnSky, isMorning, squishSwitcherKid, squishB
       ';background:' + (selected ? "white" : "#ffffff85") +
       ';box-shadow:' + (selected ? "0 4px 0 rgba(0,0,0,0.1), 0 10px 18px rgba(0,0,0,0.12)" : "0 2px 6px rgba(0,0,0,0.08)") + '">' +
       '<div class="' + (selected ? "bob-fast" : "bob") + (justSquished ? " squish-anim" : "") + '" style="filter:' + (selected ? "none" : "grayscale(0.1) opacity(0.92)") + '">' +
-      mascotSVG(id, selected ? 84 : 64, moodForKid(id, isMorning)) + '</div>' +
+      mascotSVG(id, selected ? 84 : 64, moodForKid(id, activePeriod)) + '</div>' +
       '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:' + (selected ? "16px" : "13.5px") + ';color:' + (selected ? "#3a2e2e" : "#5a5252") + ';margin-top:2px">' + k.name + '</span>' +
       '</button>';
   });
   html += '</div>';
 
-  var narrativeCaption = allDone
-    ? ""
-    : (isMorning ? "waking up!" : "getting sleepy\u2026");
   html += '<div class="wide-only row" style="align-items:center;gap:10px">' +
     '<button data-action="squish-switcher" data-kid="' + kidId + '" style="border:none;background:none;padding:0;cursor:pointer;line-height:0">' +
-    '<div class="bob wide-mascot' + (squishSwitcherKid === kidId ? " squish-anim" : "") + '">' + mascotSVG(kidId, 56, moodForKid(kidId, isMorning)) + '</div>' +
+    '<div class="bob wide-mascot' + (squishSwitcherKid === kidId ? " squish-anim" : "") + '">' + mascotSVG(kidId, 56, moodForKid(kidId, activePeriod)) + '</div>' +
     '</button>' +
     '<div>' +
     '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:17px;color:' + textOnSky + '">' + kid.name + '</div>' +
-    (narrativeCaption ? '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;font-size:12px;color:' + textOnSky + ';opacity:0.75">' + narrativeCaption + '</div>' : '') +
     '</div>' +
     '</div>';
 
-  html += '<div class="row-between" style="margin-top:18px;align-items:baseline">' +
-    '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:19px;color:' + textOnSky + '">' + (isMorning ? "\u2600\uFE0F Morning routine" : "\uD83C\uDF19 Evening routine") + '</div>' +
+  /* Phase Navigation Bar with Start Times (Parent Mode Only) */
+  if (state.parentMode) {
+    html += '<div class="phase-pills-bar">';
+    var phases = [
+      { key: "morning",   label: "Morning",   emoji: "🌅", start: ts.morningStart },
+      { key: "afternoon", label: "Afternoon", emoji: "☀️", start: ts.afternoonStart },
+      { key: "evening",   label: "Evening",   emoji: "🌙", start: ts.eveningStart }
+    ];
+    phases.forEach(function(p) {
+      var isCurrent = activePeriod === p.key;
+      html += '<button class="phase-tab-btn' + (isCurrent ? ' active' : '') + '" data-action="switch-phase" data-period="' + p.key + '">' +
+        '<div>' + p.emoji + ' ' + p.label + '</div>' +
+        '<div style="font-size:9.5px;opacity:0.85">' + formatHourLabel(p.start) + '</div>' +
+        '</button>';
+    });
+    html += '</div>';
+  }
+
+  html += '<div class="row-between" style="margin-top:14px;align-items:baseline">' +
+    '<div style="display:flex;align-items:center;gap:8px">' +
+    '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:19px;color:' + textOnSky + '">' + (activePeriod.charAt(0).toUpperCase() + activePeriod.slice(1)) + ' Routine</span>' +
+    (state.parentMode ? '<button data-action="open-timings-modal" style="border:none;background:rgba(255,255,255,0.25);border-radius:8px;padding:2px 7px;cursor:pointer;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;color:' + textOnSky + '" title="Change start times">🕒 Times</button>' : '') +
+    '</div>' +
     '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;color:' + textOnSky + '">' + doneCount + '/' + chores.length + ' done</div>' +
     '</div>';
 
@@ -759,76 +1128,142 @@ function renderKidChores(kidId, textOnSky, isMorning, squishSwitcherKid, squishB
   var COMPLETE_BG = bunColor.body;
   var COMPLETE_SHADOW = bunColor.pleat;
 
-  html += '<div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">';
+  html += '<div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">';
   chores.forEach(function (c) {
-    var key = choreKey(kidId, period, c.id);
-    var done = !!state.done[key];
+    var key = choreKey(kidId, activePeriod, c.id);
+    var status = getChoreStatus(today, key);
+    var done = !!status;
+    var isExcused = status === "excused";
     var timer = ensureTimer(key, c.minutes);
     var showTimer = !!state.timerUI[key] && !done;
-    var accent = bunColor.pleat;
+    var accent = kid.accent;
 
-    var doneBg = COMPLETE_BG;
-    var doneShadowColor = COMPLETE_SHADOW;
+    var doneBg = isExcused ? "#FFF3D6" : COMPLETE_BG;
+    var doneShadowColor = isExcused ? "#E5C88A" : COMPLETE_SHADOW;
     var doneTextColor = "#3a2e2e";
     var doneSubTextColor = "#5a5252";
     var doneIconBg = "#ffffff70";
     var doneCheckColor = "#3a2e2e";
 
-    html += '<div class="chore-card" data-chorekey="' + key + '" style="background:' + (done ? doneBg : "#ffffffee") +
+    var isEditing = state.editingChore && state.editingChore.kidId === kidId && state.editingChore.period === activePeriod && state.editingChore.choreId === c.id;
+
+    html += '<div class="chore-card" data-chorekey="' + key + '" data-choreid="' + c.id + '" data-period="' + activePeriod + '" data-kid="' + kidId + '"' +
+      (state.parentMode && !isEditing ? ' draggable="true" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)"' : '') +
+      ' style="background:' + (done ? doneBg : "#ffffffee") +
       ';box-shadow:' + (done ? "0 4px 0 " + doneShadowColor + ", 0 8px 20px rgba(0,0,0,0.12)" : "0 4px 0 rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.06)") + '">';
 
-    html += '<div class="icon-box" data-action="toggle-timer-ui" data-key="' + key + '" style="background:' + (done ? doneIconBg : "#ffffff") + '" title="Tap for a timer">' +
+    if (state.parentMode && !isEditing) {
+      html += '<div class="drag-handle" title="Drag to reorder">⠿</div>';
+    }
+
+    if (isEditing) {
+      var editIdBase = "chore-edit-" + kidId + "-" + activePeriod + "-" + c.id;
+      var currentDays = (c.days && c.days.length > 0) ? c.days : ALL_DAYS;
+      html += '<div style="flex:1;display:flex;gap:8px;flex-direction:column">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+        '<input id="' + editIdBase + '-emoji" type="text" value="' + c.emoji + '" maxlength="4" style="width:44px;text-align:center;font-size:18px;padding:6px 4px;border-radius:10px;border:1px solid #ddd" />' +
+        '<input id="' + editIdBase + '-label" type="text" value="' + c.label + '" style="flex:1;min-width:100px;padding:6px 10px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
+        '<input id="' + editIdBase + '-minutes" type="number" value="' + c.minutes + '" min="1" max="99" style="width:52px;padding:6px 6px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
+        '<button data-action="chore-edit-save" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#3FBF7F;color:white;border:none;border-radius:10px;padding:8px 10px;cursor:pointer" aria-label="Save">\u2713</button>' +
+        '<button data-action="chore-edit-cancel" style="background:#f2f0ee;color:#3a2e2e;border:none;border-radius:10px;padding:8px 10px;cursor:pointer" aria-label="Cancel">\u2715</button>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">' +
+        '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">' +
+        '<span style="font-size:11px;font-weight:800;color:#736763;margin-right:2px">Days:</span>' +
+        ALL_DAYS.map(function(d) {
+          var isChecked = currentDays.indexOf(d) >= 0 ? 'checked' : '';
+          return '<label style="font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:2px"><input type="checkbox" id="' + editIdBase + '-day-' + d + '" ' + isChecked + ' style="cursor:pointer">' + d.toUpperCase() + '</label>';
+        }).join(" ") +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:4px">' +
+        '<span style="font-size:11px;font-weight:800;color:#736763">Phase:</span>' +
+        '<select id="' + editIdBase + '-phase" style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;border-radius:8px;border:1px solid #ddd;padding:3px 6px">' +
+        '<option value="morning"' + (activePeriod === "morning" ? ' selected' : '') + '>🌅 Morning</option>' +
+        '<option value="afternoon"' + (activePeriod === "afternoon" ? ' selected' : '') + '>☀️ Afternoon</option>' +
+        '<option value="evening"' + (activePeriod === "evening" ? ' selected' : '') + '>🌙 Evening</option>' +
+        '</select>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+      html += '</div>';
+      return;
+    }
+
+    html += '<div class="icon-box" style="background:' + (done ? doneIconBg : "#ffffff") + '">' +
       '<span class="chore-emoji" style="font-size:28px;line-height:1">' + c.emoji + '</span></div>';
 
-    html += '<div style="flex:1;min-width:0">';
-    html += '<div class="chore-label" style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:17px;color:' + (done ? doneTextColor : "#3a2e2e") + ';line-height:1.15">' + c.label + '</div>';
-    html += '<div class="chore-minutes" style="font-family:\'Nunito\',sans-serif;font-size:12.5px;font-weight:700;color:' + (done ? doneSubTextColor : "#8a7f7f") + ';margin-top:1px">' + c.minutes + ' min</div>';
+    html += '<div class="chore-content">';
+    html += '<div class="chore-label" style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:17px;color:' + (done ? doneTextColor : "#3a2e2e") + ';line-height:1.15">' + c.label + (isExcused ? ' <span style="font-size:13px">🎟️</span>' : '') + '</div>';
 
-    if (showTimer) {
-      var pct = 1 - timer.remainingSeconds / timer.totalSeconds;
+    if (!done) {
       var mm = Math.floor(timer.remainingSeconds / 60);
       var ss = timer.remainingSeconds % 60;
-      var circumference = 2 * Math.PI * 18;
-      html += '<div class="timer-row">' +
-        '<div style="position:relative;width:44px;height:44px">' +
-        '<svg width="44" height="44" viewBox="0 0 44 44">' +
-        '<circle cx="22" cy="22" r="18" fill="none" stroke="#ffffff55" stroke-width="5"/>' +
-        '<circle id="ring-' + key + '" cx="22" cy="22" r="18" fill="none" stroke="' + accent + '" stroke-width="5" stroke-linecap="round" ' +
-        'stroke-dasharray="' + circumference + '" stroke-dashoffset="' + (circumference * (1 - pct)) + '" transform="rotate(-90 22 22)" style="transition:stroke-dashoffset 0.4s linear"/>' +
-        '</svg>' +
-        '<div id="time-' + key + '" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;color:#3a2e2e">' +
-        mm + ':' + (ss < 10 ? "0" + ss : ss) + '</div>' +
-        '</div>' +
-        '<button class="timer-btn" data-action="timer-toggle-run" data-key="' + key + '" style="background:' + accent + ';color:white" aria-label="Start or pause timer">' +
-        (timer.running ? iconPause(16, "white") : iconPlay(16, "white")) + '</button>' +
-        '<button class="timer-btn" data-action="timer-reset" data-key="' + key + '" style="background:#ffffffcc;color:#3a2e2e" aria-label="Reset timer">' +
-        iconReset(15, "#3a2e2e") + '</button>' +
-        '</div>';
-    }
-    html += '</div>';
+      var timeDisplay = mm + ":" + (ss < 10 ? "0" + ss : ss);
 
-    if (state.parentMode && !c.auto) {
-      html += '<div style="display:flex;flex-direction:column;gap:2px;margin-right:4px">' +
-        '<button class="timer-btn" data-action="chore-move-up" data-kid="' + kidId + '" data-period="' + period + '" data-choreid="' + c.id + '" style="width:26px;height:22px;background:#ffffffcc;color:#3a2e2e" aria-label="Move up">\u25B2</button>' +
-        '<button class="timer-btn" data-action="chore-move-down" data-kid="' + kidId + '" data-period="' + period + '" data-choreid="' + c.id + '" style="width:26px;height:22px;background:#ffffffcc;color:#3a2e2e" aria-label="Move down">\u25BC</button>' +
-        '</div>' +
-        '<button class="timer-btn" data-action="chore-delete" data-kid="' + kidId + '" data-period="' + period + '" data-choreid="' + c.id + '" style="background:#FF6B6B;color:white;margin-right:4px" aria-label="Delete chore">\u2715</button>';
+      var pillBg = timer.running ? accent : (showTimer ? accent + "22" : "#f4efe9");
+      var pillColor = timer.running ? "#ffffff" : (showTimer ? accent : "#736763");
+      var pillIcon = timer.running ? iconPauseMini(12, pillColor) : iconTimer(12, pillColor);
+      var pillLabel = showTimer ? timeDisplay : (c.minutes + " min");
+
+      html += '<div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+        '<button class="timer-pill-btn" data-action="toggle-pill-timer" data-key="' + key + '" style="background:' + pillBg + ';color:' + pillColor + '" title="Start, pause, or view timer">' +
+        pillIcon + '<span id="pill-label-' + key + '">' + pillLabel + '</span>' +
+        '</button>';
+
+      if (showTimer && !timer.running) {
+        html += '<button class="timer-pill-btn" data-action="reset-pill-timer" data-key="' + key + '" style="background:#f4efe9;color:#736763;padding:3px 7px" title="Reset timer">' +
+          iconReset(11, "#736763") +
+          '</button>';
+      }
+
+      if (state.parentMode && c.days) {
+        html += '<span style="font-size:10px;font-weight:800;color:#9C918C;background:#EDE4D8;padding:2px 6px;border-radius:6px">' + formatDayTagsLabel(c.days) + '</span>';
+      }
+
+      html += '</div>';
+
+      if (showTimer) {
+        html += '<div id="frame-wrap-' + key + '">' +
+          renderTenFrameBoxesHtml(key, c.minutes, timer.remainingSeconds, timer.running) +
+          '</div>';
+      }
+
+      html += '</div>';
+    } else {
+      html += '<div class="chore-minutes" style="font-family:\'Nunito\',sans-serif;font-size:12.5px;font-weight:700;color:' + doneSubTextColor + ';margin-top:1px">' + (isExcused ? "Parent Excused 🎟️" : c.minutes + " min") + '</div>';
+    }
+
+    html += '</div>'; // end chore-content
+
+    if (state.parentMode) {
+      html += '<button class="timer-btn" data-action="chore-pass" data-key="' + key + '" style="background:#FFF3D6;color:#D97706;margin-right:2px;font-size:15px" title="Parent Pass (Excuse chore)">🎟️</button>';
+      html += '<button class="timer-btn" data-action="chore-edit" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#ffffffcc;color:#3a2e2e;margin-right:2px" aria-label="Edit chore">\u270F\uFE0F</button>';
+      html += '<button class="timer-btn" data-action="chore-delete" data-kid="' + kidId + '" data-period="' + activePeriod + '" data-choreid="' + c.id + '" style="background:#FF6B6B;color:white;margin-right:4px" aria-label="Delete chore">\u2715</button>';
     }
 
     html += '<button class="done-btn" data-action="toggle-done" data-key="' + key + '" style="color:' + (done ? doneCheckColor : "#c9c2c2") + '" aria-label="Toggle done">' +
-      (done ? iconCheckCircle(30, doneCheckColor) : iconCircle(30, "#c9c2c2")) + '</button>';
+      (done ? (isExcused ? '<span style="font-size:24px">🎟️</span>' : iconCheckCircle(30, doneCheckColor)) : iconCircle(30, "#c9c2c2")) + '</button>';
 
     html += '</div>';
   });
   html += '</div>';
 
   if (state.parentMode) {
-    var addIdBase = "chore-add-" + kidId + "-" + period;
-    html += '<div style="margin-top:12px;background:#ffffffcc;border-radius:16px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+    var addIdBase = "chore-add-" + kidId + "-" + activePeriod;
+    html += '<div style="margin-top:12px;background:#ffffffcc;border-radius:16px;padding:12px;display:flex;gap:8px;flex-direction:column">' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
       '<input id="' + addIdBase + '-emoji" type="text" placeholder="\uD83D\uDFE2" maxlength="4" style="width:44px;text-align:center;font-size:18px;padding:8px 4px;border-radius:10px;border:1px solid #ddd" />' +
       '<input id="' + addIdBase + '-label" type="text" placeholder="Chore name" style="flex:1;min-width:100px;padding:8px 10px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
       '<input id="' + addIdBase + '-minutes" type="number" placeholder="Min" min="1" max="99" style="width:56px;padding:8px 6px;border-radius:10px;border:1px solid #ddd;font-family:\'Nunito\',sans-serif" />' +
-      '<button data-action="chore-add" data-kid="' + kidId + '" data-period="' + period + '" style="background:' + kid.accent + ';color:white;border:none;border-radius:10px;padding:8px 16px;font-family:\'Baloo 2\',sans-serif;font-weight:700;cursor:pointer">Add</button>' +
+      '<button data-action="chore-add" data-kid="' + kidId + '" data-period="' + activePeriod + '" style="background:' + kid.accent + ';color:white;border:none;border-radius:10px;padding:8px 16px;font-family:\'Baloo 2\',sans-serif;font-weight:700;cursor:pointer">Add</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">' +
+      '<span style="font-size:11px;font-weight:800;color:#736763;margin-right:4px">Days:</span>' +
+      ALL_DAYS.map(function(d) {
+        return '<label style="font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:2px"><input type="checkbox" id="' + addIdBase + '-day-' + d + '" checked style="cursor:pointer">' + d.toUpperCase() + '</label>';
+      }).join(" ") +
+      '</div>' +
       '</div>';
   }
 
@@ -838,7 +1273,7 @@ function renderKidChores(kidId, textOnSky, isMorning, squishSwitcherKid, squishB
       '<div class="bob-fast mascot-tap' + (squishBannerKid === kidId ? " squish-anim" : "") + '">' + mascotSVG(kidId, 56, "happy") + '</div>' +
       '</button>' +
       '<div>' +
-      '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;color:#3a2e2e;font-size:16px">\uD83C\uDF89 All done, ' + kid.name + '! Great ' + (isMorning ? "morning" : "evening") + '!</div>' +
+      '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;color:#3a2e2e;font-size:16px">\uD83C\uDF89 All done, ' + kid.name + '! Great job!</div>' +
       '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin-top:2px">Tap him for a surprise!</div>' +
       '</div>' +
       '</div>';
@@ -901,36 +1336,41 @@ function renderKidBalance(kidId) {
   var bunColor = (state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId];
   var html = "";
 
-  html += '<div class="footer-card" style="align-items:stretch;gap:14px">';
-  html += '<button data-action="open-account" data-kid="' + kidId + '" style="border:none;cursor:pointer;text-align:left;flex:1.3;background:linear-gradient(135deg,' + bunColor.body + ',' + bunColor.pleat + ');border-radius:18px;padding:16px;color:#3a2e2e;display:flex;flex-direction:column;justify-content:space-between;min-height:130px;position:relative;overflow:hidden">' +
+  html += '<div class="footer-card">';
+  
+  /* Bao Bank Card (Left Side) */
+  html += '<button data-action="open-account" data-kid="' + kidId + '" style="border:none;cursor:pointer;text-align:left;flex:1.1;background:linear-gradient(135deg,' + bunColor.body + ',' + bunColor.pleat + ');border-radius:18px;padding:14px 16px;color:#3a2e2e;display:flex;flex-direction:column;justify-content:space-between;min-height:120px;position:relative;overflow:hidden">' +
     '<div style="position:absolute;top:-40%;left:-20%;width:70%;height:220%;background:linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0) 60%);transform:rotate(12deg);pointer-events:none"></div>' +
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative">' +
-    '<svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#F0D28A"/><circle cx="15" cy="15" r="14" fill="none" stroke="#D9B563" stroke-width="1.5"/>' +
+    '<svg width="26" height="26" viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#F0D28A"/><circle cx="15" cy="15" r="14" fill="none" stroke="#D9B563" stroke-width="1.5"/>' +
     '<path d="M15 6l2.4 6.4L24 15l-6.6 2.6L15 24l-2.4-6.4L6 15l6.6-2.6z" fill="#FFF6DF"/></svg>' +
-    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.8px;opacity:0.7;text-transform:uppercase">Bao Bank</div>' +
+    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;letter-spacing:0.8px;opacity:0.75;text-transform:uppercase">Bao Bank</div>' +
     '</div>' +
-    '<div class="balance-amount" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:32px;margin:8px 0;position:relative;letter-spacing:0.5px">' + balanceStr + '</div>' +
+    '<div class="balance-amount" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:28px;margin:2px 0;position:relative;letter-spacing:0.5px">' + balanceStr + '</div>' +
     '<div style="display:flex;justify-content:space-between;align-items:flex-end;position:relative">' +
-    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.8">' + kid.name + '</div>' +
-    '<svg width="30" height="20" viewBox="0 0 30 20"><circle cx="11" cy="10" r="8" fill="#3a2e2e22"/><circle cx="19" cy="10" r="8" fill="#3a2e2e33"/></svg>' +
+    '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.85">' + kid.name + '</div>' +
+    '<svg width="24" height="16" viewBox="0 0 30 20"><circle cx="11" cy="10" r="8" fill="#3a2e2e22"/><circle cx="19" cy="10" r="8" fill="#3a2e2e33"/></svg>' +
     '</div>' +
     '</button>';
 
-  html += '<div style="flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center">';
+  /* 2 x 2 Goals Grid (Right Side, Low to High: $4, $6, $8, $12) */
+  html += '<div class="goals-grid-2x2">';
   GOALS[kidId].forEach(function (goal) {
     var saved = Math.min(goal.cost, balance);
     var goalPct = Math.min(100, Math.round((saved / goal.cost) * 100));
-    html += '<div>' +
-      '<div class="row" style="gap:4px;margin-bottom:3px">' +
+    html += '<div style="background:#FAF6F0;border:1px solid #EADBCE;border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;justify-content:space-between">' +
+      '<div class="row" style="gap:4px;margin-bottom:2px">' +
       '<span style="font-size:13px">' + goal.emoji + '</span>' +
-      '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:11.5px;color:#3a2e2e">' + goal.label + '</span></div>' +
-      '<div style="position:relative;background:#eee;border-radius:999px;height:14px;overflow:hidden">' +
+      '<span style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:11px;color:#3a2e2e;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + goal.label + '</span>' +
+      '</div>' +
+      '<div style="position:relative;background:#EDE4D8;border-radius:999px;height:12px;overflow:hidden">' +
       '<div style="position:absolute;inset:0;width:' + goalPct + '%;background:' + kid.accent + ';border-radius:999px;transition:width 0.4s ease"></div>' +
-      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9px;color:' + (goalPct > 50 ? "white" : "#3a2e2e") + '">$' + saved.toFixed(0) + ' / $' + goal.cost + '</div>' +
-      '</div></div>';
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:8.5px;color:' + (goalPct > 50 ? "white" : "#3a2e2e") + '">$' + saved.toFixed(0) + '/$' + goal.cost + '</div>' +
+      '</div>' +
+      '</div>';
   });
-
   html += '</div>';
+
   html += '</div>';
 
   if (state.accountOpenFor === kidId) {
@@ -981,6 +1421,113 @@ function renderKidBalance(kidId) {
   return html;
 }
 
+/* ---------------- History Drawer Component ---------------- */
+function renderHistoryDrawer() {
+  if (!state.historyOpen) return "";
+  var today = new Date();
+  var dates = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(today);
+    d.setDate(d.getDate() - i);
+    dates.push(d);
+  }
+  var selDate = state.selectedHistoryDate ? new Date(state.selectedHistoryDate + "T12:00:00") : today;
+  var selDateStr = todayDateString(selDate);
+
+  var periods = ["morning", "afternoon", "evening"];
+
+  var html = '<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px">' +
+    '<div style="background:white;border-radius:24px;padding:20px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto">' +
+    '<div class="row-between">' +
+    '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:20px;color:#3A2E2E">Weekly History Review</div>' +
+    '<button class="lock-btn" data-action="close-history" aria-label="Close">\u2715</button>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;margin:14px 0;overflow-x:auto;padding-bottom:4px">';
+
+  dates.forEach(function(d) {
+    var dStr = todayDateString(d);
+    var isSel = dStr === selDateStr;
+    var dayName = isoWeekdayKey(d).toUpperCase();
+    var dayNum = d.getDate();
+    html += '<button data-action="history-select-date" data-datestr="' + dStr + '" style="flex:1;min-width:44px;border:none;border-radius:12px;padding:8px 4px;background:' + (isSel ? '#3A2E2E' : '#F4EFEA') + ';color:' + (isSel ? 'white' : '#3A2E2E') + ';cursor:pointer">' +
+      '<div style="font-size:10px;font-weight:800">' + dayName + '</div>' +
+      '<div style="font-size:15px;font-weight:800;margin-top:2px">' + dayNum + '</div>' +
+      '</button>';
+  });
+  html += '</div>';
+
+  html += '<div style="display:flex;gap:8px;margin-bottom:12px">' +
+    Object.keys(KIDS).map(function(kId) {
+      var isK = state.kidId === kId;
+      return '<button data-action="select-kid" data-kid="' + kId + '" style="flex:1;border:none;border-radius:10px;padding:6px;font-family:\'Nunito\',sans-serif;font-weight:800;background:' + (isK ? KIDS[kId].accent : '#F4EFEA') + ';color:' + (isK ? 'white' : '#3A2E2E') + ';cursor:pointer">' + KIDS[kId].name + '</button>';
+    }).join("") +
+    '</div>';
+
+  periods.forEach(function(per) {
+    var list = choresFor(state.kidId, per, selDate);
+    if (list.length === 0) return;
+    html += '<div style="margin-top:10px">' +
+      '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:14px;color:#736763;text-transform:capitalize">' + per + '</div>';
+
+    list.forEach(function(c) {
+      var key = choreKey(state.kidId, per, c.id);
+      var status = getChoreStatus(selDateStr, key);
+      var done = !!status;
+      var excused = status === "excused";
+
+      html += '<div style="display:flex;align-items:center;gap:8px;background:#FAF6F0;padding:8px 12px;border-radius:12px;margin-top:4px">' +
+        '<span style="font-size:18px">' + c.emoji + '</span>' +
+        '<span style="font-family:\'Nunito\',sans-serif;font-weight:700;font-size:13px;flex:1;color:#3A2E2E">' + c.label + '</span>' +
+        '<button data-action="history-toggle-pass" data-datestr="' + selDateStr + '" data-key="' + key + '" style="border:none;background:' + (excused ? '#D97706' : '#FFF3D6') + ';color:' + (excused ? 'white' : '#D97706') + ';border-radius:8px;padding:4px 8px;font-weight:800;font-size:11px;cursor:pointer">🎟️ Pass</button>' +
+        '<button data-action="history-toggle-done" data-datestr="' + selDateStr + '" data-key="' + key + '" style="border:none;background:' + (done && !excused ? '#3FBF7F' : '#E0D4C8') + ';color:white;border-radius:8px;padding:4px 8px;font-weight:800;font-size:11px;cursor:pointer">' + (done && !excused ? '✓ Done' : 'Mark') + '</button>' +
+        '</div>';
+    });
+    html += '</div>';
+  });
+
+  html += '</div></div>';
+  return html;
+}
+
+/* ---------------- Timings Modal Component ---------------- */
+function renderTimingsModal() {
+  if (!state.timingsModalOpen) return "";
+  var ts = state.timingSettings || { morningStart: 5, afternoonStart: 13, eveningStart: 17 };
+
+  var hourOptions = function(selectedHour) {
+    var out = "";
+    for (var h = 0; h < 24; h++) {
+      out += '<option value="' + h + '"' + (h === selectedHour ? ' selected' : '') + '>' + formatHourLabel(h) + '</option>';
+    }
+    return out;
+  };
+
+  return '<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:30;padding:20px">' +
+    '<div style="background:white;border-radius:24px;padding:22px;width:100%;max-width:360px">' +
+    '<div class="row-between" style="margin-bottom:14px">' +
+    '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;color:#3A2E2E">🕒 Schedule Start Times</div>' +
+    '<button class="lock-btn" data-action="close-timings-modal" aria-label="Close">\u2715</button>' +
+    '</div>' +
+    '<div style="font-family:\'Nunito\',sans-serif;font-size:12.5px;color:#8a7f7f;margin-bottom:14px">Set the hour each routine phase automatically begins on the live clock:</div>' +
+    '<div style="display:flex;flex-direction:column;gap:12px">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;background:#FAF6F0;padding:10px 14px;border-radius:14px">' +
+    '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:14px">🌅 Morning</span>' +
+    '<select id="modal-ts-morning" style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;border-radius:8px;border:1px solid #ddd;padding:4px 8px">' + hourOptions(ts.morningStart) + '</select>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;background:#FAF6F0;padding:10px 14px;border-radius:14px">' +
+    '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:14px">☀️ Afternoon</span>' +
+    '<select id="modal-ts-afternoon" style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;border-radius:8px;border:1px solid #ddd;padding:4px 8px">' + hourOptions(ts.afternoonStart) + '</select>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;background:#FAF6F0;padding:10px 14px;border-radius:14px">' +
+    '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:14px">🌙 Evening</span>' +
+    '<select id="modal-ts-evening" style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;border-radius:8px;border:1px solid #ddd;padding:4px 8px">' + hourOptions(ts.eveningStart) + '</select>' +
+    '</div>' +
+    '</div>' +
+    '<button data-action="save-modal-timings" style="width:100%;margin-top:16px;background:#3A2E2E;color:white;border:none;border-radius:12px;padding:10px;font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:15px;cursor:pointer">Save Schedule</button>' +
+    '</div></div>';
+}
+
+/* ---------------- main render ---------------- */
 function render() {
   var squishSwitcherKid = state.squishSwitcher;
   state.squishSwitcher = null;
@@ -991,15 +1538,17 @@ function render() {
   var pokeBaoKid = state.pokeBao;
   state.pokeBao = null;
 
-  var period = currentPeriod();
-  state.lastRenderedPeriod = period;
-  var isMorning = period === "morning";
+  var activePeriod = currentPeriod();
+  state.lastRenderedPeriod = activePeriod;
 
+  /* Live sky updates match either the parent's currently viewed phase or the real-time clock */
   var vp;
-  if (state.visualPreview) vp = state.visualPreview;
-  else if (state.periodOverride === "morning") vp = "morning";
-  else if (state.periodOverride === "evening") vp = "night";
-  else vp = visualPeriod(new Date());
+  if (state.parentMode && state.periodOverride) {
+    vp = state.periodOverride;
+  } else {
+    vp = visualPeriod(new Date());
+  }
+
   var sky, textOnSky, decorationHtml;
   if (vp === "morning") {
     sky = "linear-gradient(180deg, #7B9FE8 0%, #B98FD1 35%, #F0B896 70%, #F5D9A8 100%)";
@@ -1012,13 +1561,12 @@ function render() {
   } else {
     sky = "linear-gradient(180deg, #0B1A3D 0%, #1B2F63 50%, #33468C 100%)";
     textOnSky = "#EAE6FF";
-    decorationHtml = moonGlowHtml() + starsFieldHtml() + landscapeHtml("night");
+    decorationHtml = moonGlowHtml() + starsFieldHtml() + landscapeHtml("evening");
   }
   document.getElementById("sky-bg").style.background = sky;
 
-  var periodIconHtml = isMorning ? iconSun(24, "#FFDE7A") : iconMoon(21, "#EAE6FF");
   var clockParts = formatClockParts(new Date());
-  var clockGlow = vp === "night" ? "#7DD8C666" : "#FF9B4266";
+  var clockGlow = vp === "evening" ? "#7DD8C666" : "#FF9B4266";
   var isFullscreen = !!document.fullscreenElement;
 
   var html = decorationHtml;
@@ -1037,7 +1585,7 @@ function render() {
   Object.keys(KIDS).forEach(function (id) {
     var active = state.kidId === id;
     html += '<div class="kid-piece' + (active ? " active" : "") + '" data-kid="' + id + '">' +
-      renderKidChores(id, textOnSky, isMorning, squishSwitcherKid, squishBannerKid, celebrateKid, pokeBaoKid) +
+      renderKidChores(id, textOnSky, activePeriod, squishSwitcherKid, squishBannerKid, celebrateKid, pokeBaoKid) +
       '</div>';
   });
   Object.keys(KIDS).forEach(function (id) {
@@ -1048,39 +1596,44 @@ function render() {
   });
   html += '</div>';
 
+  // Parent Controls Toolbar
   html += '<div class="row-between" style="margin-top:20px;opacity:0.85">' +
     '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;font-size:11px;color:' + textOnSky + ';opacity:0.6">Bao Buddy</div>' +
     '<div class="row" style="gap:8px">' +
     (state.parentMode
-      ? '<button class="lock-btn" data-action="cycle-visual-preview" style="width:auto;padding:0 10px;color:' + textOnSky + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px" aria-label="Preview morning, afternoon, or night sky">' +
-        'Sky: ' + (state.visualPreview ? state.visualPreview.charAt(0).toUpperCase() + state.visualPreview.slice(1) : "Live") + '</button>'
-      : '') +
-    (state.parentMode
-      ? '<button class="lock-btn" data-action="toggle-period-preview" aria-label="Switch between morning and evening (parent check-in)">' + periodIconHtml + '</button>'
+      ? '<button class="lock-btn" data-action="open-history" style="width:auto;padding:0 10px;color:' + textOnSky + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px">📅 History</button>'
       : '') +
     '<button class="lock-btn" data-action="toggle-parent" style="color:' + textOnSky + '" aria-label="Toggle parent mode">' + (state.parentMode ? iconUnlock(16) : iconLock(16)) + '</button>' +
     '</div>' +
     '</div>';
-  html += '</div>'; // end content layer
+
+  html += '</div>';
+
+  html += renderHistoryDrawer();
+  html += renderTimingsModal();
 
   document.getElementById("root").innerHTML = html;
 }
 
-/* ---------------- actions ---------------- */
-function checkWeeklyAward(kidId) {
-  var now = new Date();
-  var todayKey = isoWeekdayKey(now);
-  if (!todayKey) return;
+/* ---------------- actions & streak check ---------------- */
+function checkWeeklyAward(kidId, dateStr) {
+  var d = dateStr ? new Date(dateStr + "T12:00:00") : new Date();
+  var todayKey = isoWeekdayKey(d);
+  if (!todayKey || WEEKDAY_KEYS.indexOf(todayKey) < 0) return;
 
-  var morning = choresFor(kidId, "morning");
-  var evening = choresFor(kidId, "evening");
-  var morningDone = morning.every(function (c) { return !!state.done[choreKey(kidId, "morning", c.id)]; });
-  var eveningDone = evening.every(function (c) { return !!state.done[choreKey(kidId, "evening", c.id)]; });
-  if (!morningDone || !eveningDone) return;
+  var targetDateStr = todayDateString(d);
+  var periods = ["morning", "afternoon", "evening"];
+  var allPeriodsDone = periods.every(function(p) {
+    var pChores = choresFor(kidId, p, d);
+    if (pChores.length === 0) return true;
+    return pChores.every(function(c) {
+      return !!getChoreStatus(targetDateStr, choreKey(kidId, p, c.id));
+    });
+  });
 
   var w = state.weekly[kidId];
-  if (w.days[todayKey]) return;
-  w.days[todayKey] = true;
+  if (!w) return;
+  w.days[todayKey] = allPeriodsDone;
 
   var allDaysDone = WEEKDAY_KEYS.every(function (k) { return w.days[k]; });
   if (allDaysDone && !w.awarded) {
@@ -1092,13 +1645,14 @@ function checkWeeklyAward(kidId) {
 
 function completeChore(kidId, period, choreId) {
   var key = choreKey(kidId, period, choreId);
+  var today = todayDateString(new Date());
   var chores = choresFor(kidId, period);
-  var wasAllDone = chores.every(function (c) { return !!state.done[choreKey(kidId, period, c.id)]; });
+  var wasAllDone = chores.every(function (c) { return !!getChoreStatus(today, choreKey(kidId, period, c.id)); });
 
-  state.done[key] = true;
+  setChoreStatus(today, key, true);
   if (state.timers[key]) { state.timers[key].running = false; }
 
-  var isAllDoneNow = chores.every(function (c) { return !!state.done[choreKey(kidId, period, c.id)]; });
+  var isAllDoneNow = chores.every(function (c) { return !!getChoreStatus(today, choreKey(kidId, period, c.id)); });
   var justFinishedRoutine = isAllDoneNow && !wasAllDone;
 
   if (justFinishedRoutine) {
@@ -1107,7 +1661,7 @@ function completeChore(kidId, period, choreId) {
   } else {
     playChime();
   }
-  checkWeeklyAward(kidId);
+  checkWeeklyAward(kidId, today);
   savePersisted();
   render();
 
@@ -1130,6 +1684,23 @@ document.getElementById("root").addEventListener("click", function (e) {
     state.accountOpenFor = null;
     state.playModalFor = null;
     state.squishSwitcher = el.dataset.kid;
+    render();
+  } else if (action === "switch-phase") {
+    state.periodOverride = el.dataset.period;
+    render();
+  } else if (action === "open-timings-modal") {
+    state.timingsModalOpen = true;
+    render();
+  } else if (action === "close-timings-modal") {
+    state.timingsModalOpen = false;
+    render();
+  } else if (action === "save-modal-timings") {
+    var mVal = parseInt(document.getElementById("modal-ts-morning").value, 10);
+    var aVal = parseInt(document.getElementById("modal-ts-afternoon").value, 10);
+    var eVal = parseInt(document.getElementById("modal-ts-evening").value, 10);
+    state.timingSettings = { morningStart: mVal, afternoonStart: aVal, eveningStart: eVal };
+    state.timingsModalOpen = false;
+    savePersisted();
     render();
   } else if (action === "squish-switcher") {
     state.squishSwitcher = el.dataset.kid;
@@ -1171,6 +1742,10 @@ document.getElementById("root").addEventListener("click", function (e) {
     }
   } else if (action === "toggle-parent") {
     state.parentMode = !state.parentMode;
+    if (!state.parentMode) {
+      state.timingsModalOpen = false;
+      state.periodOverride = null;
+    }
     render();
   } else if (action === "toggle-fullscreen") {
     try {
@@ -1180,13 +1755,31 @@ document.getElementById("root").addEventListener("click", function (e) {
         document.exitFullscreen().catch(function () {});
       }
     } catch (e) { }
-  } else if (action === "toggle-period-preview") {
-    state.periodOverride = state.periodOverride ? null : (naturalPeriod() === "morning" ? "evening" : "morning");
+  } else if (action === "open-history") {
+    state.historyOpen = true;
+    state.selectedHistoryDate = todayDateString(new Date());
     render();
-  } else if (action === "cycle-visual-preview") {
-    var order = [null, "morning", "afternoon", "night"];
-    var idx = order.indexOf(state.visualPreview);
-    state.visualPreview = order[(idx + 1) % order.length];
+  } else if (action === "close-history") {
+    state.historyOpen = false;
+    render();
+  } else if (action === "history-select-date") {
+    state.selectedHistoryDate = el.dataset.datestr;
+    render();
+  } else if (action === "history-toggle-done") {
+    var hDate = el.dataset.datestr;
+    var hKey = el.dataset.key;
+    var cur = getChoreStatus(hDate, hKey);
+    setChoreStatus(hDate, hKey, cur === true ? false : true);
+    checkWeeklyAward(state.kidId, hDate);
+    savePersisted();
+    render();
+  } else if (action === "history-toggle-pass") {
+    var hpDate = el.dataset.datestr;
+    var hpKey = el.dataset.key;
+    var curP = getChoreStatus(hpDate, hpKey);
+    setChoreStatus(hpDate, hpKey, curP === "excused" ? false : "excused");
+    checkWeeklyAward(state.kidId, hpDate);
+    savePersisted();
     render();
   } else if (action === "open-account") {
     state.accountOpenFor = el.dataset.kid;
@@ -1217,17 +1810,6 @@ document.getElementById("root").addEventListener("click", function (e) {
     state.balance[adjKidId] = Math.max(floor, newBalance);
     savePersisted();
     render();
-  } else if (action === "chore-move-up" || action === "chore-move-down") {
-    if (!state.parentMode) return;
-    var mvKid = el.dataset.kid, mvPeriod = el.dataset.period, mvId = el.dataset.choreid;
-    var list = state.customChores[mvKid][mvPeriod];
-    var i = list.findIndex(function (c) { return c.id === mvId; });
-    if (i < 0) return;
-    var j = action === "chore-move-up" ? i - 1 : i + 1;
-    if (j < 0 || j >= list.length) return;
-    var tmp = list[i]; list[i] = list[j]; list[j] = tmp;
-    savePersisted();
-    render();
   } else if (action === "chore-delete") {
     if (!state.parentMode) return;
     var delKid = el.dataset.kid, delPeriod = el.dataset.period, delId = el.dataset.choreid;
@@ -1248,41 +1830,117 @@ document.getElementById("root").addEventListener("click", function (e) {
     var minutes = parseInt(minutesEl.value, 10);
     if (!minutes || minutes < 1) minutes = 5;
     var emoji = (emojiEl.value || "").trim() || "\u2B50";
-    var newChore = { id: "c" + state.nextChoreId, label: label, minutes: minutes, emoji: emoji };
+
+    var days = [];
+    ALL_DAYS.forEach(function(d) {
+      var cb = document.getElementById(idBase + "-day-" + d);
+      if (cb && cb.checked) days.push(d);
+    });
+    if (days.length === 0) days = ALL_DAYS.slice();
+
+    var newChore = { id: "c" + state.nextChoreId, label: label, minutes: minutes, emoji: emoji, days: days };
     state.nextChoreId += 1;
     state.customChores[addKid][addPeriod].push(newChore);
     savePersisted();
     render();
-  } else if (action === "toggle-timer-ui") {
-    state.timerUI[key] = !state.timerUI[key];
+  } else if (action === "chore-pass") {
+    if (!state.parentMode) return;
+    var passToday = todayDateString(new Date());
+    var passCur = getChoreStatus(passToday, key);
+    setChoreStatus(passToday, key, passCur === "excused" ? false : "excused");
+    checkWeeklyAward(state.kidId, passToday);
+    savePersisted();
     render();
-  } else if (action === "timer-toggle-run") {
+  } else if (action === "chore-edit") {
+    if (!state.parentMode) return;
+    state.editingChore = { kidId: el.dataset.kid, period: el.dataset.period, choreId: el.dataset.choreid };
+    render();
+  } else if (action === "chore-edit-cancel") {
+    state.editingChore = null;
+    render();
+  } else if (action === "chore-edit-save") {
+    if (!state.parentMode) return;
+    var editKid = el.dataset.kid, editPeriod = el.dataset.period, editChoreId = el.dataset.choreid;
+    var editIdBase = "chore-edit-" + editKid + "-" + editPeriod + "-" + editChoreId;
+    var eEmojiEl = document.getElementById(editIdBase + "-emoji");
+    var eLabelEl = document.getElementById(editIdBase + "-label");
+    var eMinutesEl = document.getElementById(editIdBase + "-minutes");
+    var ePhaseEl = document.getElementById(editIdBase + "-phase");
+    var eLabel = (eLabelEl.value || "").trim();
+    if (!eLabel) { eLabelEl.focus(); return; }
+    var eMinutes = parseInt(eMinutesEl.value, 10);
+    if (!eMinutes || eMinutes < 1) eMinutes = 5;
+    var eEmoji = (eEmojiEl.value || "").trim() || "\u2B50";
+    var targetPhase = (ePhaseEl && ePhaseEl.value) || editPeriod;
+
+    var editDays = [];
+    ALL_DAYS.forEach(function(d) {
+      var cb = document.getElementById(editIdBase + "-day-" + d);
+      if (cb && cb.checked) editDays.push(d);
+    });
+    if (editDays.length === 0) editDays = ALL_DAYS.slice();
+
+    var sourceList = state.customChores[editKid][editPeriod];
+    var editIdx = sourceList.findIndex(function (c) { return c.id === editChoreId; });
+    
+    if (editIdx >= 0) {
+      var updatedChore = {
+        id: editChoreId,
+        label: eLabel,
+        minutes: eMinutes,
+        emoji: eEmoji,
+        days: editDays
+      };
+
+      if (targetPhase === editPeriod) {
+        sourceList[editIdx] = updatedChore;
+      } else {
+        sourceList.splice(editIdx, 1);
+        if (!state.customChores[editKid][targetPhase]) state.customChores[editKid][targetPhase] = [];
+        state.customChores[editKid][targetPhase].push(updatedChore);
+        state.periodOverride = targetPhase;
+      }
+    }
+    state.editingChore = null;
+    savePersisted();
+    render();
+  } else if (action === "toggle-pill-timer") {
     var t = state.timers[key];
     if (!t) return;
-    if (t.running) {
-      t.remainingSeconds = Math.max(0, Math.round((t.endTimestamp - Date.now()) / 1000));
-      t.running = false;
-    } else {
+    
+    if (!state.timerUI[key]) {
+      state.timerUI[key] = true;
       t.endTimestamp = Date.now() + t.remainingSeconds * 1000;
       t.running = true;
+    } else {
+      if (t.running) {
+        t.remainingSeconds = Math.max(0, Math.round((t.endTimestamp - Date.now()) / 1000));
+        t.running = false;
+      } else {
+        t.endTimestamp = Date.now() + t.remainingSeconds * 1000;
+        t.running = true;
+      }
     }
     render();
-  } else if (action === "timer-reset") {
+  } else if (action === "reset-pill-timer") {
     var t2 = state.timers[key];
     if (!t2) return;
     t2.running = false;
     t2.remainingSeconds = t2.totalSeconds;
+    state.timerUI[key] = false;
     render();
   } else if (action === "toggle-done") {
+    var todayStr = todayDateString(new Date());
     var parts = key.split("-");
-    var kidId = parts[0], period = parts[1], choreId = parts[2];
-    var wasDone = !!state.done[key];
-    if (wasDone) {
-      state.done[key] = false;
+    var kId = parts[0], pId = parts[1], cId = parts[2];
+    var curDone = getChoreStatus(todayStr, key);
+    if (curDone) {
+      setChoreStatus(todayStr, key, false);
+      checkWeeklyAward(kId, todayStr);
       savePersisted();
       render();
     } else {
-      completeChore(kidId, period, choreId);
+      completeChore(kId, pId, cId);
     }
   }
 });
@@ -1302,27 +1960,58 @@ setInterval(function () {
     return;
   }
 
+  // Live updates for 10-Frame slots, micro-action center dot scales & digital timestamps
   Object.keys(state.timers).forEach(function (key) {
     var t = state.timers[key];
     if (!t.running) return;
     var remaining = Math.max(0, Math.round((t.endTimestamp - Date.now()) / 1000));
     if (remaining !== t.remainingSeconds) {
+      var prevRemainingMin = Math.ceil(t.remainingSeconds / 60);
+      var currentRemainingMin = Math.ceil(remaining / 60);
+
       t.remainingSeconds = remaining;
-      var timeEl = document.getElementById("time-" + key);
-      var ringEl = document.getElementById("ring-" + key);
-      if (timeEl) {
-        var mm = Math.floor(remaining / 60), ss = remaining % 60;
-        timeEl.textContent = mm + ":" + (ss < 10 ? "0" + ss : ss);
+
+      if (prevRemainingMin !== currentRemainingMin && remaining > 0) {
+        playDotPop();
       }
-      if (ringEl) {
-        var circumference = 2 * Math.PI * 18;
-        var pct = 1 - remaining / t.totalSeconds;
-        ringEl.setAttribute("stroke-dashoffset", circumference * (1 - pct));
+
+      var pillLabel = document.getElementById("pill-label-" + key);
+      if (pillLabel) {
+        var mm = Math.floor(remaining / 60), ss = remaining % 60;
+        pillLabel.textContent = mm + ":" + (ss < 10 ? "0" + ss : ss);
+      }
+
+      var totalMinutes = Math.round(t.totalSeconds / 60);
+      var activeSlotGlobal = currentRemainingMin - 1;
+      var secInMinute = remaining % 60;
+      if (secInMinute === 0 && remaining > 0) secInMinute = 60;
+      var subFraction = remaining > 0 ? (secInMinute / 60) : 0;
+      var microScale = (0.35 + 0.65 * subFraction).toFixed(2);
+
+      for (var i = 0; i < totalMinutes; i++) {
+        var slotEl = document.getElementById("slot-" + key + "-" + i);
+        if (slotEl) {
+          var active = i < currentRemainingMin;
+          var isCurrentlyTicking = t.running && (i === activeSlotGlobal);
+
+          if (active) {
+            slotEl.className = "ten-frame-slot active" + (isCurrentlyTicking ? " current-ticking" : "");
+            var dotEl = slotEl.querySelector(".ten-frame-dot");
+            if (!dotEl) {
+              slotEl.innerHTML = '<div class="ten-frame-dot" style="transform:scale(' + (isCurrentlyTicking ? microScale : '1') + ')"></div>';
+            } else {
+              dotEl.style.transform = 'scale(' + (isCurrentlyTicking ? microScale : '1') + ')';
+            }
+          } else {
+            slotEl.className = "ten-frame-slot";
+            slotEl.innerHTML = "";
+          }
+        }
       }
     }
     if (remaining <= 0) {
-      var parts = key.split("-");
-      completeChore(parts[0], parts[1], parts[2]);
+      var p = key.split("-");
+      completeChore(p[0], p[1], p[2]);
     }
   });
 }, 500);
