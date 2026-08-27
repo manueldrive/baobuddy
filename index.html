@@ -1338,8 +1338,8 @@ function accessoryHtml(accessory, kidBodyStart, offsetY) {
 
   if (accessory.type === "bow") {
     return '<g ' + transformStr + ' style="transition:transform 0.4s cubic-bezier(0.34, 1.3, 0.64, 1)">' +
-      '<path d="M50,14 Q38,24 33,34 L38,32 L43,35 Q45,26 49,15 Z" fill="#9E0059"/>' +
-      '<path d="M60,14 Q72,24 77,34 L72,32 L67,35 Q65,26 61,15 Z" fill="#C9184A"/>' +
+      '<path d="M50,14 Q42,19 38,25 L41,24 L44,26 Q45,20 49,15 Z" fill="#9E0059"/>' +
+      '<path d="M60,14 Q68,19 72,25 L69,24 L66,26 Q65,20 61,15 Z" fill="#C9184A"/>' +
       '<g transform="rotate(-12 40 12)"><ellipse cx="40" cy="12" rx="13" ry="8" fill="' + accessory.color + '"/></g>' +
       '<g transform="rotate(12 70 12)"><ellipse cx="70" cy="12" rx="13" ry="8" fill="' + accessory.color + '"/></g>' +
       '<circle cx="55" cy="13" r="4.2" fill="#9E0059"/>' +
@@ -1529,7 +1529,8 @@ var flappyGame = {
   baoImg: null,
   score: 0,
   highScore: 0,
-  state: "ready", // ready, playing, snatched, gameover
+  state: "ready", // ready, playing, caught, snatched, gameover
+  caughtTimer: 0,
   causeOfDeath: "table", // table, chopsticks, splash
   bao: { x: 60, y: 150, vy: 0, radius: 18, squishScaleX: 1, squishScaleY: 1, squishTime: 0 },
   obstacles: [],
@@ -1564,12 +1565,14 @@ var flappyGame = {
     this.bao.squishScaleX = 1;
     this.bao.squishScaleY = 1;
     this.bao.squishTime = 0;
+    this.bao.targetY = null;
     this.obstacles = [];
     this.splashes = [];
     this.score = 0;
     this.spawnCounter = 0;
     this.causeOfDeath = "table";
     this.snatchedObstacle = null;
+    this.caughtTimer = 0;
     this.state = "ready";
   },
 
@@ -1630,7 +1633,8 @@ var flappyGame = {
 
   triggerSnatch: function(obs) {
     this.causeOfDeath = "chopsticks";
-    this.state = "snatched";
+    this.state = "caught";
+    this.caughtTimer = 16;
     this.snatchedObstacle = obs;
     this.snatchStartTop = obs.top;
     playGrabSound();
@@ -1656,6 +1660,20 @@ var flappyGame = {
       if (sp.ringAlpha <= 0) {
         this.splashes.splice(s, 1);
       }
+    }
+
+    // Ease the bao down into the bowl over a few frames instead of snapping straight to rest.
+    if (this.causeOfDeath === "splash" && this.bao.targetY != null) {
+      this.bao.y += (this.bao.targetY - this.bao.y) * 0.18;
+    }
+
+    // Caught! Brief surprised freeze-frame before the pull-off animation begins.
+    if (this.state === "caught") {
+      this.caughtTimer--;
+      if (this.caughtTimer <= 0) {
+        this.state = "snatched";
+      }
+      return;
     }
 
     // Snatch Carry-Off Animation (Fly off top of screen)
@@ -1736,9 +1754,10 @@ var flappyGame = {
 
         if (bx + br > bowlLeft && bx - br < bowlRight) {
           if (by + br >= bowlTopY + 2) {
-            this.triggerSplash(bowlCenterX, bowlTopY + 6);
+            this.triggerSplash(bowlCenterX, bowlTopY + 8);
             this.bao.x = bowlCenterX;
-            this.bao.y = bowlTopY + 12; // deep in broth
+            this.bao.y = bowlTopY + 6; // starts at the surface, then eases down
+            this.bao.targetY = bowlTopY + 22; // sinks to near the bottom of the bowl
             this.state = "gameover";
           }
         }
@@ -1962,15 +1981,40 @@ var flappyGame = {
       // Submerge Bao beneath bowl rim
       var bowlTopY = floorY - this.bowlHeight;
       ctx.beginPath();
-      ctx.rect(0, 0, W, bowlTopY + 14); // clip bottom inside soup
+      ctx.rect(0, 0, W, bowlTopY + 9); // clip bottom inside soup, just below the rim
       ctx.clip();
     }
 
     ctx.translate(this.bao.x, this.bao.y);
     var tilt = Math.min(Math.PI / 4, Math.max(-Math.PI / 6, this.bao.vy * 0.06));
     ctx.rotate(tilt);
-    ctx.scale(this.bao.squishScaleX, this.bao.squishScaleY);
+    var splashShrink = (this.causeOfDeath === "splash" && this.state === "gameover") ? 0.8 : 1;
+    ctx.scale(this.bao.squishScaleX * splashShrink, this.bao.squishScaleY * splashShrink);
     if (this.baoImg) ctx.drawImage(this.baoImg, -28, -22, 56, 44);
+
+    if (this.state === "caught") {
+      // Cute surprised "caught!" face: eyes keep their normal shape and size, just a
+      // small highlight glint added, with the open mouth doing the work of showing surprise.
+      ctx.fillStyle = "#1C1818";
+      ctx.beginPath();
+      ctx.ellipse(-8.65, 7.0, 2.44, 3.0, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(8.65, 7.0, 2.44, 3.0, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(-7.55, 5.6, 0.9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(9.75, 5.6, 0.9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#3A2E2E";
+      ctx.beginPath();
+      ctx.ellipse(0, 11.1, 3.5, 2.7, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     ctx.restore();
 
     // 6. Draw Soup Splash FX on top of Bao
