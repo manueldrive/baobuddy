@@ -258,7 +258,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
 
-  /* Redesigned Footer Card: True Debit Card Ratio + Radial Doughnut Dial 2x2 Goals */
+  /* Redesigned Footer Card */
   .footer-card { 
     margin-top: 16px; 
     background: white; 
@@ -344,10 +344,6 @@
     .moon-glow { width: 190px !important; height: 190px !important; }
   }
 
-  /* Card + rewards go side-by-side only once THIS kid's own column is wide
-     enough to fit both comfortably -- not just whenever the overall page
-     crosses a viewport breakpoint (which, once split into two columns, can
-     still leave each column quite narrow). */
   @container (min-width: 560px) {
     .footer-card {
       flex-direction: row !important;
@@ -428,7 +424,6 @@ var CHORE_LIBRARY = {
   }
 };
 
-// 4 Goals in Ascending Order ($4, $6, $8, $10)
 var GOALS = {
   miles: [
     { emoji: "\uD83C\uDF66", label: "Ice Cream", cost: 4 },
@@ -497,6 +492,8 @@ var state = {
   bunColors: { miles: null, lina: null },
   bunAccessories: { miles: { type: "cap", color: "#2B2D42" }, lina: { type: "bow", color: "#FF4D6D" } },
   playModalFor: null,
+  gameActive: false,
+  flappyHighScore: { miles: 0, lina: 0 },
   pokeBao: null,
   lastRenderedPeriod: null
 };
@@ -528,6 +525,7 @@ function savePersisted() {
     timingSettings: state.timingSettings,
     bunColors: state.bunColors,
     bunAccessories: state.bunAccessories,
+    flappyHighScore: state.flappyHighScore,
     nextChoreId: state.nextChoreId,
     lastActiveDate: state.lastActiveDate
   });
@@ -579,8 +577,6 @@ function migrateLegacyDone(savedDone) {
     return typeof savedDone[k] === "object" && savedDone[k] !== null;
   });
   if (looksNew) return savedDone;
-  // Legacy flat format from before per-date tracking: { choreKey: true }.
-  // Wrap it under today's date so already-completed chores aren't lost.
   var today = todayDateString(new Date());
   var wrapped = {};
   wrapped[today] = {};
@@ -609,6 +605,7 @@ function initPersistence() {
       if (saved.weekly) state.weekly = saved.weekly;
       state.customChores = sanitizeChoresState(saved.customChores);
       if (saved.timingSettings) state.timingSettings = saved.timingSettings;
+      if (saved.flappyHighScore) state.flappyHighScore = saved.flappyHighScore;
       var migratedColors = false;
       if (saved.bunColors) {
         var wasLegacy = Object.keys(KIDS).some(function (kidId) {
@@ -794,22 +791,89 @@ function playFanfare() {
   } catch (e) { }
 }
 
-function playPoke() {
+function playFlapSound() {
   try {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
     var osc = ctx.createOscillator();
     var gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(280, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(420, ctx.currentTime + 0.08);
+    osc.frequency.setValueAtTime(320, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(560, ctx.currentTime + 0.08);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
     osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.16);
-  } catch (e) { }
+    osc.stop(ctx.currentTime + 0.11);
+  } catch (e) {}
+}
+
+function playScoreSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.06);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.14, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.22);
+  } catch (e) {}
+}
+
+function playHitSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.18);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.25);
+  } catch (e) {}
+}
+
+function playPlopSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(440, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.22);
+  } catch (e) {}
+}
+
+function playGrabSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(180, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(460, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.26);
+  } catch (e) {}
 }
 
 /* ---------------- confetti ---------------- */
@@ -1052,7 +1116,7 @@ var MASCOT_STATES = {
         '<circle cx="36.8" cy="57.5" r="0.9" fill="#FFFFFF"/>' +
         '<circle cx="70.8" cy="57.5" r="0.9" fill="#FFFFFF"/>' +
         '<g stroke="VAR_BL" stroke-width="1.7" stroke-linecap="round" opacity="0.95">' +
-        '<line x1="25" y1="60" x2="27.5" y2="64"/><line x1="29" y1="60" x2="31.5" y2="64"/><line x1="33" y1="60" x2="35.5" y2="64"/>' +
+        '<line x1="25" y1="60" x2="27.5" y2="64"/><line x1="29.5" y1="60" x2="31.5" y2="64"/><line x1="33" y1="60" x2="35.5" y2="64"/>' +
         '<line x1="74" y1="60" x2="76.5" y2="64"/><line x1="78" y1="60" x2="80.5" y2="64"/><line x1="82" y1="60" x2="84.5" y2="64"/>' +
         '</g>' +
         '<path d="M49,60 Q55,68 61,60 Z" fill="#1C1818"/>' +
@@ -1135,7 +1199,7 @@ var MASCOT_STATES = {
         '<circle cx="36.8" cy="57.5" r="0.9" fill="#FFFFFF"/>' +
         '<circle cx="70.8" cy="57.5" r="0.9" fill="#FFFFFF"/>' +
         '<g stroke="VAR_BL" stroke-width="1.7" stroke-linecap="round" opacity="0.95">' +
-        '<line x1="25" y1="60" x2="27.5" y2="64"/><line x1="29" y1="60" x2="31.5" y2="64"/><line x1="33" y1="60" x2="35.5" y2="64"/>' +
+        '<line x1="25" y1="60" x2="27.5" y2="64"/><line x1="29.5" y1="60" x2="31.5" y2="64"/><line x1="33" y1="60" x2="35.5" y2="64"/>' +
         '<line x1="74" y1="60" x2="76.5" y2="64"/><line x1="78" y1="60" x2="80.5" y2="64"/><line x1="82" y1="60" x2="84.5" y2="64"/>' +
         '</g>' +
         '<path d="M49,60 Q55,68 61,60 Z" fill="#1C1818"/>' +
@@ -1251,9 +1315,8 @@ function migrateLegacyBunColors(savedColors) {
   Object.keys(KIDS).forEach(function (kidId) {
     var c = savedColors && savedColors[kidId];
     if (!c) { out[kidId] = null; return; }
-    if (c.bodyStart) { out[kidId] = c; return; } // already new format
+    if (c.bodyStart) { out[kidId] = c; return; }
     if (c.body) {
-      // Old { body, pleat, blush } format -- derive the new 4-tone gradient scheme from it.
       out[kidId] = {
         bodyStart: lightenColor(c.body, 10),
         bodyEnd: c.pleat || darkenColor(c.body, 15),
@@ -1263,12 +1326,12 @@ function migrateLegacyBunColors(savedColors) {
       };
       return;
     }
-    out[kidId] = null; // unrecognized shape, fall back to default
+    out[kidId] = null;
   });
   return out;
 }
 
-/* ---------------- Full-coverage accessories (bow / snapback cap) ---------------- */
+/* ---------------- accessories ---------------- */
 function accessoryHtml(accessory, kidBodyStart, offsetY) {
   if (!accessory || !accessory.type) return "";
   var transformStr = 'transform="translate(0, ' + offsetY.toFixed(1) + ')"';
@@ -1316,7 +1379,7 @@ function mascotSVG(kidId, size, phase, progressTier) {
   mascotGradientCounter += 1;
   var uid = kidId + "-" + phase + "-" + progressTier + "-" + mascotGradientCounter;
 
-  return '<svg width="' + size + '" height="' + (size * 85 / 110).toFixed(1) + '" viewBox="0 0 110 85">' +
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + (size * 85 / 110).toFixed(1) + '" viewBox="0 0 110 85">' +
     '<defs>' +
     '<radialGradient id="grad-' + uid + '" cx="50%" cy="25%" r="75%">' +
     '<stop offset="0%" stop-color="' + c.highlight + '"/>' +
@@ -1347,7 +1410,7 @@ function computeProgressTier(kidId, period) {
   return "p50";
 }
 
-/* ---------------- 10-Frame Multi-Box Builder with Live Micro-Action ---------------- */
+/* ---------------- 10-Frame Multi-Box Builder ---------------- */
 function renderTenFrameBoxesHtml(key, minutes, remainingSeconds, isRunning) {
   var remainingMin = Math.ceil(remainingSeconds / 60);
   var activeSlotGlobal = remainingMin - 1;
@@ -1457,6 +1520,516 @@ function renderDayChipsHtml(prefixId, currentDays) {
   return html;
 }
 
+/* ---------------- Flappy Bao Game Engine (Tabletop Escape) ---------------- */
+var flappyGame = {
+  canvas: null,
+  ctx: null,
+  animId: null,
+  kidId: null,
+  baoImg: null,
+  score: 0,
+  highScore: 0,
+  state: "ready", // ready, playing, snatched, gameover
+  causeOfDeath: "table", // table, chopsticks, splash
+  bao: { x: 60, y: 150, vy: 0, radius: 18, squishScaleX: 1, squishScaleY: 1, squishTime: 0 },
+  obstacles: [],
+  splashes: [],
+  pipeWidth: 38,
+  bowlWidth: 68,
+  bowlHeight: 32,
+  gravity: 0.38,
+  jumpStrength: -6.2,
+  pipeSpeed: 2.0,
+  spawnCounter: 0,
+  globalTime: 0,
+  snatchedY: 0,
+  snatchedObstacle: null,
+
+  init: function(kidId) {
+    this.kidId = kidId;
+    this.canvas = document.getElementById("flappy-canvas");
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext("2d");
+    this.highScore = (state.flappyHighScore && state.flappyHighScore[kidId]) || 0;
+    this.reset();
+    this.renderBaoImage();
+    if (this.animId) cancelAnimationFrame(this.animId);
+    this.loop();
+  },
+
+  reset: function() {
+    this.bao.x = 60;
+    this.bao.y = this.canvas.height / 2;
+    this.bao.vy = 0;
+    this.bao.squishScaleX = 1;
+    this.bao.squishScaleY = 1;
+    this.bao.squishTime = 0;
+    this.obstacles = [];
+    this.splashes = [];
+    this.score = 0;
+    this.spawnCounter = 0;
+    this.causeOfDeath = "table";
+    this.snatchedObstacle = null;
+    this.state = "ready";
+  },
+
+  renderBaoImage: function() {
+    var currentP = (state.parentMode && state.periodOverride) ? state.periodOverride : visualPeriod(new Date());
+    var svgStr = mascotSVG(this.kidId, 100, currentP, "p100");
+    var blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var img = new Image();
+    var self = this;
+    img.onload = function() {
+      self.baoImg = img;
+    };
+    img.src = url;
+  },
+
+  flap: function() {
+    if (this.state === "ready" || this.state === "playing") {
+      this.state = "playing";
+      this.bao.vy = this.jumpStrength;
+      this.bao.squishTime = 15;
+      playFlapSound();
+    } else if (this.state === "gameover") {
+      this.reset();
+      this.state = "playing";
+      this.bao.vy = this.jumpStrength;
+      this.bao.squishTime = 15;
+      playFlapSound();
+    }
+  },
+
+  triggerSplash: function(x, y) {
+    this.causeOfDeath = "splash";
+    playPlopSound();
+
+    var droplets = [];
+    for (var i = 0; i < 14; i++) {
+      var angle = -Math.PI * 0.85 + Math.random() * Math.PI * 0.7;
+      var speed = 2.5 + Math.random() * 4.5;
+      droplets.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 2 + Math.random() * 2.5,
+        alpha: 1
+      });
+    }
+
+    this.splashes.push({
+      x: x,
+      y: y,
+      droplets: droplets,
+      ringRadius: 4,
+      ringAlpha: 1
+    });
+  },
+
+  triggerSnatch: function(obs) {
+    this.causeOfDeath = "chopsticks";
+    this.state = "snatched";
+    this.snatchedObstacle = obs;
+    this.snatchStartTop = obs.top;
+    playGrabSound();
+  },
+
+  update: function() {
+    this.globalTime += 0.08;
+    var floorY = this.canvas.height - 20;
+
+    // Update Splash Particles
+    for (var s = this.splashes.length - 1; s >= 0; s--) {
+      var sp = this.splashes[s];
+      sp.ringRadius += 1.6;
+      sp.ringAlpha -= 0.04;
+
+      sp.droplets.forEach(function(d) {
+        d.x += d.vx;
+        d.y += d.vy;
+        d.vy += 0.28;
+        d.alpha -= 0.025;
+      });
+
+      if (sp.ringAlpha <= 0) {
+        this.splashes.splice(s, 1);
+      }
+    }
+
+    // Snatch Carry-Off Animation (Fly off top of screen)
+    if (this.state === "snatched") {
+      if (this.snatchedObstacle) {
+        this.snatchedObstacle.top -= 6.5;
+        this.bao.y = this.snatchedObstacle.top;
+        this.bao.x = this.snatchedObstacle.x + this.pipeWidth / 2;
+
+        if (this.snatchedObstacle.top < -60) {
+          this.state = "gameover";
+        }
+      }
+      return;
+    }
+
+    if (this.state === "playing") {
+      this.bao.vy += this.gravity;
+      this.bao.y += this.bao.vy;
+
+      if (this.bao.squishTime > 0) {
+        this.bao.squishTime--;
+        var p = (15 - this.bao.squishTime) / 15;
+        this.bao.squishScaleX = 1 + 0.35 * Math.sin(p * Math.PI);
+        this.bao.squishScaleY = 1 - 0.28 * Math.sin(p * Math.PI);
+      } else {
+        this.bao.squishScaleX = 1;
+        this.bao.squishScaleY = 1;
+      }
+
+      // Ceiling escape check
+      if (this.bao.y - this.bao.radius <= 0) {
+        this.bao.y = this.bao.radius;
+        this.bao.vy = 0;
+      }
+
+      // Table hit
+      if (this.bao.y + this.bao.radius >= floorY) {
+        this.causeOfDeath = "table";
+        playHitSound();
+        this.state = "gameover";
+      }
+
+      // Spawner
+      this.spawnCounter++;
+      if (this.spawnCounter >= 85) {
+        this.spawnCounter = 0;
+        var topH = Math.floor(65 + Math.random() * 75);
+
+        this.obstacles.push({
+          x: this.canvas.width + 10,
+          top: topH,
+          passed: false,
+          pinchPhase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Obstacle collisions
+      for (var i = this.obstacles.length - 1; i >= 0; i--) {
+        var obs = this.obstacles[i];
+        obs.x -= this.pipeSpeed;
+
+        var bx = this.bao.x, by = this.bao.y, br = this.bao.radius - 2;
+
+        // Top chopstick grab collision (carried off-screen)
+        if (bx + br > obs.x && bx - br < obs.x + this.pipeWidth) {
+          if (by - br < obs.top) {
+            this.triggerSnatch(obs);
+            return;
+          }
+        }
+
+        // Bottom bowl rim & soup submersion
+        var bowlCenterX = obs.x + this.pipeWidth / 2;
+        var bowlTopY = floorY - this.bowlHeight;
+        var bowlLeft = bowlCenterX - this.bowlWidth / 2;
+        var bowlRight = bowlCenterX + this.bowlWidth / 2;
+
+        if (bx + br > bowlLeft && bx - br < bowlRight) {
+          if (by + br >= bowlTopY + 2) {
+            this.triggerSplash(bowlCenterX, bowlTopY + 6);
+            this.bao.x = bowlCenterX;
+            this.bao.y = bowlTopY + 12; // deep in broth
+            this.state = "gameover";
+          }
+        }
+
+        if (!obs.passed && obs.x + this.pipeWidth < this.bao.x) {
+          obs.passed = true;
+          this.score++;
+          playScoreSound();
+          if (this.score > this.highScore) {
+            this.highScore = this.score;
+            if (!state.flappyHighScore) state.flappyHighScore = {};
+            state.flappyHighScore[this.kidId] = this.highScore;
+            savePersisted();
+          }
+        }
+
+        if (obs.x + this.bowlWidth < -40) {
+          this.obstacles.splice(i, 1);
+        }
+      }
+    }
+  },
+
+  drawStick: function(ctx, x1, y1, x2, y2, tw, bw) {
+    ctx.beginPath();
+    ctx.moveTo(x1 - tw / 2, y1);
+    ctx.lineTo(x1 + tw / 2, y1);
+    ctx.lineTo(x2 + bw / 2, y2);
+    ctx.lineTo(x2 - bw / 2, y2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  },
+
+  drawAnimatedChopsticks: function(ctx, x, topY, pinchPhase, isSnatching, snatchOffset) {
+    var w = this.pipeWidth;
+    var off = snatchOffset || 0;
+    var pinchCycle = Math.sin(this.globalTime * 2.2 + pinchPhase);
+    var pinchSpread = isSnatching ? 0 : (7 + pinchCycle * 5); // Tightly clamped if snatched
+
+    var stickGrad = ctx.createLinearGradient(x, 0, x + w, 0);
+    stickGrad.addColorStop(0, "#D9A96A");
+    stickGrad.addColorStop(0.25, "#FFF2D4");
+    stickGrad.addColorStop(0.7, "#E6BA7E");
+    stickGrad.addColorStop(1, "#AC7C3C");
+
+    ctx.fillStyle = stickGrad;
+    ctx.strokeStyle = "#6B4416";
+    ctx.lineWidth = 1.5;
+
+    var cx = x + w / 2;
+    var tipLeftX = cx - pinchSpread;
+    var tipRightX = cx + pinchSpread;
+    var gripY = -10 - off;
+
+    this.drawStick(ctx, cx - 10, gripY, tipLeftX, topY, 6.5, 3.2);
+    this.drawStick(ctx, cx + 10, gripY, tipRightX, topY, 6.5, 3.2);
+
+    ctx.fillStyle = "#D90429";
+    ctx.fillRect(cx - 18, 10 - off, 36, 20);
+    ctx.fillStyle = "#FFD166";
+    ctx.fillRect(cx - 18, 15 - off, 36, 2.5);
+    ctx.fillRect(cx - 18, 22 - off, 36, 2.5);
+  },
+
+  drawLowTableBowl: function(ctx, cx, floorY) {
+    var bw = this.bowlWidth;
+    var halfW = bw / 2;
+    var bowlH = this.bowlHeight;
+    var topY = floorY - bowlH;
+
+    ctx.save();
+
+    // 1. Table Contact Drop Shadow
+    ctx.fillStyle = "rgba(38, 26, 21, 0.3)";
+    ctx.beginPath();
+    ctx.ellipse(cx, floorY, halfW + 4, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Foot Ring
+    ctx.fillStyle = "#C2B2A0";
+    ctx.beginPath();
+    ctx.roundRect(cx - halfW * 0.45, floorY - 3, halfW * 0.9, 3, [0, 0, 2, 2]);
+    ctx.fill();
+
+    // 3. Ceramic Bowl Belly
+    var bodyGrad = ctx.createLinearGradient(cx - halfW, 0, cx + halfW, 0);
+    bodyGrad.addColorStop(0, "#D1C2B2");
+    bodyGrad.addColorStop(0.25, "#FFFFFF");
+    bodyGrad.addColorStop(0.7, "#EFE7DC");
+    bodyGrad.addColorStop(1, "#C2B2A0");
+
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx - halfW, topY + 4);
+    ctx.bezierCurveTo(cx - halfW - 3, topY + 18, cx - halfW * 0.5, floorY - 3, cx - halfW * 0.4, floorY - 3);
+    ctx.lineTo(cx + halfW * 0.4, floorY - 3);
+    ctx.bezierCurveTo(cx + halfW * 0.5, floorY - 3, cx + halfW + 3, topY + 18, cx + halfW, topY + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.15)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Blue porcelain decorative floral band
+    ctx.strokeStyle = "#2B59C3";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - halfW + 4, topY + 13);
+    ctx.quadraticCurveTo(cx, topY + 17, cx + halfW - 4, topY + 13);
+    ctx.stroke();
+
+    // 4. Inner Rim Cavity & Soup Broth
+    var rimRx = halfW;
+    var rimRy = 7.5;
+
+    ctx.fillStyle = "#1D3B82";
+    ctx.beginPath();
+    ctx.ellipse(cx, topY + 4, rimRx - 2, rimRy, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#E09F3E";
+    ctx.beginPath();
+    ctx.ellipse(cx, topY + 5.5, rimRx - 4, rimRy - 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Specular soup sheen
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.beginPath();
+    ctx.ellipse(cx - 8, topY + 4.5, rimRx * 0.35, rimRy * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5. Rim Lip Highlight
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.ellipse(cx, topY + 4, rimRx, rimRy, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.restore();
+  },
+
+  drawSplashes: function(ctx) {
+    this.splashes.forEach(function(sp) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(224, 159, 62, " + Math.max(0, sp.ringAlpha) + ")";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.ellipse(sp.x, sp.y, sp.ringRadius, sp.ringRadius * 0.35, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      sp.droplets.forEach(function(d) {
+        if (d.alpha > 0) {
+          ctx.fillStyle = "rgba(224, 159, 62, " + d.alpha + ")";
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      ctx.restore();
+    });
+  },
+
+  draw: function() {
+    var ctx = this.ctx, W = this.canvas.width, H = this.canvas.height;
+    var floorY = H - 20;
+
+    // 1. Table Top Background with Ambient Spotlight
+    var spot = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 220);
+    spot.addColorStop(0, "#FFFDF7");
+    spot.addColorStop(0.6, "#F6EFE6");
+    spot.addColorStop(1, "#EADDCF");
+    ctx.fillStyle = spot;
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Beveled Front Table Edge
+    var lipGrad = ctx.createLinearGradient(0, floorY, 0, H);
+    lipGrad.addColorStop(0, "#D9C9B6");
+    lipGrad.addColorStop(1, "#C2AF9B");
+    ctx.fillStyle = lipGrad;
+    ctx.fillRect(0, floorY, W, 20);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.fillRect(0, floorY - 2, W, 1.5);
+    ctx.fillStyle = "#A89480";
+    ctx.fillRect(0, floorY - 0.5, W, 1.5);
+
+    // 3. Dynamic Ground Shadow under Bao
+    if (this.state !== "gameover" || this.causeOfDeath !== "splash") {
+      var heightAboveFloor = Math.max(0, floorY - this.bao.y);
+      var maxAltitude = floorY - this.bao.radius;
+      var altitudeFraction = Math.min(1, heightAboveFloor / maxAltitude);
+
+      var shadowRx = 14 + altitudeFraction * 14;
+      var shadowRy = 4 + altitudeFraction * 2;
+      var shadowAlpha = 0.28 - altitudeFraction * 0.18;
+
+      var shadGrad = ctx.createRadialGradient(this.bao.x, floorY - 1, 0, this.bao.x, floorY - 1, shadowRx);
+      shadGrad.addColorStop(0, "rgba(38, 26, 21, " + shadowAlpha.toFixed(3) + ")");
+      shadGrad.addColorStop(1, "transparent");
+
+      ctx.fillStyle = shadGrad;
+      ctx.beginPath();
+      ctx.ellipse(this.bao.x, floorY - 1, shadowRx, shadowRy, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 4. Draw Obstacles: Dipping Animated Chopsticks + Low Table Bowls
+    var self = this;
+    this.obstacles.forEach(function(obs) {
+      var isThisSnatched = (self.snatchedObstacle === obs);
+      var snatchOffset = isThisSnatched ? (self.snatchStartTop - obs.top) : 0;
+      self.drawAnimatedChopsticks(ctx, obs.x, obs.top, obs.pinchPhase, isThisSnatched, snatchOffset);
+      var bowlCenterX = obs.x + self.pipeWidth / 2;
+      self.drawLowTableBowl(ctx, bowlCenterX, floorY);
+    });
+
+    // 5. Draw Bao (With Submersion Clipping if in Soup)
+    ctx.save();
+    if (this.causeOfDeath === "splash" && (this.state === "gameover" || this.state === "playing")) {
+      // Submerge Bao beneath bowl rim
+      var bowlTopY = floorY - this.bowlHeight;
+      ctx.beginPath();
+      ctx.rect(0, 0, W, bowlTopY + 14); // clip bottom inside soup
+      ctx.clip();
+    }
+
+    ctx.translate(this.bao.x, this.bao.y);
+    var tilt = Math.min(Math.PI / 4, Math.max(-Math.PI / 6, this.bao.vy * 0.06));
+    ctx.rotate(tilt);
+    ctx.scale(this.bao.squishScaleX, this.bao.squishScaleY);
+    if (this.baoImg) ctx.drawImage(this.baoImg, -28, -22, 56, 44);
+    ctx.restore();
+
+    // 6. Draw Soup Splash FX on top of Bao
+    this.drawSplashes(ctx);
+
+    // 7. Score Overlay
+    ctx.fillStyle = "#3A2E2E";
+    ctx.font = "800 26px 'Baloo 2', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(this.score, W / 2, 38);
+
+    if (this.state === "ready") {
+      ctx.fillStyle = "rgba(58, 46, 46, 0.88)";
+      ctx.font = "800 18px 'Baloo 2', sans-serif";
+      ctx.fillText("Tap to Escape the Table!", W / 2, H / 2 - 20);
+    }
+
+    if (this.state === "gameover") {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#FFF";
+      ctx.beginPath();
+      ctx.roundRect(W / 2 - 95, H / 2 - 60, 190, 120, 16);
+      ctx.fill();
+      ctx.strokeStyle = "#EDE4D8";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      var headerText = "Caught! 🥢";
+      if (this.causeOfDeath === "splash") {
+        headerText = "Splashed! 🍲";
+      }
+
+      ctx.fillStyle = "#3A2E2E";
+      ctx.font = "800 20px 'Baloo 2', sans-serif";
+      ctx.fillText(headerText, W / 2, H / 2 - 24);
+      ctx.font = "800 14px Nunito, sans-serif";
+      ctx.fillStyle = "#FF9B42";
+      ctx.fillText("Score: " + this.score, W / 2, H / 2 + 6);
+      ctx.fillStyle = "#3A2E2E";
+      ctx.fillText("👉 Tap to retry", W / 2, H / 2 + 36);
+    }
+  },
+
+  loop: function() {
+    var self = this;
+    if (state.playModalFor && state.gameActive) {
+      this.update();
+      this.draw();
+      this.animId = requestAnimationFrame(function() { self.loop(); });
+    }
+  },
+
+  stop: function() {
+    if (this.animId) cancelAnimationFrame(this.animId);
+    this.animId = null;
+  }
+};
+
 /* ---------------- render routines ---------------- */
 function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squishBannerKid, celebrateKid, pokeBaoKid) {
   var kid = KIDS[kidId];
@@ -1497,7 +2070,6 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
     '</div>' +
     '</div>';
 
-  /* Phase Navigation Bar with Start Times (Parent Mode Only) */
   if (state.parentMode) {
     html += '<div class="phase-pills-bar">';
     var phases = [
@@ -1665,57 +2237,69 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
       '</div>';
   }
 
+  /* Modal with Bao Customizer & Flappy Mini-Game */
   if (state.playModalFor === kidId && allDone) {
     html += '<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:25;padding:20px">' +
-      '<div style="background:white;border-radius:26px;padding:24px;width:100%;max-width:340px;text-align:center">' +
-      '<div class="row-between">' +
-      '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:18px;color:#3a2e2e">' + kid.name + '\u2019s Bao</div>' +
-      '<button class="lock-btn" data-action="close-play-modal" aria-label="Close">\u2715</button>' +
-      '</div>' +
-      '<button data-action="poke-bao" data-kid="' + kidId + '" style="border:none;background:none;padding:0;cursor:pointer;margin:14px 0" aria-label="Poke!">' +
-      '<div class="bob-fast' + (pokeBaoKid === kidId ? " squish-anim" : "") + '">' + mascotSVG(kidId, 140, activePeriod, "p100") + '</div>' +
-      '</button>' +
-      '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:12px;margin-bottom:12px">Tap him to poke, or pick a new color!</div>' +
-      '<div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap">' +
-      (function () {
-        var currentColor = state.bunColors[kidId] || DEFAULT_BUN_COLORS[kidId];
-        return BUN_PALETTE.map(function (p, i) {
-          var isCurrent = currentColor.bodyStart === p.bodyStart && currentColor.bodyEnd === p.bodyEnd;
-          return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
-        }).join("");
-      })() +
-      '</div>' +
-      '<div style="border-top:1px solid #eee;margin:16px 0 12px;padding-top:14px">' +
-      '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:12px;margin-bottom:10px">Add an accessory!</div>' +
-      '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px">' +
-      (function () {
-        var current = state.bunAccessories[kidId];
-        var buttons = ACCESSORY_TYPES.map(function (a) {
-          var isCurrent = current && current.type === a.type;
-          return '<button data-action="accessory-type" data-kid="' + kidId + '" data-type="' + a.type + '" style="border:none;border-radius:14px;padding:8px 14px;background:' + (isCurrent ? "#3a2e2e" : "#f2f0ee") + ';color:' + (isCurrent ? "white" : "#3a2e2e") + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;cursor:pointer">' + a.emoji + ' ' + a.label + '</button>';
-        }).join("");
-        buttons += '<button data-action="accessory-type" data-kid="' + kidId + '" data-type="" style="border:none;border-radius:14px;padding:8px 14px;background:' + (current ? "#f2f0ee" : "#3a2e2e") + ';color:' + (current ? "#3a2e2e" : "white") + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;cursor:pointer">None</button>';
-        return buttons;
-      })() +
-      '</div>' +
-      (state.bunAccessories[kidId]
-        ? '<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">' +
-          ACCESSORY_COLORS.map(function (color) {
-            var isCurrent = state.bunAccessories[kidId].color === color;
-            return '<button data-action="accessory-color" data-kid="' + kidId + '" data-color="' + color + '" style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
-          }).join("") +
-          '</div>'
-        : '') +
-      '</div>' +
-      '</div>' +
-      '</div>';
+      '<div style="background:white;border-radius:26px;padding:24px;width:100%;max-width:340px;text-align:center;position:relative;overflow:hidden">';
+
+    if (state.gameActive) {
+      /* Flappy Bao Screen inside Modal */
+      html += '<div class="row-between" style="margin-bottom:12px">' +
+        '<button data-action="exit-flappy" style="border:none;background:#FAF6F0;border-radius:10px;padding:4px 10px;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:12px;color:#3a2e2e;cursor:pointer">← Style Bao</button>' +
+        '<button class="lock-btn" data-action="close-play-modal" aria-label="Close">\u2715</button>' +
+        '</div>' +
+        '<canvas id="flappy-canvas" width="292" height="340" style="border-radius:18px;width:100%;cursor:pointer;box-shadow:inset 0 2px 8px rgba(0,0,0,0.06);touch-action:none" data-action="flap-bao"></canvas>' +
+        '<div style="margin-top:8px;font-family:\'Nunito\',sans-serif;font-weight:700;font-size:11.5px;color:#8a7f7f">Best Record: ' + ((state.flappyHighScore && state.flappyHighScore[kidId]) || 0) + ' pts</div>';
+    } else {
+      /* Customization Screen */
+      html += '<div class="row-between">' +
+        '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:18px;color:#3a2e2e">' + kid.name + '\u2019s Bao</div>' +
+        '<button class="lock-btn" data-action="close-play-modal" aria-label="Close">\u2715</button>' +
+        '</div>' +
+        '<button data-action="start-flappy" data-kid="' + kidId + '" style="border:none;background:none;padding:0;cursor:pointer;margin:14px 0" aria-label="Play Flappy Bao!">' +
+        '<div class="bob-fast mascot-tap' + (pokeBaoKid === kidId ? " squish-anim" : "") + '">' + mascotSVG(kidId, 140, activePeriod, "p100") + '</div>' +
+        '</button>' +
+        '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:12px;margin-bottom:12px">Pick a new color & accessory:</div>' +
+        '<div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap">' +
+        (function () {
+          var currentColor = state.bunColors[kidId] || DEFAULT_BUN_COLORS[kidId];
+          return BUN_PALETTE.map(function (p, i) {
+            var isCurrent = currentColor.bodyStart === p.bodyStart && currentColor.bodyEnd === p.bodyEnd;
+            return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
+          }).join("");
+        })() +
+        '</div>' +
+        '<div style="border-top:1px solid #eee;margin:16px 0 12px;padding-top:14px">' +
+        '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px">' +
+        (function () {
+          var current = state.bunAccessories[kidId];
+          var buttons = ACCESSORY_TYPES.map(function (a) {
+            var isCurrent = current && current.type === a.type;
+            return '<button data-action="accessory-type" data-kid="' + kidId + '" data-type="' + a.type + '" style="border:none;border-radius:14px;padding:8px 14px;background:' + (isCurrent ? "#3a2e2e" : "#f2f0ee") + ';color:' + (isCurrent ? "white" : "#3a2e2e") + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;cursor:pointer">' + a.emoji + ' ' + a.label + '</button>';
+          }).join("");
+          buttons += '<button data-action="accessory-type" data-kid="' + kidId + '" data-type="" style="border:none;border-radius:14px;padding:8px 14px;background:' + (current ? "#f2f0ee" : "#3a2e2e") + ';color:' + (current ? "#3a2e2e" : "white") + ';font-family:\'Nunito\',sans-serif;font-weight:800;font-size:13px;cursor:pointer">None</button>';
+          return buttons;
+        })() +
+        '</div>' +
+        (state.bunAccessories[kidId]
+          ? '<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">' +
+            ACCESSORY_COLORS.map(function (color) {
+              var isCurrent = state.bunAccessories[kidId].color === color;
+              return '<button data-action="accessory-color" data-kid="' + kidId + '" data-color="' + color + '" style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
+            }).join("") +
+            '</div>'
+          : '') +
+        '</div>';
+    }
+
+    html += '</div></div>';
   }
 
   html += '</div>';
   return html;
 }
 
-/* ---------------- render Kid Balance (Debit Card + Radial Doughnut Dial 2x2 Goals) ---------------- */
+/* ---------------- render Kid Balance ---------------- */
 function renderKidBalance(kidId) {
   var kid = KIDS[kidId];
   var balance = state.balance[kidId];
@@ -1725,7 +2309,6 @@ function renderKidBalance(kidId) {
 
   html += '<div class="footer-card">';
   
-  /* Bao Bank Debit Card (Locked Aspect Ratio: 1.586 / 1) */
   html += '<button class="debit-card-box" data-action="open-account" data-kid="' + kidId + '" style="background:linear-gradient(135deg,' + bunColor.bodyStart + ',' + bunColor.bodyEnd + ');">' +
     '<div style="position:absolute;top:-50%;left:-20%;width:80%;height:220%;background:linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 60%);transform:rotate(15deg);pointer-events:none"></div>' +
     
@@ -1745,7 +2328,6 @@ function renderKidBalance(kidId) {
     '</div>' +
     '</button>';
 
-  /* Radial Doughnut Dial 2x2 Goals Grid ($4, $6, $8, $10) */
   html += '<div class="goals-container-2x2">';
   GOALS[kidId].forEach(function (goal) {
     var saved = Math.min(goal.cost, balance);
@@ -2010,6 +2592,10 @@ function render() {
   html += renderTimingsModal();
 
   document.getElementById("root").innerHTML = html;
+
+  if (state.playModalFor && state.gameActive) {
+    flappyGame.init(state.playModalFor);
+  }
 }
 
 /* ---------------- actions & streak check ---------------- */
@@ -2080,6 +2666,8 @@ document.getElementById("root").addEventListener("click", function (e) {
     state.kidId = el.dataset.kid;
     state.accountOpenFor = null;
     state.playModalFor = null;
+    state.gameActive = false;
+    flappyGame.stop();
     state.squishSwitcher = el.dataset.kid;
     render();
   } else if (action === "switch-phase") {
@@ -2107,14 +2695,22 @@ document.getElementById("root").addEventListener("click", function (e) {
   } else if (action === "squish-banner") {
     state.squishBanner = el.dataset.kid;
     state.playModalFor = el.dataset.kid;
+    state.gameActive = false;
     render();
   } else if (action === "close-play-modal") {
     state.playModalFor = null;
+    state.gameActive = false;
+    flappyGame.stop();
     render();
-  } else if (action === "poke-bao") {
-    state.pokeBao = el.dataset.kid;
-    playPoke();
+  } else if (action === "start-flappy") {
+    state.gameActive = true;
     render();
+  } else if (action === "exit-flappy") {
+    state.gameActive = false;
+    flappyGame.stop();
+    render();
+  } else if (action === "flap-bao") {
+    flappyGame.flap();
   } else if (action === "bun-color") {
     var colorKid = el.dataset.kid;
     var colorIndex = parseInt(el.dataset.colorIndex, 10);
@@ -2354,6 +2950,14 @@ document.getElementById("root").addEventListener("click", function (e) {
     } else {
       completeChore(kId, pId, cId);
     }
+  }
+});
+
+/* Keyboard Spacebar jump listener for Flappy Bao */
+window.addEventListener("keydown", function(e) {
+  if (e.code === "Space" && state.gameActive) {
+    e.preventDefault();
+    flappyGame.flap();
   }
 });
 
