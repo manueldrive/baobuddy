@@ -1670,6 +1670,12 @@ var flappyGame = {
     // Caught! Brief surprised freeze-frame before the pull-off animation begins.
     if (this.state === "caught") {
       this.caughtTimer--;
+      if (this.snatchedObstacle) {
+        var settleX = this.snatchedObstacle.x + this.pipeWidth / 2;
+        var settleY = this.snatchedObstacle.top;
+        this.bao.x += (settleX - this.bao.x) * 0.3;
+        this.bao.y += (settleY - this.bao.y) * 0.3;
+      }
       if (this.caughtTimer <= 0) {
         this.state = "snatched";
       }
@@ -1680,8 +1686,8 @@ var flappyGame = {
     if (this.state === "snatched") {
       if (this.snatchedObstacle) {
         this.snatchedObstacle.top -= 6.5;
-        this.bao.y = this.snatchedObstacle.top;
-        this.bao.x = this.snatchedObstacle.x + this.pipeWidth / 2;
+        this.bao.y += (this.snatchedObstacle.top - this.bao.y) * 0.4;
+        this.bao.x += (this.snatchedObstacle.x + this.pipeWidth / 2 - this.bao.x) * 0.4;
 
         if (this.snatchedObstacle.top < -60) {
           this.state = "gameover";
