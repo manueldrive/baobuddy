@@ -2751,10 +2751,6 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
         : "") +
       '</div>';
 
-    if (tab === "closet" && closetCat === "food" && pendingFeedList.length > 0) {
-      html += '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11.5px;color:#8a7f7f;margin-bottom:10px">\uD83D\uDC46 Drag a fruit up to Bao!</div>';
-    }
-
     if (tab === "play") {
       html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
         ACTIVITIES.map(function (a) {
