@@ -342,6 +342,8 @@
   }
 
   .lock-btn { background: #ffffff33; border: none; border-radius: 999px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .fullscreen-btn-subtle { background: none; border: none; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.4; transition: opacity 0.15s ease; }
+  .fullscreen-btn-subtle:hover, .fullscreen-btn-subtle:active { opacity: 0.75; }
   .timer-btn { border: none; border-radius: 999px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
 
   /* Responsive Rules */
@@ -1449,6 +1451,20 @@ function lightenColor(hex, amt) {
   var b = Math.min(255, (num & 0x0000FF) + amt);
   return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
 }
+function darkenColorPct(hex, pct) {
+  var num = parseInt(hex.replace("#", ""), 16);
+  var r = Math.round(((num >> 16) & 0xFF) * (1 - pct));
+  var g = Math.round(((num >> 8) & 0xFF) * (1 - pct));
+  var b = Math.round((num & 0xFF) * (1 - pct));
+  return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+}
+function rainbowGradientCSS(angle) {
+  return "linear-gradient(" + angle + "deg, #F04141 0%, #F0954B 20%, #F0D341 40%, #4FBF63 60%, #3E86D8 80%, #8A5CD6 100%)";
+}
+function isRainbowActive(kidId) {
+  var spec = state.activeSpecial && state.activeSpecial[kidId];
+  return !!(spec && spec.id === "rainbow");
+}
 function migrateLegacyBunColors(savedColors) {
   var out = {};
   Object.keys(KIDS).forEach(function (kidId) {
@@ -1722,11 +1738,12 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
 
   if (c.swirl && c.swirlColor2) {
     var swirlGradId = "swirlgrad-" + uid;
-    extraDefs += '<linearGradient id="' + swirlGradId + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+    extraDefs += '<radialGradient id="' + swirlGradId + '" ' + gradAttrs + '>' +
       '<stop offset="0%" stop-color="' + c.highlight + '"/>' +
-      '<stop offset="45%" stop-color="' + c.bodyStart + '"/>' +
-      '<stop offset="100%" stop-color="' + c.swirlColor2 + '"/>' +
-      '</linearGradient>';
+      '<stop offset="35%" stop-color="' + c.bodyStart + '"/>' +
+      '<stop offset="78%" stop-color="' + c.swirlColor2 + '"/>' +
+      '<stop offset="100%" stop-color="' + darkenColorPct(c.swirlColor2, 0.18) + '"/>' +
+      '</radialGradient>';
     bodyFillRef = "url(#" + swirlGradId + ")";
   }
 
@@ -2677,7 +2694,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
     var backdrop = TAB_BACKDROPS[tab];
     var closetCat = state.closetCategory || "color";
     html += '<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:25;padding:20px">' +
-      '<div style="background:' + backdrop + ';border-radius:26px;padding:20px;width:100%;max-width:340px;min-height:380px;text-align:center;position:relative;overflow:hidden;transition:background 0.25s ease">';
+      '<div style="background:' + backdrop + ';border-radius:26px;padding:20px;width:100%;max-width:380px;min-height:440px;text-align:center;position:relative;overflow:hidden;transition:background 0.25s ease">';
 
     html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px;position:relative;z-index:1">' +
       (TAB_DEFS.length > 1 ? '<div style="display:inline-flex;gap:3px;background:#F2EEE7;padding:4px;border-radius:14px">' +
@@ -2701,13 +2718,33 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
     var mascotClass = "mascot-tap" + (animActive && kidAnim.type === "bouncing" ? " bao-bouncing" : " bob-fast") + (!animActive && (pokeBaoKid === kidId || activitySquishKid === kidId) ? " squish-anim" : "");
     var mascotDraftArg = isPreview ? draft : undefined;
     var pendingFeedList = state.pendingFeed[kidId] || [];
+    var currentAcc = isPreview ? draft.accessory : state.bunAccessories[kidId];
+    var currentColor = isPreview ? draft.bunColor : (state.bunColors[kidId] || DEFAULT_BUN_COLORS[kidId]);
 
-    html += '<div data-mascot-wrap style="position:relative;display:inline-block;margin:6px 0 14px;min-height:100px">' +
+    if (tab === "closet") {
+      /* Toolbar: category chips (Color / Hat / Bow / Food), placed above the bao */
+      var chipDefs = [
+        { key: "color", icon: "\uD83C\uDFA8", label: "Color" },
+        { key: "hat", icon: "\uD83E\uDDE2", label: "Hat" },
+        { key: "bow", icon: "\uD83C\uDF80", label: "Bow" },
+        { key: "food", icon: "\uD83C\uDF4E", label: "Food" }
+      ];
+
+      html += '<div style="display:block;width:100%;margin:4px 0 6px">' +
+        '<div style="display:inline-flex;gap:7px;background:#F2EEE7;padding:6px;border-radius:18px">' +
+        chipDefs.map(function (c) {
+          var isActive = closetCat === c.key;
+          return '<button data-action="switch-closet-cat" data-cat="' + c.key + '" aria-label="' + c.label + '" title="' + c.label + '" style="border:none;width:54px;height:54px;border-radius:14px;background:' + (isActive ? "#3a2e2e" : "transparent") + ';color:' + (isActive ? "white" : "#3a2e2e") + ';font-size:27px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">' + c.icon + '</button>';
+        }).join("") +
+        '</div></div>';
+    }
+
+    html += '<div data-mascot-wrap style="position:relative;display:inline-block;margin:6px 0 14px;min-height:150px">' +
       (animActive && kidAnim.type === "bouncing"
         ? '<div style="position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);z-index:1;opacity:0.9">' + itemIconSVG("trampoline", 90) + '</div>'
         : "") +
       '<button data-action="poke-bao" data-kid="' + kidId + '" style="border:none;background:none;padding:0;cursor:pointer;position:relative;z-index:2" aria-label="' + kid.name + '\u2019s bao">' +
-      '<div data-mascot-visual class="' + mascotClass + '">' + mascotSVG(kidId, 130, activePeriod, "p100", mascotDraftArg) + '</div>' +
+      '<div data-mascot-visual class="' + mascotClass + '">' + mascotSVG(kidId, 190, activePeriod, "p100", mascotDraftArg) + '</div>' +
       '</button>' +
       (animActive && kidAnim.type === "reading"
         ? '<div style="position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none">' + itemIconSVG("book", 76) + '</div>'
@@ -2725,55 +2762,38 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
           var enabled = !isBusy;
           var label = (animActive && kidAnim.type === a.animType) ? (a.animType === "reading" ? "Reading\u2026" : "Bouncing\u2026") : a.label;
           return '<button data-action="do-activity" data-kid="' + kidId + '" data-activity="' + a.id + '"' + (enabled ? "" : " disabled") + ' style="border:none;text-align:center;background:#F7F4EF;border-radius:16px;padding:12px 8px;cursor:' + (enabled ? "pointer" : "default") + ';opacity:' + (enabled ? "1" : "0.6") + '">' +
-            itemIconSVG(a.id, 44) +
+            itemIconSVG(a.id, 54) +
             '<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:12px;color:#3a2e2e;margin:6px 0 4px">' + label + '</div>' +
             '</button>';
         }).join("") +
         '</div>';
     } else {
-      /* Closet: category chips (Color / Hat / Bow / Food) with revealed content below, including a None option */
-      var currentAcc = isPreview ? draft.accessory : state.bunAccessories[kidId];
-      var currentColor = isPreview ? draft.bunColor : (state.bunColors[kidId] || DEFAULT_BUN_COLORS[kidId]);
-      var chipDefs = [
-        { key: "color", icon: "\uD83C\uDFA8", label: "Color" },
-        { key: "hat", icon: "\uD83E\uDDE2", label: "Hat" },
-        { key: "bow", icon: "\uD83C\uDF80", label: "Bow" },
-        { key: "food", icon: "\uD83C\uDF4E", label: "Food" }
-      ];
-
-      html += '<div style="display:block;width:100%;margin:10px 0 16px">' +
-        '<div style="display:inline-flex;gap:6px;background:#F2EEE7;padding:5px;border-radius:16px">' +
-        chipDefs.map(function (c) {
-          var isActive = closetCat === c.key;
-          return '<button data-action="switch-closet-cat" data-cat="' + c.key + '" aria-label="' + c.label + '" title="' + c.label + '" style="border:none;width:44px;height:44px;border-radius:12px;background:' + (isActive ? "#3a2e2e" : "transparent") + ';color:' + (isActive ? "white" : "#3a2e2e") + ';font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">' + c.icon + '</button>';
-        }).join("") +
-        '</div></div>';
-
+      /* Closet: revealed content for the active category, including a None option */
       if (closetCat === "color") {
         var activeSpec = isPreview ? draft.activeSpecial : state.activeSpecial[kidId];
         var specialLiveNow = !!(activeSpec && activeSpec.id);
-        html += '<div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:16px">' +
+        html += '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap;margin-bottom:18px">' +
           BUN_PALETTE.map(function (p, i) {
             var isCurrent = currentColor.name === p.name;
-            return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
+            return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
           }).join("") +
           '</div>';
 
         if (state.swirlPickerOpen === kidId) {
-          html += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">' +
+          html += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px">' +
             '<button data-action="close-swirl-picker" style="border:none;background:#F2EEE7;border-radius:8px;padding:3px 8px;font-family:\'Nunito\',sans-serif;font-weight:800;font-size:11px;color:#3a2e2e;cursor:pointer">\u2190</button>' +
             '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px">Pick a second color</div>' +
             '</div>' +
-            '<div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">' +
+            '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap">' +
             BUN_PALETTE.map(function (p, i) {
-              return '<button data-action="buy-swirl" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
+              return '<button data-action="buy-swirl" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
             }).join("") +
             '</div>';
         } else {
           html += '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin-bottom:8px">Special effects</div>' +
             '<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">' +
             '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' +
-            '<button data-action="remove-special" data-kid="' + kidId + '" aria-label="None" title="None" style="width:32px;height:32px;border-radius:50%;background:#F2EEE7;border:3px solid ' + (!specialLiveNow ? "#3a2e2e" : "#ffffff") + ';display:flex;align-items:center;justify-content:center;color:#8a7f7f;font-weight:800;font-size:14px;cursor:pointer">\u2715</button>' +
+            '<button data-action="remove-special" data-kid="' + kidId + '" aria-label="None" title="None" style="width:44px;height:44px;border-radius:50%;background:#F2EEE7;border:3px solid ' + (!specialLiveNow ? "#3a2e2e" : "#ffffff") + ';display:flex;align-items:center;justify-content:center;color:#8a7f7f;font-weight:800;font-size:16px;cursor:pointer">\u2715</button>' +
             '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;color:#8a7f7f;white-space:nowrap">None</span>' +
             '</div>' +
             SPECIALS.map(function (sp) {
@@ -2781,14 +2801,14 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
               var swatchBg = sp.id === "rainbow"
                 ? "radial-gradient(circle at 38% 26%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 55%), radial-gradient(circle at 50% 42%, rgba(28,15,46,0) 60%, rgba(28,15,46,0.28) 100%), linear-gradient(107deg, #F04141 0%, #F0954B 20%, #F0D341 40%, #4FBF63 60%, #3E86D8 80%, #8A5CD6 100%)"
                 : sp.id === "swirl"
-                ? "linear-gradient(180deg," + currentColor.highlight + " 0%," + currentColor.bodyStart + " 45%,#6FA8FF 100%)"
+                ? "radial-gradient(circle at 38% 26%, " + currentColor.highlight + " 0%, " + currentColor.bodyStart + " 35%, #6FA8FF 78%, " + darkenColorPct("#6FA8FF", 0.18) + " 100%)"
                 : sp.id === "jelly"
                 ? "radial-gradient(circle at 25% 30%, #6FD9C4 0 3px, transparent 3px), radial-gradient(circle at 55% 25%, #FF8FA8 0 2.5px, transparent 2.5px), radial-gradient(circle at 75% 45%, #FFB877 0 3px, transparent 3px), radial-gradient(circle at 35% 65%, #C9A6F2 0 2.5px, transparent 2.5px), radial-gradient(circle at 65% 70%, #FFE066 0 2.5px, transparent 2.5px), #ffffffcc"
                 : "radial-gradient(circle at 30% 30%, #ffffff 1px, transparent 1.5px), radial-gradient(circle at 65% 55%, #ffffff 1px, transparent 1.5px), radial-gradient(circle at 45% 75%, #ffffff 1px, transparent 1.5px), linear-gradient(135deg," + currentColor.bodyStart + "," + currentColor.bodyEnd + ")";
               var thisAction = sp.needsColor ? "open-swirl-picker" : "buy-special";
               var badgeText = isPreview ? (isThisActive ? "Testing" : "Try it") : (isThisActive ? "Equipped" : "Try it");
               return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' +
-                '<button data-action="' + thisAction + '" data-kid="' + kidId + '" data-special="' + sp.id + '" title="' + sp.label + '" style="position:relative;width:32px;height:32px;border-radius:50%;background:' + swatchBg + ';border:3px solid ' + (isThisActive ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>' +
+                '<button data-action="' + thisAction + '" data-kid="' + kidId + '" data-special="' + sp.id + '" title="' + sp.label + '" style="position:relative;width:44px;height:44px;border-radius:50%;background:' + swatchBg + ';border:3px solid ' + (isThisActive ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>' +
                 '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;color:#8a7f7f;white-space:nowrap">' + badgeText + '</span>' +
                 '</div>';
             }).join("") +
@@ -2798,11 +2818,11 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
         html += (pendingFeedList.length > 0
           ? '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin-bottom:8px">\uD83D\uDED2 Drag a fruit up to Bao!</div>'
           : '') +
-          '<div style="background:#EFE6D8;border-radius:14px 14px 0 0;padding:14px 10px 10px">' +
-          '<div style="display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;min-height:48px">' +
+          '<div style="background:#EFE6D8;border-radius:14px 14px 0 0;padding:16px 10px 12px">' +
+          '<div style="display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;min-height:64px">' +
           pendingFeedList.map(function (foodId) {
             return '<div class="drag-food-item" data-drag-food="' + foodId + '" data-kid="' + kidId + '">' +
-              itemIconSVG(foodId, 40) +
+              itemIconSVG(foodId, 58) +
               '</div>';
           }).join("") +
           '</div>' +
@@ -2811,11 +2831,11 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
       } else {
         var typeKey = closetCat === "hat" ? "cap" : "bow";
         var isThisEquipped = currentAcc && currentAcc.type === typeKey;
-        html += '<div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">' +
-          '<button data-action="accessory-pick" data-kid="' + kidId + '" data-type="none" aria-label="None" title="None" style="width:32px;height:32px;border-radius:50%;background:#F2EEE7;border:3px solid ' + (!isThisEquipped ? "#3a2e2e" : "#ffffff") + ';display:flex;align-items:center;justify-content:center;color:#8a7f7f;font-weight:800;font-size:14px;cursor:pointer">\u2715</button>' +
+        html += '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap">' +
+          '<button data-action="accessory-pick" data-kid="' + kidId + '" data-type="none" aria-label="None" title="None" style="width:44px;height:44px;border-radius:50%;background:#F2EEE7;border:3px solid ' + (!isThisEquipped ? "#3a2e2e" : "#ffffff") + ';display:flex;align-items:center;justify-content:center;color:#8a7f7f;font-weight:800;font-size:16px;cursor:pointer">\u2715</button>' +
           ACCESSORY_COLORS.map(function (color) {
             var isCurrent = isThisEquipped && currentAcc.color === color;
-            return '<button data-action="accessory-pick" data-kid="' + kidId + '" data-type="' + typeKey + '" data-color="' + color + '" style="width:32px;height:32px;border-radius:50%;background:' + color + ';border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
+            return '<button data-action="accessory-pick" data-kid="' + kidId + '" data-type="' + typeKey + '" data-color="' + color + '" style="width:44px;height:44px;border-radius:50%;background:' + color + ';border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
           }).join("") +
           '</div>';
       }
@@ -2834,11 +2854,16 @@ function renderKidBalance(kidId) {
   var balance = state.balance[kidId];
   var balanceStr = "$" + balance.toFixed(2);
   var bunColor = (state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId];
+  var cardIsRainbow = isRainbowActive(kidId);
+  var cardBg = cardIsRainbow ? rainbowGradientCSS(135) : "linear-gradient(135deg," + bunColor.bodyStart + "," + bunColor.bodyEnd + ")";
+  var ringGradStops = cardIsRainbow
+    ? '<stop offset="0%" stop-color="#F04141"/><stop offset="20%" stop-color="#F0954B"/><stop offset="40%" stop-color="#F0D341"/><stop offset="60%" stop-color="#4FBF63"/><stop offset="80%" stop-color="#3E86D8"/><stop offset="100%" stop-color="#8A5CD6"/>'
+    : '<stop offset="0%" stop-color="' + bunColor.bodyStart + '"/><stop offset="100%" stop-color="' + bunColor.bodyEnd + '"/>';
   var html = "";
 
   html += '<div class="footer-card">';
   
-  html += '<button class="debit-card-box" data-action="open-account" data-kid="' + kidId + '" style="background:linear-gradient(135deg,' + bunColor.bodyStart + ',' + bunColor.bodyEnd + ');">' +
+  html += '<button class="debit-card-box" data-action="open-account" data-kid="' + kidId + '" style="background:' + cardBg + ';">' +
     '<div style="position:absolute;top:-50%;left:-20%;width:80%;height:220%;background:linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 60%);transform:rotate(15deg);pointer-events:none"></div>' +
     
     '<div style="display:flex;justify-content:space-between;align-items:center;position:relative">' +
@@ -2858,18 +2883,20 @@ function renderKidBalance(kidId) {
     '</button>';
 
   html += '<div class="goals-container-2x2">';
-  GOALS[kidId].forEach(function (goal) {
+  GOALS[kidId].forEach(function (goal, goalIdx) {
     var saved = Math.min(goal.cost, balance);
     var goalPct = Math.min(100, Math.round((saved / goal.cost) * 100));
     var radius = 14;
     var circ = 2 * Math.PI * radius;
     var offset = circ - (goalPct / 100) * circ;
+    var ringGradId = "ringgrad-" + kidId + "-" + goalIdx;
 
     html += '<div class="goal-card-item">' +
       '<div class="donut-gauge-wrap">' +
       '<svg width="38" height="38" viewBox="0 0 36 36">' +
+      '<defs><linearGradient id="' + ringGradId + '" x1="0%" y1="0%" x2="100%" y2="100%">' + ringGradStops + '</linearGradient></defs>' +
       '<circle cx="18" cy="18" r="' + radius + '" fill="none" stroke="#EDE4D8" stroke-width="4"/>' +
-      '<circle cx="18" cy="18" r="' + radius + '" fill="none" stroke="' + kid.accent + '" stroke-width="4" stroke-dasharray="' + circ.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease"/>' +
+      '<circle cx="18" cy="18" r="' + radius + '" fill="none" stroke="url(#' + ringGradId + ')" stroke-width="4" stroke-dasharray="' + circ.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease"/>' +
       '</svg>' +
       '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1">' + goal.emoji + '</div>' +
       '</div>' +
@@ -3088,8 +3115,8 @@ function render() {
     '<span class="clock-time" data-clock-time style="font-family:\'Courier New\',monospace;font-weight:800;font-size:52px;color:' + textOnSky + ';letter-spacing:1px;text-shadow:0 0 16px ' + clockGlow + '">' + clockParts.hm + '</span>' +
     '<span class="clock-ampm" data-clock-ampm style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:16px;color:' + textOnSky + ';opacity:0.75">' + clockParts.ampm + '</span>' +
     '</div>' +
-    '<button class="lock-btn hide-mobile" data-action="toggle-fullscreen" style="color:' + textOnSky + '" aria-label="' + (isFullscreen ? "Exit full screen" : "Enter full screen") + '">' +
-    (isFullscreen ? iconCompress(18) : iconExpand(18)) + '</button>' +
+    '<button class="fullscreen-btn-subtle" data-action="toggle-fullscreen" style="color:' + textOnSky + '" aria-label="' + (isFullscreen ? "Exit full screen" : "Enter full screen") + '">' +
+    (isFullscreen ? iconCompress(16) : iconExpand(16)) + '</button>' +
     '</div>';
 
   html += '<div class="kid-grid">';
