@@ -34,6 +34,16 @@
   @media (min-width: 480px) { #root { padding: 24px 24px 200px; } }
   button { font-family: inherit; }
 
+  /* Faster, more responsive taps on tablets: kill the default browser tap
+     delay/highlight and give instant press feedback so a chore or mascot
+     tap never feels like it needs a second click. */
+  button, [data-action] { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .done-btn, .icon-box, .mascot-tap { transition: transform 0.1s ease; }
+  .done-btn:active { transform: scale(0.8); }
+  .mascot-tap:active, .kid-btn:active { transform: scale(0.9); }
+  .chore-card:active { transform: scale(0.98); }
+  [data-action="squish-banner"]:active { transform: scale(0.97); }
+
   @keyframes fall { to { transform: translateY(140px) rotate(200deg); opacity: 0; } }
   @keyframes itemBounce {
     0% { transform: translate(-50%, 14px) scale(0.4); opacity: 0; }
@@ -132,7 +142,8 @@
 
   .icon-box { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
   .chore-content { flex: 1; min-width: 0; }
-  .done-btn { background: none; border: none; cursor: pointer; flex-shrink: 0; padding: 0; }
+  .done-btn { background: none; border: none; cursor: pointer; flex-shrink: 0; padding: 6px; margin: -6px; }
+  .done-btn:disabled { opacity: 1; -webkit-text-fill-color: currentColor; }
   
   /* Action Toolbar inside card for Parent Mode */
   .parent-card-actions {
@@ -2655,8 +2666,13 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
     html += '</div>';
 
-    html += '<button class="done-btn" data-action="toggle-done" data-key="' + key + '" style="color:' + (done ? doneCheckColor : "#c9c2c2") + '" aria-label="' + (wasParentCompleted ? "Checked off by a parent" : "Toggle done") + '" title="' + (wasParentCompleted ? "Checked off by a parent" : "") + '">' +
-      (wasParentCompleted ? '<span style="font-size:26px;line-height:1;display:inline-block">\uD83C\uDFAB</span>' : (done ? iconCheckCircle(28, doneCheckColor) : iconCircle(28, "#c9c2c2"))) + '</button>';
+    var passLocked = isExcused && !state.parentMode;
+    html += '<button class="done-btn" data-action="toggle-done" data-key="' + key + '"' +
+      (passLocked ? ' data-locked="1" disabled' : '') +
+      ' style="color:' + (done ? doneCheckColor : "#c9c2c2") + (passLocked ? ';cursor:default;opacity:1' : '') + '"' +
+      ' aria-label="' + (wasParentCompleted ? "Checked off by a parent" : (passLocked ? "Parent Pass - ask a parent to change this" : "Toggle done")) + '"' +
+      ' title="' + (wasParentCompleted ? "Checked off by a parent" : (passLocked ? "Parent Pass - ask a parent to change this" : "")) + '">' +
+      (wasParentCompleted ? '<span style="font-size:34px;line-height:1;display:inline-block">\uD83C\uDFAB</span>' : (passLocked ? '<span style="font-size:34px;line-height:1;display:inline-block">\uD83C\uDF9F\uFE0F</span>' : (done ? iconCheckCircle(36, doneCheckColor) : iconCircle(36, "#c9c2c2")))) + '</button>';
 
     html += '</div>';
   });
@@ -3269,11 +3285,23 @@ document.addEventListener("pointerup", function (e) {
   if (!fed) render();
 });
 
+var lastActionAt = {};
 document.getElementById("root").addEventListener("click", function (e) {
   var el = e.target.closest("[data-action]");
   if (!el) return;
   var action = el.dataset.action;
   var key = el.dataset.key;
+
+  if (el.dataset.locked === "1") return;
+
+  // Guard against a fast double-tap (common on tablets when there's a render
+  // delay) being read as two separate clicks and cancelling itself out.
+  var guardKey = action + "|" + (key || "") + "|" + (el.dataset.kid || "") + "|" + (el.dataset.choreid || "");
+  var nowTs = Date.now();
+  if (lastActionAt[guardKey] && nowTs - lastActionAt[guardKey] < 400) {
+    return;
+  }
+  lastActionAt[guardKey] = nowTs;
 
   if (action === "select-kid") {
     state.kidId = el.dataset.kid;
@@ -3681,6 +3709,11 @@ document.getElementById("root").addEventListener("click", function (e) {
     var parts = key.split("-");
     var kId = parts[0], pId = parts[1], cId = parts[2];
     var curDone = getChoreStatus(todayStr, key);
+    if (curDone === "excused" && !state.parentMode) {
+      // A parent-excused chore can only be un-excused from Parent Mode
+      // (via the Pass button) - a kid can't uncheck it back in regular mode.
+      return;
+    }
     if (curDone) {
       setChoreStatus(todayStr, key, false);
       if (state.parentMode) {
