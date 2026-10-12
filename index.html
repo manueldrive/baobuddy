@@ -1838,7 +1838,8 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   // A Halloween face with a sleep version stays on through the night instead of resetting.
   var sleepyState = (phase === "morning" && progressTier === "p0") || (phase === "evening" && progressTier === "p100");
   var useSleepFace = !!(faceDef && faceDef.sleepSvg && sleepyState);
-  var faceDesignVisible = faceDef && (useSleepFace || !!draftPreview || phase === "evening" || faceDesignUnlockedToday(kidId));
+  // Faces without a sleep version (Jack, Sally) keep their regular face through the night.
+  var faceDesignVisible = faceDef && (sleepyState || !!draftPreview || phase === "evening" || faceDesignUnlockedToday(kidId));
   var rawFace = useSleepFace
     ? faceDef.sleepSvg + (phase === "evening" ? SLEEP_ZZZ_SVG : "")
     : (faceDesignVisible ? faceDef.svg : s.face);
