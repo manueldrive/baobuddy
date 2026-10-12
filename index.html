@@ -687,7 +687,11 @@ function initPersistence() {
         state.bunColors = migrateLegacyBunColors(saved.bunColors);
         migratedColors = wasLegacy;
       }
-      if (saved.bunAccessories) state.bunAccessories = saved.bunAccessories;
+      // Firebase deletes null values, so a kid with no hat/bow comes back as a
+      // missing key. Treat missing as "none" instead of falling back to the
+      // starter cap/bow defaults.
+      var savedAcc = saved.bunAccessories || {};
+      state.bunAccessories = { miles: savedAcc.miles || null, lina: savedAcc.lina || null };
       if (saved.nextChoreId) state.nextChoreId = saved.nextChoreId;
       if (saved.lastActiveDate) state.lastActiveDate = saved.lastActiveDate;
       if (migratedDone || migratedColors) savePersisted();
