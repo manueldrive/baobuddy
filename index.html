@@ -2837,7 +2837,8 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
     html += '</div>';
 
-    var passLocked = isExcused && !state.parentMode;
+    // Parent-excused (🎟️) and parent-checked (🎫) chores can only be changed in Parent Mode.
+    var passLocked = (isExcused || wasParentCompleted) && !state.parentMode;
     html += '<button class="done-btn" data-action="toggle-done" data-key="' + key + '"' +
       (passLocked ? ' data-locked="1" disabled' : '') +
       ' style="color:' + (done ? doneCheckColor : "#c9c2c2") + (passLocked ? ';cursor:default;opacity:1' : '') + '"' +
@@ -3944,7 +3945,7 @@ document.getElementById("root").addEventListener("click", function (e) {
     var parts = key.split("-");
     var kId = parts[0], pId = parts[1], cId = parts[2];
     var curDone = getChoreStatus(todayStr, key);
-    if (curDone === "excused" && !state.parentMode) {
+    if ((curDone === "excused" || isParentCompleted(todayStr, key)) && !state.parentMode) {
       // A parent-excused chore can only be un-excused from Parent Mode
       // (via the Pass button) - a kid can't uncheck it back in regular mode.
       return;
