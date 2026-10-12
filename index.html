@@ -3871,9 +3871,26 @@ document.getElementById("root").addEventListener("click", function (e) {
   } else if (action === "chore-pass") {
     if (!state.parentMode) return;
     var passToday = todayDateString(new Date());
+    // Use the child this chore belongs to - not whichever child happens to be selected.
+    var passParts = key.split("-");
+    var passKid = passParts[0], passPeriod = passParts[1];
+    var passChores = choresFor(passKid, passPeriod);
+    var passAllDone = function () {
+      return passChores.every(function (c) { return !!getChoreStatus(passToday, choreKey(passKid, passPeriod, c.id)); });
+    };
+    var passWasAllDone = passAllDone();
     var passCur = getChoreStatus(passToday, key);
     setChoreStatus(passToday, key, passCur === "excused" ? false : "excused");
-    checkWeeklyAward(state.kidId, passToday);
+    // If excusing this chore finishes the child's routine, give them their fruit like a normal finish.
+    var passRoutineKey = passKid + "-" + passPeriod;
+    if (passAllDone() && !passWasAllDone && !fruitAlreadyAwarded(passToday, passRoutineKey)) {
+      if (!state.pendingFeed[passKid]) state.pendingFeed[passKid] = [];
+      (MEALS_BY_PERIOD[passPeriod] || FOOD_ITEMS).forEach(function (f) { state.pendingFeed[passKid].push(f.id); });
+      markFruitAwarded(passToday, passRoutineKey);
+      playFanfare();
+      state.celebrateKid = passKid;
+    }
+    checkWeeklyAward(passKid, passToday);
     savePersisted();
     render();
   } else if (action === "chore-edit") {
