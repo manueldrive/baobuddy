@@ -1525,6 +1525,13 @@ var FACE_DESIGNS = [
       '<polygon points="52,56 58,56 55,51" fill="#1C1818" />' +
       '<g class="bao-mouth" style="transform-box:fill-box;transform-origin:center">' +
       '<path fill-rule="evenodd" d="M 34,61 C 48,74 62,74 76,61 Z M 46,61 L 51,61 L 51,65 L 46,65 Z M 60,61 L 65,61 L 65,65 L 60,65 Z" fill="#1C1818" />' +
+      '</g>',
+    // Sleepy version: carved eyes close into thin downward crescents, grin narrows to a sleepy carved smile.
+    sleepSvg: '<path d="M 32,57 Q 39,64 46,57 Q 39,60.5 32,57 Z" fill="#1C1818" />' +
+      '<path d="M 64,57 Q 71,64 78,57 Q 71,60.5 64,57 Z" fill="#1C1818" />' +
+      '<polygon points="52.5,62 57.5,62 55,58.5" fill="#1C1818" />' +
+      '<g class="bao-mouth" style="transform-box:fill-box;transform-origin:center">' +
+      '<path d="M 43,65 Q 55,72 67,65 Q 55,68.5 43,65 Z" fill="#1C1818" />' +
       '</g>'
   },
   {
@@ -1537,6 +1544,13 @@ var FACE_DESIGNS = [
       '<path d="M 40,65 Q 55,75 70,65 Z" fill="#1C1818" />' +
       '<path d="M 47,65 L 47,67.5 Q 47,69 48.5,69 L 50.5,69 Q 52,69 52,67.5 L 52,65 Z" fill="#FFFFFF" />' +
       '<path d="M 58,65 L 58,67.5 Q 58,69 59.5,69 L 61.5,69 Q 63,69 63,67.5 L 63,65 Z" fill="#FFFFFF" />' +
+      '</g>',
+    // Sleepy version: the big single eye is a closed lid with lashes; a tiny fang peeks out of a sleepy smile.
+    sleepSvg: '<path d="M 42,55 Q 55,65 68,55" stroke="#1C1818" stroke-width="2.8" fill="none" stroke-linecap="round" />' +
+      '<path d="M 46,59.5 L 44.5,62 M 55,61 L 55,63.8 M 64,59.5 L 65.5,62" stroke="#1C1818" stroke-width="1.8" stroke-linecap="round" />' +
+      '<g class="bao-mouth" style="transform-box:fill-box;transform-origin:center">' +
+      '<path d="M 48,67 Q 55,71 62,67" stroke="#1C1818" stroke-width="2.2" fill="none" stroke-linecap="round" />' +
+      '<path d="M 51.5,68.6 L 54.5,69.4 L 52.7,72 Z" fill="#FFFFFF" stroke="#1C1818" stroke-width="0.9" stroke-linejoin="round" />' +
       '</g>'
   },
   {
@@ -1552,6 +1566,16 @@ var FACE_DESIGNS = [
       '<path d="M 44,60 Q 55,75 66,60 Z" fill="#1C1818" />' +
       '<polygon points="48,60 50.5,64 53,60" fill="#FFFFFF" />' +
       '<polygon points="57,60 59.5,64 62,60" fill="#FFFFFF" />' +
+      '</g>',
+    // Sleepy version: closed eyes, same rosy cheeks, two little fangs resting over a sleepy smile.
+    sleepSvg: '<path d="M 33,57 Q 38,61.5 43,57" stroke="#1C1818" stroke-width="2.6" fill="none" stroke-linecap="round" />' +
+      '<path d="M 67,57 Q 72,61.5 77,57" stroke="#1C1818" stroke-width="2.6" fill="none" stroke-linecap="round" />' +
+      '<ellipse cx="28" cy="62" rx="4" ry="2.2" fill="#FF758F" opacity="0.8" />' +
+      '<ellipse cx="82" cy="62" rx="4" ry="2.2" fill="#FF758F" opacity="0.8" />' +
+      '<g class="bao-mouth" style="transform-box:fill-box;transform-origin:center">' +
+      '<path d="M 47,65 Q 55,70 63,65" stroke="#1C1818" stroke-width="2.3" fill="none" stroke-linecap="round" />' +
+      '<polygon points="49.6,66.4 52.4,67.4 50.6,70.4" fill="#FFFFFF" stroke="#1C1818" stroke-width="0.8" stroke-linejoin="round" />' +
+      '<polygon points="60.4,66.4 57.6,67.4 59.4,70.4" fill="#FFFFFF" stroke="#1C1818" stroke-width="0.8" stroke-linejoin="round" />' +
       '</g>'
   }
 ];
@@ -1767,6 +1791,8 @@ var mascotGradientCounter = 0;
 function happyEyeSVG(cx, cy) {
   return '<path d="M' + (cx - 6) + ',' + cy + ' Q' + cx + ',' + (cy - 5.5) + ' ' + (cx + 6) + ',' + cy + '" stroke="#1C1818" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
 }
+var SLEEP_ZZZ_SVG = '<text x="76" y="26" font-family="\'Baloo 2\',sans-serif" font-weight="800" font-size="12" fill="#1C1818" opacity="0.65">z</text>' +
+  '<text x="82" y="18" font-family="\'Baloo 2\',sans-serif" font-weight="800" font-size="9" fill="#1C1818" opacity="0.5">z</text>';
 var EAT_MOUTH_SVG = '<path d="M49,60 Q55,68 61,60 Z" fill="#1C1818"/><path d="M52,62 Q55,67 58,62 Z" fill="#FF758F"/>';
 function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   var baseColor = draftPreview ? draftPreview.bunColor : ((state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId]);
@@ -1808,8 +1834,14 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   var faceDef = (faceSel && faceSel.id) ? FACE_DESIGNS.filter(function (f) { return f.id === faceSel.id; })[0] : null;
   var eatFaceInfo = state.eatFace && state.eatFace[kidId];
   var eatFaceLive = eatFaceInfo && eatFaceInfo.endsAt > Date.now();
-  var faceDesignVisible = faceDef && (!!draftPreview || phase === "evening" || faceDesignUnlockedToday(kidId));
-  var rawFace = faceDesignVisible ? faceDef.svg : s.face;
+  // Sleepy states: just woke up (morning, nothing done yet) and fully asleep (bedtime all done).
+  // A Halloween face with a sleep version stays on through the night instead of resetting.
+  var sleepyState = (phase === "morning" && progressTier === "p0") || (phase === "evening" && progressTier === "p100");
+  var useSleepFace = !!(faceDef && faceDef.sleepSvg && sleepyState);
+  var faceDesignVisible = faceDef && (useSleepFace || !!draftPreview || phase === "evening" || faceDesignUnlockedToday(kidId));
+  var rawFace = useSleepFace
+    ? faceDef.sleepSvg + (phase === "evening" ? SLEEP_ZZZ_SVG : "")
+    : (faceDesignVisible ? faceDef.svg : s.face);
   if (eatFaceLive && !faceDesignVisible) {
     var blushStart = rawFace.indexOf('<g stroke="VAR_BL"');
     if (blushStart !== -1) {
