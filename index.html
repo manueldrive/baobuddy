@@ -783,7 +783,7 @@ function fruitAlreadyAwarded(dateStr, key) {
 }
 function markFruitAwarded(dateStr, key) {
   if (!state.fruitAwarded[dateStr]) state.fruitAwarded[dateStr] = {};
-  state.fruitAwarded[dateStr][key] = true;
+  state.fruitAwarded[dateStr][key] = Date.now(); // when the routine was finished (truthy, like before)
 }
 function clearFruitAwarded(dateStr, key) {
   if (state.fruitAwarded[dateStr]) delete state.fruitAwarded[dateStr][key];
@@ -1803,6 +1803,9 @@ var SLEEP_ZZZ_SVG = '<text x="76" y="26" font-family="\'Baloo 2\',sans-serif" fo
   '<text x="82" y="18" font-family="\'Baloo 2\',sans-serif" font-weight="800" font-size="9" fill="#1C1818" opacity="0.5">z</text>';
 var EAT_MOUTH_SVG = '<path d="M49,60 Q55,68 61,60 Z" fill="#1C1818"/><path d="M52,62 Q55,67 58,62 Z" fill="#FF758F"/>';
 function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
+  if (phase === "evening" && progressTier === "p100" && !baoAsleepTonight(kidId)) {
+    phase = "afternoon"; // happy, awake "all done" bao instead of the sleeping one
+  }
   var baseColor = draftPreview ? draftPreview.bunColor : ((state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId]);
   var activeSpec = draftPreview ? draftPreview.activeSpecial : (state.activeSpecial && state.activeSpecial[kidId]);
   var specialLive = !!(activeSpec && activeSpec.id);
@@ -1981,6 +1984,17 @@ function faceDesignUnlockedToday(kidId) {
   var list = choresFor(kidId, "morning");
   if (list.length === 0) return true;
   return list.every(function (c) { return !!getChoreStatus(today, choreKey(kidId, "morning", c.id)); });
+}
+
+// The bao stays awake for 5 minutes after bedtime chores are finished,
+// so the kids can see their face design and feed it before it falls asleep.
+var BEDTIME_AWAKE_MS = 5 * 60 * 1000;
+function baoAsleepTonight(kidId) {
+  if (computeProgressTier(kidId, "evening") !== "p100") return false;
+  var today = todayDateString(new Date());
+  var doneAt = state.fruitAwarded[today] && state.fruitAwarded[today][kidId + "-evening"];
+  if (typeof doneAt !== "number") return true; // older saves only stored "true"
+  return Date.now() - doneAt >= BEDTIME_AWAKE_MS;
 }
 
 function computeProgressTier(kidId, period) {
@@ -4010,6 +4024,14 @@ setInterval(function () {
     render();
     return;
   }
+
+  var sleepSig = Object.keys(KIDS).map(baoAsleepTonight).join(",");
+  if (state.lastSleepSig !== undefined && sleepSig !== state.lastSleepSig) {
+    state.lastSleepSig = sleepSig;
+    render();
+    return;
+  }
+  state.lastSleepSig = sleepSig;
 
   Object.keys(state.timers).forEach(function (key) {
     var t = state.timers[key];
