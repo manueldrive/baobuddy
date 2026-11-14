@@ -1468,26 +1468,75 @@ var BUN_PALETTE = [
   { bodyStart: "#F9B3CE", bodyEnd: "#E388B0", highlight: "#FDE2EE", crease: "#C66993", blush: "#E82C6A", name: "Pink" },
   { bodyStart: "#FFFDBA", bodyEnd: "#FFE066", highlight: "#FFFFD3", crease: "#E1C248", blush: "#FFB877", name: "Yellow" },
   { bodyStart: "#EADEFF", bodyEnd: "#C9B3FF", highlight: "#FFF7FF", crease: "#AB95E1", blush: "#FFB8D9", name: "Purple" },
-  { bodyStart: "#FFFFFF", bodyEnd: "#E6E1D8", highlight: "#FFFFFF", crease: "#C8C2B5", blush: "#FFAEC0", name: "White" }
+  { bodyStart: "#FFFFFF", bodyEnd: "#E6E1D8", highlight: "#FFFFFF", crease: "#C8C2B5", blush: "#FFAEC0", name: "White" },
+  // November fall colors (shown next to the regular ones)
+  { bodyStart: "#FFC48A", bodyEnd: "#F08A3C", highlight: "#FFE2C2", crease: "#C9662A", blush: "#E8553A", name: "Pumpkin", season: 10 },
+  { bodyStart: "#F59A8A", bodyEnd: "#D2483C", highlight: "#FFD3CB", crease: "#A8352B", blush: "#FFD0C0", name: "Maple", season: 10 },
+  { bodyStart: "#FBE08A", bodyEnd: "#E0B436", highlight: "#FFF3C8", crease: "#B88E1E", blush: "#F08A5C", name: "Mustard", season: 10 },
+  { bodyStart: "#D9B48A", bodyEnd: "#A8774A", highlight: "#F0DCC0", crease: "#7E5530", blush: "#F2907A", name: "Acorn", season: 10 },
+  { bodyStart: "#D2DDB0", bodyEnd: "#9EAF72", highlight: "#EBF1D8", crease: "#7A8C52", blush: "#F2907A", name: "Sage", season: 10 },
+  { bodyStart: "#E59AB0", bodyEnd: "#B04A6E", highlight: "#F7D3DE", crease: "#8A3355", blush: "#FFC0D0", name: "Cranberry", season: 10 },
+  { bodyStart: "#FFF1D8", bodyEnd: "#EFCF9C", highlight: "#FFFAEE", crease: "#C9A56C", blush: "#F2907A", name: "Cider", season: 10 }
 ];
 var SPECIALS = [
   { id: "rainbow", label: "Rainbow", bodyStart: "#FF6B6B", bodyEnd: "#B48CFF", overlay: false },
   { id: "glitter", label: "Glitter", overlay: true },
   { id: "swirl", label: "Swirl", needsColor: true },
-  { id: "jelly", label: "Jelly", overlay: true }
+  { id: "jelly", label: "Jelly", overlay: true },
+  // November plaids. check = two-color buffalo check; otherwise bands + thin pinstripes.
+  { id: "buffalo", label: "Buffalo", season: 10, plaid: { base: "#C8302E", band: "#1E1A1B", check: true, crease: "#5A1614", blush: "#FFB3A8" } },
+  { id: "harvest", label: "Harvest", season: 10, plaid: { base: "#E9853A", band: "#7A4A24", thin: "#FBE3B0", crease: "#8A4A1A", blush: "#FFD0B0" } },
+  { id: "flannel", label: "Flannel", season: 10, plaid: { base: "#5E7F4E", band: "#2F4430", thin: "#E3B341", crease: "#2A3A26", blush: "#FFB3A8" } },
+  { id: "cozy", label: "Cozy", season: 10, plaid: { base: "#F3E6CC", band: "#B7472F", thin: "#6E5232", crease: "#B59A6E", blush: "#F2907A" } }
 ];
+function plaidSwatchCSS(pl) {
+  var bands = "repeating-linear-gradient(90deg," + pl.band + "55 0 7px,transparent 7px 18px)," +
+    "repeating-linear-gradient(0deg," + pl.band + "55 0 7px,transparent 7px 18px)";
+  var thins = pl.thin ? "repeating-linear-gradient(90deg,transparent 0 12px," + pl.thin + "aa 12px 13.5px,transparent 13.5px 18px)," +
+    "repeating-linear-gradient(0deg,transparent 0 12px," + pl.thin + "aa 12px 13.5px,transparent 13.5px 18px)," : "";
+  return thins + bands + "," + pl.base;
+}
 
 /* ---------------- Face design overlays ---------------- */
 /* These swap only the eyes/mouth drawn on top of the bao's existing shape and
    color — the body outline, pleats, and chosen color/special effect are untouched. */
-// Halloween face designs are seasonal: they only show up (in the Closet and on the bao) during October.
-// Each kid's pick is kept, so it comes back automatically next October.
-function halloweenSeason(d) {
-  return (d || new Date()).getMonth() === 9;
+// Seasonal items (face designs, costumes, colors, specials) carry a `season` month (0 = Jan ... 9 = Oct, 10 = Nov).
+// They only show up in the Closet - and on the bao - during that month. Each kid's pick is kept,
+// so it comes back automatically next year.
+function inSeason(item, d) {
+  if (!item || item.season === undefined) return true;
+  return (d || new Date()).getMonth() === item.season;
 }
+
+// ---- Costume artwork for November (drawn in the bao's 110 x 85 space) ----
+var TURKEY_TAIL_SVG = (function () {
+  var cols = [["#C0392B", "#8E2A20"], ["#E8722C", "#B34E12"], ["#F5B731", "#C98D12"], ["#8B5A2B", "#5E3A18"]];
+  var out = "";
+  [-72, -54, -36, -18, 0, 18, 36, 54, 72].forEach(function (a, k) {
+    var c = cols[k % 4];
+    out += '<g transform="translate(55,56) rotate(' + a + ')">' +
+      '<path d="M0,0 C-12,-18 -13,-46 0,-60 C13,-46 12,-18 0,0 Z" fill="' + c[0] + '" stroke="' + c[1] + '" stroke-width="1.4"/>' +
+      '<path d="M0,-6 L0,-52" stroke="' + c[1] + '" stroke-width="1" opacity="0.6"/></g>';
+  });
+  return out;
+})();
+var TURKEY_FEET_SVG = '<path d="M42,73 l-4,6 M42,73 l0,7 M42,73 l4,6 M68,73 l-4,6 M68,73 l0,7 M68,73 l4,6" stroke="#E8952C" stroke-width="2.6" stroke-linecap="round"/>';
+var PILGRIM_COLLAR_SVG = '<path d="M55,68 C46,67 34,69 29,74 C36,80 47,80 55,74.5 C63,80 74,80 81,74 C76,69 64,67 55,68 Z" fill="#FFFDF7" stroke="#CFC6B4" stroke-width="1.3" stroke-linejoin="round"/>' +
+  '<path d="M55,68.5 L55,74" stroke="#CFC6B4" stroke-width="1"/>';
+var PILGRIM_HAT_SVG = '<ellipse cx="55" cy="24" rx="33" ry="6.5" fill="#2E2A2B" stroke="#151213" stroke-width="1.2"/>' +
+  '<path d="M37,24 L41,-14 Q55,-18 69,-14 L73,24 Q55,28 37,24 Z" fill="#3A3536" stroke="#151213" stroke-width="1.2"/>' +
+  '<path d="M38.4,11 Q55,15 71.6,11 L72.4,19 Q55,23 37.6,19 Z" fill="#1E1A1B"/>' +
+  '<rect x="49" y="10.5" width="12" height="10" rx="1.5" fill="none" stroke="#F2C24B" stroke-width="2.4"/>' +
+  '<path d="M45,-11 Q55,-14 60,-12" stroke="#FFFFFF" stroke-width="1.6" opacity="0.18" fill="none" stroke-linecap="round"/>';
+var PILGRIM_BONNET_SVG = '<path d="M13,50 C9,22 34,4 55,4 C76,4 101,22 97,50 C92,42 84,37 76,35 Q55,29 34,35 C26,37 18,42 13,50 Z" fill="#FFFDF7" stroke="#CFC6B4" stroke-width="1.3"/>' +
+  '<path d="M14,49 C19,41 27,36.5 34,35 Q55,29 76,35 C83,36.5 91,41 96,49" fill="none" stroke="#E8DFCC" stroke-width="4" stroke-dasharray="0.1 5.2" stroke-linecap="round"/>' +
+  '<path d="M24,22 Q55,8 86,22" stroke="#E8DFCC" stroke-width="1.2" fill="none"/>' +
+  '<path d="M14,50 Q16,62 22,70" stroke="#FFFDF7" stroke-width="3.2" fill="none" stroke-linecap="round"/>' +
+  '<path d="M96,50 Q94,62 88,70" stroke="#FFFDF7" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+
 var FACE_DESIGNS = [
   {
-    id: "jack", label: "Jack", emoji: "💀",
+    id: "jack", season: 9, label: "Jack", emoji: "💀",
     swatchBg: "linear-gradient(135deg,#F0F4F8,#D9E2EC)",
     svg: '<path d="M 32,49 C 30,38 46,38 45,51 C 44,56 34,55 32,49 Z" fill="#1C1818" />' +
       '<path d="M 78,49 C 80,38 64,38 65,51 C 66,56 76,55 78,49 Z" fill="#1C1818" />' +
@@ -1504,7 +1553,7 @@ var FACE_DESIGNS = [
       '</g>'
   },
   {
-    id: "sally", label: "Sally", emoji: "🧵",
+    id: "sally", season: 9, label: "Sally", emoji: "🧵",
     swatchBg: "linear-gradient(135deg,#C5D6FF,#7C97F0)",
     svg: '<circle cx="38" cy="50" r="5.5" fill="#1C1818" />' +
       '<circle cx="72" cy="50" r="5.5" fill="#1C1818" />' +
@@ -1523,7 +1572,7 @@ var FACE_DESIGNS = [
       '</g>'
   },
   {
-    id: "pumpkin", label: "Pumpkin", emoji: "🎃",
+    id: "pumpkin", season: 9, label: "Pumpkin", emoji: "🎃",
     swatchBg: "linear-gradient(135deg,#FFCB7D,#FF8F3D)",
     svg: '<path d="M 32,50 Q 39,42 46,50 L 44,53 Q 39,47 34,53 Z" fill="#1C1818" />' +
       '<path d="M 64,50 Q 71,42 78,50 L 76,53 Q 71,47 66,53 Z" fill="#1C1818" />' +
@@ -1540,7 +1589,7 @@ var FACE_DESIGNS = [
       '</g>'
   },
   {
-    id: "monster", label: "Monster", emoji: "👁️",
+    id: "monster", season: 9, label: "Monster", emoji: "👁️",
     swatchBg: "linear-gradient(135deg,#CDEE96,#8FC24C)",
     svg: '<circle cx="55" cy="48" r="13" fill="#FFFFFF" stroke="#1C1818" stroke-width="2.5" />' +
       '<circle cx="55" cy="48" r="7" fill="#1C1818" />' +
@@ -1559,7 +1608,7 @@ var FACE_DESIGNS = [
       '</g>'
   },
   {
-    id: "vampire", label: "Vampire", emoji: "🧛",
+    id: "vampire", season: 9, label: "Vampire", emoji: "🧛",
     swatchBg: "linear-gradient(135deg,#C994E8,#8B42C2)",
     svg: '<ellipse cx="38" cy="52" rx="4.5" ry="5.5" fill="#1C1818"/>' +
       '<ellipse cx="72" cy="52" rx="4.5" ry="5.5" fill="#1C1818"/>' +
@@ -1582,6 +1631,44 @@ var FACE_DESIGNS = [
       '<polygon points="49.6,66.4 52.4,67.4 50.6,70.4" fill="#FFFFFF" stroke="#1C1818" stroke-width="0.8" stroke-linejoin="round" />' +
       '<polygon points="60.4,66.4 57.6,67.4 59.4,70.4" fill="#FFFFFF" stroke="#1C1818" stroke-width="0.8" stroke-linejoin="round" />' +
       '</g>'
+  },
+  // ---- November costumes (original designs) ----
+  {
+    id: "turkey", season: 10, label: "Turkey", emoji: "🦃",
+    swatchBg: "linear-gradient(135deg,#E3B07A,#9C6A3A)",
+    // Turns the bao turkey-brown while it's on, with a fan of tail feathers and little feet.
+    bodyColor: { bodyStart: "#C9965F", bodyEnd: "#9C6A3A", highlight: "#E3BE8E", crease: "#7A4E26", blush: "#FF8A5B" },
+    hideAccessory: true,
+    back: TURKEY_TAIL_SVG,     // moves with the bao's top as it squishes
+    backFixed: TURKEY_FEET_SVG, // stays at the bottom
+    svg: '<circle cx="39" cy="54" r="5.2" fill="#FFFFFF" stroke="#1C1818" stroke-width="1.6" /><circle cx="40" cy="55" r="2.8" fill="#1C1818" /><circle cx="41" cy="53.8" r="0.9" fill="#FFFFFF" />' +
+      '<circle cx="71" cy="54" r="5.2" fill="#FFFFFF" stroke="#1C1818" stroke-width="1.6" /><circle cx="70" cy="55" r="2.8" fill="#1C1818" /><circle cx="71" cy="53.8" r="0.9" fill="#FFFFFF" />' +
+      '<ellipse cx="30" cy="63" rx="4" ry="2.3" fill="#FF8A5B" opacity="0.7" /><ellipse cx="80" cy="63" rx="4" ry="2.3" fill="#FF8A5B" opacity="0.7" />' +
+      '<g class="bao-mouth" style="transform-box:fill-box;transform-origin:center">' +
+      '<path d="M 49,57 L 61,57 L 55,64 Z" fill="#FFB020" stroke="#C97A00" stroke-width="1.2" stroke-linejoin="round" />' +
+      '<path d="M 55,63 C 51,66 51,72 54,73 C 57,74 58,69 56,64 Z" fill="#E5484D" stroke="#B3262B" stroke-width="1" />' +
+      '</g>',
+    sleepSvg: '<path d="M 33,55 Q 39,60 45,55" stroke="#1C1818" stroke-width="2.6" fill="none" stroke-linecap="round" />' +
+      '<path d="M 65,55 Q 71,60 77,55" stroke="#1C1818" stroke-width="2.6" fill="none" stroke-linecap="round" />' +
+      '<ellipse cx="30" cy="63" rx="4" ry="2.3" fill="#FF8A5B" opacity="0.7" /><ellipse cx="80" cy="63" rx="4" ry="2.3" fill="#FF8A5B" opacity="0.7" />' +
+      '<g class="bao-mouth" style="transform-box:fill-box;transform-origin:center">' +
+      '<path d="M 49,57 L 61,57 L 55,64 Z" fill="#FFB020" stroke="#C97A00" stroke-width="1.2" stroke-linejoin="round" />' +
+      '<path d="M 55,63 C 51,66 51,72 54,73 C 57,74 58,69 56,64 Z" fill="#E5484D" stroke="#B3262B" stroke-width="1" />' +
+      '</g>'
+  },
+  {
+    id: "pilgrim-boy", season: 10, label: "Pilgrim", emoji: "🎩",
+    swatchBg: "linear-gradient(135deg,#5A5455,#2E2A2B)",
+    hideAccessory: true, // the hat replaces the cap/bow
+    front: PILGRIM_HAT_SVG,
+    frontFixed: PILGRIM_COLLAR_SVG
+  },
+  {
+    id: "pilgrim-girl", season: 10, label: "Bonnet", emoji: "👒",
+    swatchBg: "linear-gradient(135deg,#FFFDF7,#E8DFCC)",
+    hideAccessory: true,
+    front: PILGRIM_BONNET_SVG,
+    frontFixed: PILGRIM_COLLAR_SVG
   }
 ];
 function hexLuminance(hex) {
@@ -1815,9 +1902,19 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   var activeSpec = draftPreview ? draftPreview.activeSpecial : (state.activeSpecial && state.activeSpecial[kidId]);
   var specialLive = !!(activeSpec && activeSpec.id);
   var c = baseColor;
+  var faceSel = draftPreview ? draftPreview.activeFace : (state.activeFace && state.activeFace[kidId]);
+  var faceDef = (faceSel && faceSel.id) ? FACE_DESIGNS.filter(function (f) { return f.id === faceSel.id; })[0] : null;
+  if (faceDef && !inSeason(faceDef)) faceDef = null;
+  if (faceDef && faceDef.bodyColor) {
+    c = faceDef.bodyColor; // e.g. the turkey costume turns the bao brown (specials are paused while it's on)
+    specialLive = false;
+  }
   if (specialLive) {
     var specDef = SPECIALS.filter(function (sp) { return sp.id === activeSpec.id; })[0];
-    if (specDef && specDef.id === "glitter") {
+    if (specDef && !inSeason(specDef)) specDef = null;
+    if (specDef && specDef.plaid) {
+      c = Object.assign({}, baseColor, { plaid: specDef.plaid, crease: specDef.plaid.crease, blush: specDef.plaid.blush, highlight: "#ffffff88", bodyStart: specDef.plaid.base });
+    } else if (specDef && specDef.id === "glitter") {
       c = Object.assign({}, baseColor, { glitter: true });
     } else if (specDef && specDef.id === "rainbow") {
       c = Object.assign({}, baseColor, { rainbow: true, bodyStart: specDef.bodyStart, bodyEnd: specDef.bodyEnd });
@@ -1828,6 +1925,7 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
     }
   }
   var accessory = draftPreview ? draftPreview.accessory : (state.bunAccessories && state.bunAccessories[kidId]);
+  if (faceDef && faceDef.hideAccessory) accessory = null;
   var s = MASCOT_STATES[phase][progressTier];
   mascotGradientCounter += 1;
   var uid = kidId + "-" + phase + "-" + progressTier + "-" + mascotGradientCounter;
@@ -1846,16 +1944,14 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   var pleats = c.rainbow
     ? s.pleats.replace(/VAR_HI/g, "transparent").replace(/VAR_CR/g, "url(#rainbowcrease-" + uid + ")")
     : s.pleats.replace(/VAR_HI/g, c.highlight).replace(/VAR_CR/g, c.crease);
-  var faceSel = draftPreview ? draftPreview.activeFace : (state.activeFace && state.activeFace[kidId]);
-  var faceDef = (faceSel && faceSel.id && halloweenSeason()) ? FACE_DESIGNS.filter(function (f) { return f.id === faceSel.id; })[0] : null;
   var eatFaceInfo = state.eatFace && state.eatFace[kidId];
   var eatFaceLive = eatFaceInfo && eatFaceInfo.endsAt > Date.now();
   // Sleepy states: just woke up (morning, nothing done yet) and fully asleep (bedtime all done).
   // A Halloween face with a sleep version stays on through the night instead of resetting.
   var sleepyState = (phase === "morning" && progressTier === "p0") || (phase === "evening" && progressTier === "p100");
   var useSleepFace = !!(faceDef && faceDef.sleepSvg && sleepyState);
-  // A chosen Halloween face is always shown (no more waiting for morning chores to unlock it).
-  var faceDesignVisible = !!faceDef;
+  // A chosen face design is always shown. Costumes without their own face (pilgrims) keep the normal bao face.
+  var faceDesignVisible = !!(faceDef && faceDef.svg);
   var rawFace = useSleepFace
     ? faceDef.sleepSvg + (phase === "evening" ? SLEEP_ZZZ_SVG : "")
     : (faceDesignVisible ? faceDef.svg : s.face);
@@ -1960,9 +2056,33 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
       '</g>';
   }
 
+  var plaidOverlay = "";
+  var faceFilterAttr = "";
+  if (c.plaid) {
+    var pl = c.plaid, pid = "plaid-" + uid, psh = "plaidshine-" + uid, phalo = "plaidhalo-" + uid;
+    var pat = '<pattern id="' + pid + '" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="' + pl.base + '"/>';
+    if (pl.check) {
+      pat += '<rect width="12" height="24" fill="' + pl.band + '" opacity="0.32"/><rect width="24" height="12" fill="' + pl.band + '" opacity="0.32"/>';
+    } else {
+      pat += '<rect width="8" height="24" fill="' + pl.band + '" opacity="0.3"/><rect width="24" height="8" fill="' + pl.band + '" opacity="0.3"/>' +
+        '<rect x="15" width="1.6" height="24" fill="' + pl.thin + '" opacity="0.6"/><rect y="15" width="24" height="1.6" fill="' + pl.thin + '" opacity="0.6"/>';
+    }
+    pat += '</pattern>';
+    extraDefs += pat +
+      '<radialGradient id="' + psh + '" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"/><stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.22"/></radialGradient>' +
+      // thin outline in the plaid's base color so the eyes and mouth don't sit on the stripes
+      '<filter id="' + phalo + '" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.6" result="d"/><feGaussianBlur in="d" stdDeviation="0.8" result="b"/><feFlood flood-color="' + pl.base + '"/><feComposite in2="b" operator="in" result="h"/><feMerge><feMergeNode in="h"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    bodyFillRef = "url(#" + pid + ")";
+    plaidOverlay = '<path d="' + s.bodyPath + '" fill="url(#' + psh + ')" stroke="' + pl.crease + '" stroke-width="0.8"/>';
+    faceFilterAttr = ' filter="url(#' + phalo + ')"';
+  }
+  var costumeOffset = 'transform="translate(0,' + (s.accOffsetY || 0).toFixed(1) + ')"';
+  var costumeBack = faceDef ? ((faceDef.backFixed || "") + (faceDef.back ? '<g ' + costumeOffset + '>' + faceDef.back + '</g>' : "")) : "";
+  var costumeFront = faceDef ? ((faceDef.frontFixed || "") + (faceDef.front ? '<g ' + costumeOffset + '>' + faceDef.front + '</g>' : "")) : "";
+
   var needsBodyClip = c.glitter || c.jelly;
 
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + (size * 85 / 110).toFixed(1) + '" viewBox="0 0 110 85">' +
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + (size * 85 / 110).toFixed(1) + '" viewBox="0 0 110 85"' + (costumeBack || costumeFront ? ' style="overflow:visible"' : '') + '>' +
     '<defs>' +
     '<radialGradient id="grad-' + uid + '" ' + gradAttrs + '>' +
     gradStops +
@@ -1975,11 +2095,14 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
     extraDefs +
     '</defs>' +
     '<ellipse cx="55" cy="79" rx="' + s.shadowRx + '" ry="' + s.shadowRy + '" fill="url(#shadow-' + uid + ')"/>' +
+    costumeBack +
     jellyBalls +
     '<path d="' + s.bodyPath + '" fill="' + bodyFillRef + '" fill-opacity="' + bodyFillOpacity + '"/>' +
+    plaidOverlay +
     rainbowDepthOverlay +
     glitterOverlay +
-    pleats + face +
+    pleats + (faceFilterAttr ? '<g' + faceFilterAttr + '>' + face + '</g>' : face) +
+    costumeFront +
     accessoryHtml(accessory, c.bodyStart, s.accOffsetY, uid) +
     '</svg>';
 }
@@ -2994,6 +3117,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
         var specialLiveNow = !!(activeSpec && activeSpec.id);
         html += '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap;margin-bottom:18px">' +
           BUN_PALETTE.map(function (p, i) {
+            if (!inSeason(p)) return "";
             var isCurrent = currentColor.name === p.name;
             return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
           }).join("") +
@@ -3006,6 +3130,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
             '</div>' +
             '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap">' +
             BUN_PALETTE.map(function (p, i) {
+              if (!inSeason(p)) return "";
               return '<button data-action="buy-swirl" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
             }).join("") +
             '</div>';
@@ -3017,8 +3142,9 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
             '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;color:#8a7f7f;white-space:nowrap">None</span>' +
             '</div>' +
             SPECIALS.map(function (sp) {
+              if (!inSeason(sp)) return "";
               var isThisActive = specialLiveNow && activeSpec.id === sp.id;
-              var swatchBg = sp.id === "rainbow"
+              var swatchBg = sp.plaid ? plaidSwatchCSS(sp.plaid) : sp.id === "rainbow"
                 ? "radial-gradient(circle at 38% 26%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 55%), radial-gradient(circle at 50% 42%, rgba(28,15,46,0) 60%, rgba(28,15,46,0.28) 100%), linear-gradient(107deg, #F04141 0%, #F0954B 20%, #F0D341 40%, #4FBF63 60%, #3E86D8 80%, #8A5CD6 100%)"
                 : sp.id === "swirl"
                 ? "radial-gradient(circle at 38% 26%, " + currentColor.highlight + " 0%, " + currentColor.bodyStart + " 35%, #6FA8FF 78%, " + darkenColorPct("#6FA8FF", 0.18) + " 100%)"
@@ -3036,13 +3162,14 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
           var activeFaceNow = isPreview ? draft.activeFace : state.activeFace[kidId];
           var faceLiveNow = !!(activeFaceNow && activeFaceNow.id);
-          if (halloweenSeason()) html += '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin:18px 0 8px">🎭 Face designs</div>' +
+          var facesInSeason = FACE_DESIGNS.filter(function (f) { return inSeason(f); });
+          if (facesInSeason.length) html += '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin:18px 0 8px">🎭 Costumes</div>' +
             '<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">' +
             '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' +
             '<button data-action="remove-face" data-kid="' + kidId + '" aria-label="None" title="None" style="width:44px;height:44px;border-radius:50%;background:#F2EEE7;border:3px solid ' + (!faceLiveNow ? "#3a2e2e" : "#ffffff") + ';display:flex;align-items:center;justify-content:center;color:#8a7f7f;font-weight:800;font-size:16px;cursor:pointer">✕</button>' +
             '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;color:#8a7f7f;white-space:nowrap">None</span>' +
             '</div>' +
-            FACE_DESIGNS.map(function (fc) {
+            facesInSeason.map(function (fc) {
               var isThisActive = faceLiveNow && activeFaceNow.id === fc.id;
               var badgeText = isPreview ? (isThisActive ? "Testing" : "Try it") : (isThisActive ? "Equipped" : "Try it");
               return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' +
