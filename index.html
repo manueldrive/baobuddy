@@ -1480,6 +1480,11 @@ var SPECIALS = [
 /* ---------------- Face design overlays ---------------- */
 /* These swap only the eyes/mouth drawn on top of the bao's existing shape and
    color — the body outline, pleats, and chosen color/special effect are untouched. */
+// Halloween face designs are seasonal: they only show up (in the Closet and on the bao) during October.
+// Each kid's pick is kept, so it comes back automatically next October.
+function halloweenSeason(d) {
+  return (d || new Date()).getMonth() === 9;
+}
 var FACE_DESIGNS = [
   {
     id: "jack", label: "Jack", emoji: "💀",
@@ -1842,7 +1847,7 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
     ? s.pleats.replace(/VAR_HI/g, "transparent").replace(/VAR_CR/g, "url(#rainbowcrease-" + uid + ")")
     : s.pleats.replace(/VAR_HI/g, c.highlight).replace(/VAR_CR/g, c.crease);
   var faceSel = draftPreview ? draftPreview.activeFace : (state.activeFace && state.activeFace[kidId]);
-  var faceDef = (faceSel && faceSel.id) ? FACE_DESIGNS.filter(function (f) { return f.id === faceSel.id; })[0] : null;
+  var faceDef = (faceSel && faceSel.id && halloweenSeason()) ? FACE_DESIGNS.filter(function (f) { return f.id === faceSel.id; })[0] : null;
   var eatFaceInfo = state.eatFace && state.eatFace[kidId];
   var eatFaceLive = eatFaceInfo && eatFaceInfo.endsAt > Date.now();
   // Sleepy states: just woke up (morning, nothing done yet) and fully asleep (bedtime all done).
@@ -3031,7 +3036,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
           var activeFaceNow = isPreview ? draft.activeFace : state.activeFace[kidId];
           var faceLiveNow = !!(activeFaceNow && activeFaceNow.id);
-          html += '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin:18px 0 8px">🎭 Face designs</div>' +
+          if (halloweenSeason()) html += '<div style="font-family:\'Nunito\',sans-serif;font-weight:700;color:#8a7f7f;font-size:11px;margin:18px 0 8px">🎭 Face designs</div>' +
             '<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">' +
             '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' +
             '<button data-action="remove-face" data-kid="' + kidId + '" aria-label="None" title="None" style="width:44px;height:44px;border-radius:50%;background:#F2EEE7;border:3px solid ' + (!faceLiveNow ? "#3a2e2e" : "#ffffff") + ';display:flex;align-items:center;justify-content:center;color:#8a7f7f;font-weight:800;font-size:16px;cursor:pointer">✕</button>' +
