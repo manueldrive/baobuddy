@@ -1507,6 +1507,13 @@ function inSeason(item, d) {
   if (!item || item.season === undefined) return true;
   return (d || new Date()).getMonth() === item.season;
 }
+// While a season has its own colors/specials, the Closet shows only those (the everyday ones are
+// hidden for now, not deleted - they come back when the season ends). A kid's current pick is untouched.
+function shownInCloset(list, item) {
+  var seasonalNow = list.some(function (x) { return x.season !== undefined && inSeason(x); });
+  if (seasonalNow) return item.season !== undefined && inSeason(item);
+  return inSeason(item);
+}
 
 // ---- Costume artwork for November (drawn in the bao's 110 x 85 space) ----
 var TURKEY_TAIL_SVG = (function () {
@@ -3117,7 +3124,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
         var specialLiveNow = !!(activeSpec && activeSpec.id);
         html += '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap;margin-bottom:18px">' +
           BUN_PALETTE.map(function (p, i) {
-            if (!inSeason(p)) return "";
+            if (!shownInCloset(BUN_PALETTE, p)) return "";
             var isCurrent = currentColor.name === p.name;
             return '<button data-action="bun-color" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid ' + (isCurrent ? "#3a2e2e" : "#ffffff") + ';box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
           }).join("") +
@@ -3130,7 +3137,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
             '</div>' +
             '<div style="display:flex;justify-content:center;gap:11px;flex-wrap:wrap">' +
             BUN_PALETTE.map(function (p, i) {
-              if (!inSeason(p)) return "";
+              if (!shownInCloset(BUN_PALETTE, p)) return "";
               return '<button data-action="buy-swirl" data-kid="' + kidId + '" data-color-index="' + i + '" title="' + p.name + '" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,' + p.bodyStart + ',' + p.bodyEnd + ');border:3px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer"></button>';
             }).join("") +
             '</div>';
@@ -3142,7 +3149,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
             '<span style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:9.5px;color:#8a7f7f;white-space:nowrap">None</span>' +
             '</div>' +
             SPECIALS.map(function (sp) {
-              if (!inSeason(sp)) return "";
+              if (!shownInCloset(SPECIALS, sp)) return "";
               var isThisActive = specialLiveNow && activeSpec.id === sp.id;
               var swatchBg = sp.plaid ? plaidSwatchCSS(sp.plaid) : sp.id === "rainbow"
                 ? "radial-gradient(circle at 38% 26%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 55%), radial-gradient(circle at 50% 42%, rgba(28,15,46,0) 60%, rgba(28,15,46,0.28) 100%), linear-gradient(107deg, #F04141 0%, #F0954B 20%, #F0D341 40%, #4FBF63 60%, #3E86D8 80%, #8A5CD6 100%)"
