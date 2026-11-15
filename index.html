@@ -358,20 +358,19 @@
   .timer-btn { border: none; border-radius: 999px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
 
 
-  /* ---- Kid cards: name as a header in the kid's bao color, bao fills the card ---- */
+  /* ---- Kid cards: bao fills the card, name sits underneath it (no colored header) ---- */
   .kid-card { padding: 0 !important; overflow: hidden; justify-content: flex-start !important; gap: 0 !important; flex: 1 1 0 !important; }
-  .kid-card > span { order: -1; width: 100%; margin: 0 !important; padding: 7px 0 6px; font-size: 16px !important; text-align: center;
-    background: var(--kid-head); color: var(--kid-head-ink) !important; opacity: 0.75; }
-  .kid-card.is-selected > span { opacity: 1; }
-  .kid-card > div { width: 100%; padding: 8px 6px 6px; }
+  .kid-card > div { width: 100%; padding: 12px 6px 2px; }
   .kid-card svg { width: 100% !important; height: auto !important; }
+  .kid-card > span { width: 100%; margin: 0 !important; padding: 0 0 9px; font-size: 16px !important; text-align: center; color: #6a6060 !important; }
+  .kid-card.is-selected > span { color: #3a2e2e !important; }
   .row.narrow-only { align-items: stretch !important; }
   @media (min-width: 700px) {
     .kid-hero-card { flex-direction: column !important; align-items: stretch !important; gap: 0 !important; margin: 4px 0 10px !important;
       background: rgba(255,255,255,0.92); border-radius: 26px; overflow: hidden; box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 12px 24px rgba(0,0,0,0.12); }
-    .kid-hero-card > div { order: -1; background: var(--kid-head); padding: 10px 0 9px; }
-    .kid-hero-card > div > div { font-size: 22px !important; text-align: center; color: var(--kid-head-ink) !important; letter-spacing: 0.3px; }
-    .kid-hero-card > button { display: flex; justify-content: center; padding: 14px 0 10px !important; }
+    .kid-hero-card > div { padding: 0 0 12px; }
+    .kid-hero-card > div > div { font-size: 22px !important; text-align: center; color: #3a2e2e !important; letter-spacing: 0.3px; }
+    .kid-hero-card > button { display: flex; justify-content: center; padding: 14px 0 4px !important; }
     .kid-hero-card .wide-mascot svg { width: 300px !important; height: 231px !important; }
   }
   /* Responsive Rules */
@@ -1501,10 +1500,10 @@ var SPECIALS = [
   { id: "swirl", label: "Swirl", needsColor: true },
   { id: "jelly", label: "Jelly", overlay: true },
   // November plaids. check = two-color buffalo check; otherwise bands + thin pinstripes.
-  { id: "buffalo", label: "Buffalo", season: 10, plaid: { base: "#C8302E", band: "#1E1A1B", check: true, crease: "#5A1614", blush: "#FFB3A8" } },
-  { id: "harvest", label: "Harvest", season: 10, plaid: { base: "#E9853A", band: "#7A4A24", thin: "#FBE3B0", crease: "#8A4A1A", blush: "#FFD0B0" } },
-  { id: "flannel", label: "Flannel", season: 10, plaid: { base: "#5E7F4E", band: "#2F4430", thin: "#E3B341", crease: "#2A3A26", blush: "#FFB3A8" } },
-  { id: "cozy", label: "Cozy", season: 10, plaid: { base: "#F3E6CC", band: "#B7472F", thin: "#6E5232", crease: "#B59A6E", blush: "#F2907A" } }
+  { id: "buffalo", label: "Buffalo", season: 10, plaid: { base: "#C8302E", band: "#1E1A1B", check: true, done: ["#F4AFAC", "#C8302E"], crease: "#5A1614", blush: "#FFB3A8" } },
+  { id: "harvest", label: "Harvest", season: 10, plaid: { base: "#E9853A", band: "#7A4A24", thin: "#FBE3B0", done: ["#F9C9A0", "#E9853A"], crease: "#8A4A1A", blush: "#FFD0B0" } },
+  { id: "flannel", label: "Flannel", season: 10, plaid: { base: "#5E7F4E", band: "#2F4430", thin: "#E3B341", done: ["#C5D8B6", "#5E7F4E"], crease: "#2A3A26", blush: "#FFB3A8" } },
+  { id: "cozy", label: "Cozy", season: 10, plaid: { base: "#F3E6CC", band: "#B7472F", thin: "#6E5232", done: ["#F2BCAE", "#B7472F"], crease: "#B59A6E", blush: "#F2907A" } }
 ];
 function plaidSwatchCSS(pl, scale) {
   var k = scale || 1, px = function (n) { return (n * k) + "px"; };
@@ -2924,8 +2923,8 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   var doneSpec = state.activeSpecial && state.activeSpecial[kidId];
   var doneSpecDef = doneSpec && doneSpec.id ? SPECIALS.filter(function (sp) { return sp.id === doneSpec.id; })[0] : null;
   if (doneSpecDef && doneSpecDef.plaid && inSeason(doneSpecDef)) {
-    COMPLETE_BG = lightenColor(doneSpecDef.plaid.base, 110);
-    COMPLETE_SHADOW = doneSpecDef.plaid.base;
+    COMPLETE_BG = doneSpecDef.plaid.done[0];
+    COMPLETE_SHADOW = doneSpecDef.plaid.done[1];
   }
 
   html += '<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">';
@@ -3269,9 +3268,9 @@ function renderKidBalance(kidId) {
   var cardSpec = state.activeSpecial && state.activeSpecial[kidId];
   var cardSpecDef = cardSpec && cardSpec.id ? SPECIALS.filter(function (sp) { return sp.id === cardSpec.id; })[0] : null;
   var cardPlaid = (cardSpecDef && cardSpecDef.plaid && inSeason(cardSpecDef)) ? cardSpecDef.plaid : null;
-  if (cardPlaid) cardBg = "linear-gradient(135deg,rgba(255,255,255,0.55),rgba(255,255,255,0.25))," + plaidSwatchCSS(cardPlaid, 2.4);
+  if (cardPlaid) cardBg = "linear-gradient(135deg," + cardPlaid.done[0] + "cc," + cardPlaid.done[0] + "66)," + plaidSwatchCSS(cardPlaid, 2.4);
   var ringGradStops = cardPlaid
-    ? '<stop offset="0%" stop-color="' + lightenColor(cardPlaid.base, 90) + '"/><stop offset="100%" stop-color="' + cardPlaid.base + '"/>'
+    ? '<stop offset="0%" stop-color="' + cardPlaid.done[0] + '"/><stop offset="100%" stop-color="' + cardPlaid.done[1] + '"/>'
     : cardIsRainbow
     ? '<stop offset="0%" stop-color="#F04141"/><stop offset="20%" stop-color="#F0954B"/><stop offset="40%" stop-color="#F0D341"/><stop offset="60%" stop-color="#4FBF63"/><stop offset="80%" stop-color="#3E86D8"/><stop offset="100%" stop-color="#8A5CD6"/>'
     : '<stop offset="0%" stop-color="' + bunColor.bodyStart + '"/><stop offset="100%" stop-color="' + bunColor.bodyEnd + '"/>';
