@@ -357,6 +357,23 @@
   .fullscreen-btn-subtle:hover, .fullscreen-btn-subtle:active { opacity: 0.75; }
   .timer-btn { border: none; border-radius: 999px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
 
+
+  /* ---- Kid cards: name as a header in the kid's bao color, bao fills the card ---- */
+  .kid-card { padding: 0 !important; overflow: hidden; justify-content: flex-start !important; gap: 0 !important; flex: 1 1 0 !important; }
+  .kid-card > span { order: -1; width: 100%; margin: 0 !important; padding: 7px 0 6px; font-size: 16px !important; text-align: center;
+    background: var(--kid-head); color: var(--kid-head-ink) !important; opacity: 0.75; }
+  .kid-card.is-selected > span { opacity: 1; }
+  .kid-card > div { width: 100%; padding: 8px 6px 6px; }
+  .kid-card svg { width: 100% !important; height: auto !important; }
+  .row.narrow-only { align-items: stretch !important; }
+  @media (min-width: 700px) {
+    .kid-hero-card { flex-direction: column !important; align-items: stretch !important; gap: 0 !important; margin: 4px 0 10px !important;
+      background: rgba(255,255,255,0.92); border-radius: 26px; overflow: hidden; box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 12px 24px rgba(0,0,0,0.12); }
+    .kid-hero-card > div { order: -1; background: var(--kid-head); padding: 10px 0 9px; }
+    .kid-hero-card > div > div { font-size: 22px !important; text-align: center; color: var(--kid-head-ink) !important; letter-spacing: 0.3px; }
+    .kid-hero-card > button { display: flex; justify-content: center; padding: 14px 0 10px !important; }
+    .kid-hero-card .wide-mascot svg { width: 300px !important; height: 231px !important; }
+  }
   /* Responsive Rules */
   .hide-mobile { display: none !important; }
   .kid-grid { display: block; }
@@ -1678,6 +1695,15 @@ var FACE_DESIGNS = [
     frontFixed: PILGRIM_COLLAR_SVG
   }
 ];
+// Card header color for a kid = the deeper shade of the bao color they picked (plaid -> its base color).
+function kidHeaderColors(kidId) {
+  var col = state.bunColors[kidId] || DEFAULT_BUN_COLORS[kidId];
+  var spec = state.activeSpecial && state.activeSpecial[kidId];
+  var specDef = spec && spec.id ? SPECIALS.filter(function (sp) { return sp.id === spec.id; })[0] : null;
+  var bg = (specDef && specDef.plaid && inSeason(specDef)) ? specDef.plaid.base : col.bodyEnd;
+  if (hexLuminance(bg) > 0.85) bg = col.crease; // white / pale colors need something visible
+  return { bg: bg, ink: hexLuminance(bg) > 0.62 ? "#3a2e2e" : "#ffffff" };
+}
 function hexLuminance(hex) {
   var h = (hex || "").replace("#", "");
   if (h.length === 3) h = h.split("").map(function (ch) { return ch + ch; }).join("");
@@ -2829,14 +2855,16 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
 
   var ts = state.timingSettings || { morningStart: 5, afternoonStart: 13, eveningStart: 17 };
 
-  var html = '<div class="kid-panel-content" style="--kid-accent:' + kid.accent + '">';
+  var headCol = kidHeaderColors(kidId);
+  var html = '<div class="kid-panel-content" style="--kid-accent:' + kid.accent + ';--kid-head:' + headCol.bg + ';--kid-head-ink:' + headCol.ink + '">';
 
   html += '<div class="row narrow-only" style="gap:12px">';
   Object.keys(KIDS).forEach(function (id) {
     var k = KIDS[id];
     var selected = state.kidId === id;
     var justSquished = squishSwitcherKid === id;
-    html += '<button class="kid-btn" data-action="select-kid" data-kid="' + id + '" style="padding:' + (selected ? "14px 10px 10px" : "12px 10px 10px") +
+    var btnHead = kidHeaderColors(id);
+    html += '<button class="kid-btn kid-card' + (selected ? " is-selected" : "") + '" data-action="select-kid" data-kid="' + id + '" style="--kid-head:' + btnHead.bg + ';--kid-head-ink:' + btnHead.ink + ';padding:' + (selected ? "14px 10px 10px" : "12px 10px 10px") +
       ';background:' + (selected ? "white" : "#ffffff85") +
       ';box-shadow:' + (selected ? "0 4px 0 rgba(0,0,0,0.1), 0 10px 18px rgba(0,0,0,0.12)" : "0 2px 6px rgba(0,0,0,0.08)") + '">' +
       '<div class="' + (selected ? "bob-fast" : "bob") + (justSquished ? " squish-anim" : "") + '" style="filter:' + (selected ? "none" : "grayscale(0.1) opacity(0.92)") + '">' +
@@ -2846,7 +2874,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   });
   html += '</div>';
 
-  html += '<div class="wide-only row" style="align-items:center;gap:10px">' +
+  html += '<div class="wide-only row kid-hero-card" style="align-items:center;gap:10px">' +
     '<button data-action="squish-switcher" data-kid="' + kidId + '" style="border:none;background:none;padding:0;cursor:pointer;line-height:0">' +
     '<div class="bob wide-mascot' + (squishSwitcherKid === kidId ? " squish-anim" : "") + '">' + mascotSVG(kidId, 56, activePeriod, computeProgressTier(kidId, activePeriod)) + '</div>' +
     '</button>' +
@@ -2890,6 +2918,13 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
   if (hexLuminance(bunColor.bodyStart) > 0.93) {
     COMPLETE_BG = bunColor.bodyEnd;
     COMPLETE_SHADOW = bunColor.crease;
+  }
+  // A plaid special changes how the bao looks, so finished chores (and the name header) follow the plaid.
+  var doneSpec = state.activeSpecial && state.activeSpecial[kidId];
+  var doneSpecDef = doneSpec && doneSpec.id ? SPECIALS.filter(function (sp) { return sp.id === doneSpec.id; })[0] : null;
+  if (doneSpecDef && doneSpecDef.plaid && inSeason(doneSpecDef)) {
+    COMPLETE_BG = lightenColor(doneSpecDef.plaid.base, 110);
+    COMPLETE_SHADOW = doneSpecDef.plaid.base;
   }
 
   html += '<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">';
