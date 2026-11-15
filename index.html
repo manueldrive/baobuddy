@@ -1506,11 +1506,12 @@ var SPECIALS = [
   { id: "flannel", label: "Flannel", season: 10, plaid: { base: "#5E7F4E", band: "#2F4430", thin: "#E3B341", crease: "#2A3A26", blush: "#FFB3A8" } },
   { id: "cozy", label: "Cozy", season: 10, plaid: { base: "#F3E6CC", band: "#B7472F", thin: "#6E5232", crease: "#B59A6E", blush: "#F2907A" } }
 ];
-function plaidSwatchCSS(pl) {
-  var bands = "repeating-linear-gradient(90deg," + pl.band + "55 0 7px,transparent 7px 18px)," +
-    "repeating-linear-gradient(0deg," + pl.band + "55 0 7px,transparent 7px 18px)";
-  var thins = pl.thin ? "repeating-linear-gradient(90deg,transparent 0 12px," + pl.thin + "aa 12px 13.5px,transparent 13.5px 18px)," +
-    "repeating-linear-gradient(0deg,transparent 0 12px," + pl.thin + "aa 12px 13.5px,transparent 13.5px 18px)," : "";
+function plaidSwatchCSS(pl, scale) {
+  var k = scale || 1, px = function (n) { return (n * k) + "px"; };
+  var bands = "repeating-linear-gradient(90deg," + pl.band + "55 0 " + px(7) + ",transparent " + px(7) + " " + px(18) + ")," +
+    "repeating-linear-gradient(0deg," + pl.band + "55 0 " + px(7) + ",transparent " + px(7) + " " + px(18) + ")";
+  var thins = pl.thin ? "repeating-linear-gradient(90deg,transparent 0 " + px(12) + "," + pl.thin + "aa " + px(12) + " " + px(13.5) + ",transparent " + px(13.5) + " " + px(18) + ")," +
+    "repeating-linear-gradient(0deg,transparent 0 " + px(12) + "," + pl.thin + "aa " + px(12) + " " + px(13.5) + ",transparent " + px(13.5) + " " + px(18) + ")," : "";
   return thins + bands + "," + pl.base;
 }
 
@@ -3264,7 +3265,14 @@ function renderKidBalance(kidId) {
   var bunColor = (state.bunColors && state.bunColors[kidId]) || DEFAULT_BUN_COLORS[kidId];
   var cardIsRainbow = isRainbowActive(kidId);
   var cardBg = cardIsRainbow ? rainbowGradientCSS(135) : "linear-gradient(135deg," + bunColor.bodyStart + "," + bunColor.bodyEnd + ")";
-  var ringGradStops = cardIsRainbow
+  // With a plaid special on, the Bao Bank card is plaid too (washed lighter so the balance stays easy to read).
+  var cardSpec = state.activeSpecial && state.activeSpecial[kidId];
+  var cardSpecDef = cardSpec && cardSpec.id ? SPECIALS.filter(function (sp) { return sp.id === cardSpec.id; })[0] : null;
+  var cardPlaid = (cardSpecDef && cardSpecDef.plaid && inSeason(cardSpecDef)) ? cardSpecDef.plaid : null;
+  if (cardPlaid) cardBg = "linear-gradient(135deg,rgba(255,255,255,0.55),rgba(255,255,255,0.25))," + plaidSwatchCSS(cardPlaid, 2.4);
+  var ringGradStops = cardPlaid
+    ? '<stop offset="0%" stop-color="' + lightenColor(cardPlaid.base, 90) + '"/><stop offset="100%" stop-color="' + cardPlaid.base + '"/>'
+    : cardIsRainbow
     ? '<stop offset="0%" stop-color="#F04141"/><stop offset="20%" stop-color="#F0954B"/><stop offset="40%" stop-color="#F0D341"/><stop offset="60%" stop-color="#4FBF63"/><stop offset="80%" stop-color="#3E86D8"/><stop offset="100%" stop-color="#8A5CD6"/>'
     : '<stop offset="0%" stop-color="' + bunColor.bodyStart + '"/><stop offset="100%" stop-color="' + bunColor.bodyEnd + '"/>';
   var html = "";
