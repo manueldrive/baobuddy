@@ -41,6 +41,15 @@
   .done-btn, .icon-box, .mascot-tap { transition: transform 0.1s ease; }
   .done-btn:active { transform: scale(0.8); }
   .mascot-tap:active, .kid-btn:active { transform: scale(0.9); }
+  /* Closet buttons: shrink while pressed, and pop when picked, so every tap visibly "lands" */
+  [data-action="bun-color"], [data-action="buy-special"], [data-action="remove-special"], [data-action="pick-face"],
+  [data-action="remove-face"], [data-action="accessory-pick"], [data-action="switch-closet-cat"], [data-action="buy-swirl"],
+  [data-action="open-swirl-picker"] { transition: transform 0.08s ease; }
+  [data-action="bun-color"]:active, [data-action="buy-special"]:active, [data-action="remove-special"]:active, [data-action="pick-face"]:active,
+  [data-action="remove-face"]:active, [data-action="accessory-pick"]:active, [data-action="switch-closet-cat"]:active, [data-action="buy-swirl"]:active,
+  [data-action="open-swirl-picker"]:active { transform: scale(0.86); }
+  @keyframes pickPop { 0% { transform: scale(0.8); } 55% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  .just-picked { animation: pickPop 0.32s cubic-bezier(.34,1.56,.64,1); }
   .chore-card:active { transform: scale(0.98); }
   [data-action="squish-banner"]:active { transform: scale(0.97); }
 
@@ -3695,6 +3704,15 @@ document.addEventListener("pointerup", function (e) {
 });
 
 var lastActionAt = {};
+// The whole screen is redrawn after a pick, so find the freshly drawn copy of the tapped button and pop it.
+function popPicked(el) {
+  var d = el.dataset, sel = '[data-action="' + d.action + '"]';
+  ["kid", "special", "face", "type", "color", "colorIndex", "cat"].forEach(function (k) {
+    if (d[k] !== undefined) sel += '[data-' + k.replace(/[A-Z]/g, function (m) { return "-" + m.toLowerCase(); }) + '="' + d[k] + '"]';
+  });
+  var fresh = document.querySelector(sel);
+  if (fresh) fresh.classList.add("just-picked");
+}
 document.getElementById("root").addEventListener("click", function (e) {
   var el = e.target.closest("[data-action]");
   if (!el) return;
@@ -3705,7 +3723,9 @@ document.getElementById("root").addEventListener("click", function (e) {
 
   // Guard against a fast double-tap (common on tablets when there's a render
   // delay) being read as two separate clicks and cancelling itself out.
-  var guardKey = action + "|" + (key || "") + "|" + (el.dataset.kid || "") + "|" + (el.dataset.choreid || "");
+  var guardKey = action + "|" + (key || "") + "|" + (el.dataset.kid || "") + "|" + (el.dataset.choreid || "") + "|" +
+    (el.dataset.special || "") + "|" + (el.dataset.face || "") + "|" + (el.dataset.type || "") + "|" + (el.dataset.color || "") + "|" +
+    (el.dataset.colorIndex || "") + "|" + (el.dataset.cat || "");
   var nowTs = Date.now();
   if (lastActionAt[guardKey] && nowTs - lastActionAt[guardKey] < 400) {
     return;
@@ -3817,15 +3837,27 @@ document.getElementById("root").addEventListener("click", function (e) {
   } else if (action === "accessory-pick") {
     var pickKid = el.dataset.kid;
     var pickType = el.dataset.type;
-    var newAcc = pickType === "none" ? null : { type: pickType, color: el.dataset.color };
+    var curAcc = state.shopPreviewMode ? state.shopDraft.accessory : state.bunAccessories[pickKid];
+    var newAcc;
+    if (pickType === "none") {
+      // ✕ on the Hat tab only takes off a hat (and on the Bow tab only a bow) - it never removes the other one
+      var tabType = state.closetCategory === "hat" ? "cap" : state.closetCategory === "bow" ? "bow" : null;
+      newAcc = (curAcc && tabType && curAcc.type !== tabType) ? curAcc : null;
+    } else if (curAcc && curAcc.type === pickType && curAcc.color === el.dataset.color) {
+      newAcc = null; // tapping the one you're wearing takes it off
+    } else {
+      newAcc = { type: pickType, color: el.dataset.color };
+      if (curAcc && curAcc.type === pickType && curAcc.direction) newAcc.direction = curAcc.direction;
+    }
+    state.pokeBao = pickKid;
     if (state.shopPreviewMode) {
       state.shopDraft.accessory = newAcc;
-      render();
+      render(); popPicked(el);
       return;
     }
     state.bunAccessories[pickKid] = newAcc;
     savePersisted();
-    render();
+    render(); popPicked(el);
   } else if (action === "do-activity") {
     var actKid = el.dataset.kid;
     var activityId = el.dataset.activity;
@@ -3848,14 +3880,15 @@ document.getElementById("root").addEventListener("click", function (e) {
   } else if (action === "bun-color") {
     var colorKid = el.dataset.kid;
     var colorIndex = parseInt(el.dataset.colorIndex, 10);
+    state.pokeBao = colorKid;
     if (state.shopPreviewMode) {
       state.shopDraft.bunColor = BUN_PALETTE[colorIndex];
-      render();
+      render(); popPicked(el);
       return;
     }
     state.bunColors[colorKid] = BUN_PALETTE[colorIndex];
     savePersisted();
-    render();
+    render(); popPicked(el);
   } else if (action === "open-swirl-picker") {
     state.swirlPickerOpen = el.dataset.kid;
     render();
@@ -3884,49 +3917,57 @@ document.getElementById("root").addEventListener("click", function (e) {
     var specId = el.dataset.special;
     var specDef = SPECIALS.filter(function (sp) { return sp.id === specId; })[0];
     if (!specDef) return;
+    var curSpec = state.shopPreviewMode ? state.shopDraft.activeSpecial : state.activeSpecial[specKid];
+    var specOff = !!(curSpec && curSpec.id === specId); // tapping the one that's on takes it off
+    state.pokeBao = specKid;
     if (state.shopPreviewMode) {
-      state.shopDraft.activeSpecial = { id: specId };
-      render();
+      state.shopDraft.activeSpecial = specOff ? null : { id: specId };
+      render(); popPicked(el);
       return;
     }
-    state.activeSpecial[specKid] = { id: specId };
-    playFanfare();
+    state.activeSpecial[specKid] = specOff ? null : { id: specId };
+    if (!specOff) playFanfare();
     savePersisted();
-    render();
+    render(); popPicked(el);
   } else if (action === "remove-special") {
     var removeKid = el.dataset.kid;
+    state.pokeBao = removeKid;
     if (state.shopPreviewMode) {
       state.shopDraft.activeSpecial = null;
-      render();
+      render(); popPicked(el);
       return;
     }
     state.activeSpecial[removeKid] = null;
     savePersisted();
-    render();
+    render(); popPicked(el);
   } else if (action === "pick-face") {
     var faceKid = el.dataset.kid;
     var faceId = el.dataset.face;
     var faceDefPicked = FACE_DESIGNS.filter(function (f) { return f.id === faceId; })[0];
     if (!faceDefPicked) return;
+    var curFace = state.shopPreviewMode ? state.shopDraft.activeFace : state.activeFace[faceKid];
+    var faceOff = !!(curFace && curFace.id === faceId); // tapping the costume that's on takes it off
+    state.pokeBao = faceKid;
     if (state.shopPreviewMode) {
-      state.shopDraft.activeFace = { id: faceId };
-      render();
+      state.shopDraft.activeFace = faceOff ? null : { id: faceId };
+      render(); popPicked(el);
       return;
     }
-    state.activeFace[faceKid] = { id: faceId };
-    playFanfare();
+    state.activeFace[faceKid] = faceOff ? null : { id: faceId };
+    if (!faceOff) playFanfare();
     savePersisted();
-    render();
+    render(); popPicked(el);
   } else if (action === "remove-face") {
     var removeFaceKid = el.dataset.kid;
+    state.pokeBao = removeFaceKid;
     if (state.shopPreviewMode) {
       state.shopDraft.activeFace = null;
-      render();
+      render(); popPicked(el);
       return;
     }
     state.activeFace[removeFaceKid] = null;
     savePersisted();
-    render();
+    render(); popPicked(el);
   } else if (action === "accessory-type") {
     var accKid = el.dataset.kid;
     var accType = el.dataset.type;
