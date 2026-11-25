@@ -2211,6 +2211,9 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   var costumeBackArt = faceDef && faceDef.back ? (typeof faceDef.back === "function" ? faceDef.back(c) : faceDef.back) : "";
   var costumeBack = faceDef ? ((faceDef.backFixed || "") + (costumeBackArt ? '<g ' + costumeOffset + '>' + costumeBackArt + '</g>' : "")) : "";
   var costumeFront = faceDef ? ((faceDef.frontFixed || "") + (faceDef.front ? '<g ' + costumeOffset + '>' + faceDef.front + '</g>' : "")) : "";
+  // Hat art carries its own gradients; give them ids unique to this drawing, or a hidden copy elsewhere on the page can blank them out.
+  costumeBack = costumeBack.replace(/xm-/g, "xm-" + uid + "-");
+  costumeFront = costumeFront.replace(/xm-/g, "xm-" + uid + "-");
 
   var needsBodyClip = c.glitter || c.jelly || c.artOverlay;
   var artOverlayHtml = c.artOverlay ? '<g clip-path="url(#bodyclip-' + uid + ')">' + c.artOverlay + '</g>' : "";
