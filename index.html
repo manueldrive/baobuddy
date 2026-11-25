@@ -1487,6 +1487,11 @@ var DEFAULT_BUN_COLORS = {
   miles: { bodyStart: "#D0EE96", bodyEnd: "#A6D968", highlight: "#E7F7BD", crease: "#8BBF4A", blush: "#F2788E" },
   lina:  { bodyStart: "#F9B3CE", bodyEnd: "#E388B0", highlight: "#FDE2EE", crease: "#C66993", blush: "#E82C6A" }
 };
+// Seasonal date windows: [month (0-11), day, hour]. Defined up here because the color, special and
+// costume lists below use them. (Thanksgiving moves each year - update FALL_WINDOW / XMAS_A before next November.)
+var FALL_WINDOW = { from: [10, 1, 0], until: [10, 27, 5] };   // Nov 1 -> Fri Nov 27, 5 a.m.
+var XMAS_A = { from: [10, 27, 5], until: [11, 31, 24] };      // Fri Nov 27, 5 a.m. -> end of Dec 31
+var XMAS_B = { from: [11, 14, 5], until: [11, 31, 24] };      // Mon Dec 14, 5 a.m. -> end of Dec 31
 var BUN_PALETTE = [
   { bodyStart: "#D0EE96", bodyEnd: "#A6D968", highlight: "#E7F7BD", crease: "#8BBF4A", blush: "#F2788E", name: "Green" },
   { bodyStart: "#FFE3BA", bodyEnd: "#FFB877", highlight: "#FFFCD3", crease: "#E19A59", blush: "#FF9B7A", name: "Orange" },
@@ -1496,13 +1501,20 @@ var BUN_PALETTE = [
   { bodyStart: "#EADEFF", bodyEnd: "#C9B3FF", highlight: "#FFF7FF", crease: "#AB95E1", blush: "#FFB8D9", name: "Purple" },
   { bodyStart: "#FFFFFF", bodyEnd: "#E6E1D8", highlight: "#FFFFFF", crease: "#C8C2B5", blush: "#FFAEC0", name: "White" },
   // November fall colors (shown next to the regular ones)
-  { bodyStart: "#FFC48A", bodyEnd: "#F08A3C", highlight: "#FFE2C2", crease: "#C9662A", blush: "#E8553A", name: "Pumpkin", season: 10 },
-  { bodyStart: "#F59A8A", bodyEnd: "#D2483C", highlight: "#FFD3CB", crease: "#A8352B", blush: "#FFD0C0", name: "Maple", season: 10 },
-  { bodyStart: "#FBE08A", bodyEnd: "#E0B436", highlight: "#FFF3C8", crease: "#B88E1E", blush: "#F08A5C", name: "Mustard", season: 10 },
-  { bodyStart: "#D9B48A", bodyEnd: "#A8774A", highlight: "#F0DCC0", crease: "#7E5530", blush: "#F2907A", name: "Acorn", season: 10 },
-  { bodyStart: "#D2DDB0", bodyEnd: "#9EAF72", highlight: "#EBF1D8", crease: "#7A8C52", blush: "#F2907A", name: "Sage", season: 10 },
-  { bodyStart: "#E59AB0", bodyEnd: "#B04A6E", highlight: "#F7D3DE", crease: "#8A3355", blush: "#FFC0D0", name: "Cranberry", season: 10 },
-  { bodyStart: "#FFF1D8", bodyEnd: "#EFCF9C", highlight: "#FFFAEE", crease: "#C9A56C", blush: "#F2907A", name: "Cider", season: 10 }
+  { bodyStart: "#FFC48A", bodyEnd: "#F08A3C", highlight: "#FFE2C2", crease: "#C9662A", blush: "#E8553A", name: "Pumpkin", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  { bodyStart: "#F59A8A", bodyEnd: "#D2483C", highlight: "#FFD3CB", crease: "#A8352B", blush: "#FFD0C0", name: "Maple", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  { bodyStart: "#FBE08A", bodyEnd: "#E0B436", highlight: "#FFF3C8", crease: "#B88E1E", blush: "#F08A5C", name: "Mustard", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  { bodyStart: "#D9B48A", bodyEnd: "#A8774A", highlight: "#F0DCC0", crease: "#7E5530", blush: "#F2907A", name: "Acorn", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  { bodyStart: "#D2DDB0", bodyEnd: "#9EAF72", highlight: "#EBF1D8", crease: "#7A8C52", blush: "#F2907A", name: "Sage", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  { bodyStart: "#E59AB0", bodyEnd: "#B04A6E", highlight: "#F7D3DE", crease: "#8A3355", blush: "#FFC0D0", name: "Cranberry", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  { bodyStart: "#FFF1D8", bodyEnd: "#EFCF9C", highlight: "#FFFAEE", crease: "#C9A56C", blush: "#F2907A", name: "Cider", from: FALL_WINDOW.from, until: FALL_WINDOW.until },
+  // Christmas colors - first drop (Nov 27) and second drop (Dec 14)
+  { bodyStart: "#F7A3A3", bodyEnd: "#D93A40", highlight: "#FFD6D6", crease: "#A82A30", blush: "#FFD0D0", name: "Candy Red", from: XMAS_A.from, until: XMAS_A.until },
+  { bodyStart: "#9FD3A8", bodyEnd: "#2F7A4A", highlight: "#D6F0DA", crease: "#225C37", blush: "#FFB3A8", name: "Evergreen", from: XMAS_A.from, until: XMAS_A.until },
+  { bodyStart: "#E3F4FD", bodyEnd: "#A9D8F0", highlight: "#FFFFFF", crease: "#7FB4D2", blush: "#FFB3C6", name: "Frost", from: XMAS_A.from, until: XMAS_A.until },
+  { bodyStart: "#FFFFFF", bodyEnd: "#E4EAF0", highlight: "#FFFFFF", crease: "#C2CCD6", blush: "#FFB3C6", name: "Snow", from: XMAS_A.from, until: XMAS_A.until },
+  { bodyStart: "#C79A78", bodyEnd: "#8A5A3B", highlight: "#E6C7AE", crease: "#6A4129", blush: "#F29A86", name: "Cocoa", from: XMAS_B.from, until: XMAS_B.until },
+  { bodyStart: "#FCE7A6", bodyEnd: "#E2B33C", highlight: "#FFF6D6", crease: "#B78C1F", blush: "#F08A5C", name: "Gold", from: XMAS_B.from, until: XMAS_B.until }
 ];
 var SPECIALS = [
   { id: "rainbow", label: "Rainbow", bodyStart: "#FF6B6B", bodyEnd: "#B48CFF", overlay: false },
@@ -1510,12 +1522,22 @@ var SPECIALS = [
   { id: "swirl", label: "Swirl", needsColor: true },
   { id: "jelly", label: "Jelly", overlay: true },
   // November plaids. check = two-color buffalo check; otherwise bands + thin pinstripes.
-  { id: "buffalo", label: "Buffalo", season: 10, plaid: { base: "#C8302E", band: "#1E1A1B", check: true, done: ["#F4AFAC", "#C8302E"], crease: "#5A1614", blush: "#FFB3A8" } },
-  { id: "harvest", label: "Harvest", season: 10, plaid: { base: "#E9853A", band: "#7A4A24", thin: "#FBE3B0", done: ["#F9C9A0", "#E9853A"], crease: "#8A4A1A", blush: "#FFD0B0" } },
-  { id: "flannel", label: "Flannel", season: 10, plaid: { base: "#5E7F4E", band: "#2F4430", thin: "#E3B341", done: ["#C5D8B6", "#5E7F4E"], crease: "#2A3A26", blush: "#FFB3A8" } },
-  { id: "cozy", label: "Cozy", season: 10, plaid: { base: "#F3E6CC", band: "#B7472F", thin: "#6E5232", done: ["#F2BCAE", "#B7472F"], crease: "#B59A6E", blush: "#F2907A" } }
+  { id: "buffalo", label: "Buffalo", from: FALL_WINDOW.from, until: FALL_WINDOW.until, plaid: { base: "#C8302E", band: "#1E1A1B", check: true, done: ["#F4AFAC", "#C8302E"], crease: "#5A1614", blush: "#FFB3A8" } },
+  { id: "harvest", label: "Harvest", from: FALL_WINDOW.from, until: FALL_WINDOW.until, plaid: { base: "#E9853A", band: "#7A4A24", thin: "#FBE3B0", done: ["#F9C9A0", "#E9853A"], crease: "#8A4A1A", blush: "#FFD0B0" } },
+  { id: "flannel", label: "Flannel", from: FALL_WINDOW.from, until: FALL_WINDOW.until, plaid: { base: "#5E7F4E", band: "#2F4430", thin: "#E3B341", done: ["#C5D8B6", "#5E7F4E"], crease: "#2A3A26", blush: "#FFB3A8" } },
+  { id: "cozy", label: "Cozy", from: FALL_WINDOW.from, until: FALL_WINDOW.until, plaid: { base: "#F3E6CC", band: "#B7472F", thin: "#6E5232", done: ["#F2BCAE", "#B7472F"], crease: "#B59A6E", blush: "#F2907A" } },
+  // Christmas specials. Patterns reuse the plaid path (svg = custom <pattern>); `art` is drawn on top of the kid's color.
+  { id: "candycane", label: "Candy Cane", from: XMAS_A.from, until: XMAS_A.until, plaid: { svg: "<pattern id=\"XMPID\" width=\"14\" height=\"14\" patternUnits=\"userSpaceOnUse\" patternTransform=\"rotate(40)\"><rect width=\"14\" height=\"14\" fill=\"#FFFFFF\"/><rect width=\"7\" height=\"14\" fill=\"#E5434B\"/><rect x=\"7\" width=\"1.2\" height=\"14\" fill=\"#F7B3B6\"/></pattern>", base: "#FFFFFF", crease: "#D9B8BB", blush: "#FFB3C6", done: ["#F7C6C9", "#E5434B"],
+    swatch: "repeating-linear-gradient(40deg,#E5434B 0 6px,#FFFFFF 6px 12px)" } },
+  { id: "snowfall", label: "Snowfall", from: XMAS_A.from, until: XMAS_A.until, art: "<circle cx=\"18\" cy=\"30\" r=\"2.6\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"30\" cy=\"22\" r=\"1.9\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"44\" cy=\"28\" r=\"3\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"60\" cy=\"20\" r=\"2.1\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"74\" cy=\"26\" r=\"2.8\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"88\" cy=\"32\" r=\"2\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"22\" cy=\"46\" r=\"2.2\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"40\" cy=\"42\" r=\"1.7\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"84\" cy=\"44\" r=\"2.6\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"96\" cy=\"52\" r=\"1.9\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"14\" cy=\"58\" r=\"2.4\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"100\" cy=\"60\" r=\"2.2\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"60\" cy=\"40\" r=\"1.6\" fill=\"#FFFFFF\" opacity=\"0.92\"/><circle cx=\"30\" cy=\"38\" r=\"1.5\" fill=\"#FFFFFF\" opacity=\"0.92\"/><path d=\"M6,72 Q22,66 38,71 Q55,76 72,70 Q88,65 106,71 L106,92 L6,92 Z\" fill=\"#FFFFFF\" opacity=\"0.9\"/>",
+    swatchBg: "radial-gradient(circle at 30% 30%,#FFFFFF 2.5px,transparent 3.5px),radial-gradient(circle at 68% 45%,#FFFFFF 2px,transparent 3px),radial-gradient(circle at 45% 70%,#FFFFFF 2.5px,transparent 3.5px),#9CCDEB" },
+  { id: "lights", label: "Lights", from: XMAS_B.from, until: XMAS_B.until, art: "<path d=\"M8,38 Q32,24 55,30 Q78,36 104,26\" stroke=\"#2D4A2D\" stroke-width=\"1.4\" fill=\"none\"/><path d=\"M8,58 Q55,84 102,58\" stroke=\"#2D4A2D\" stroke-width=\"1.4\" fill=\"none\"/><circle cx=\"14\" cy=\"36\" r=\"5\" fill=\"#FF4D5E\" opacity=\"0.35\"/><ellipse cx=\"14\" cy=\"36\" rx=\"2.2\" ry=\"3\" fill=\"#FF4D5E\"/><rect x=\"12.7\" y=\"32.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"26\" cy=\"30\" r=\"5\" fill=\"#FFC933\" opacity=\"0.35\"/><ellipse cx=\"26\" cy=\"30\" rx=\"2.2\" ry=\"3\" fill=\"#FFC933\"/><rect x=\"24.7\" y=\"26.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"38\" cy=\"29\" r=\"5\" fill=\"#3FCF6B\" opacity=\"0.35\"/><ellipse cx=\"38\" cy=\"29\" rx=\"2.2\" ry=\"3\" fill=\"#3FCF6B\"/><rect x=\"36.7\" y=\"25.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"50\" cy=\"31\" r=\"5\" fill=\"#4D8BFF\" opacity=\"0.35\"/><ellipse cx=\"50\" cy=\"31\" rx=\"2.2\" ry=\"3\" fill=\"#4D8BFF\"/><rect x=\"48.7\" y=\"27.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"62\" cy=\"34\" r=\"5\" fill=\"#C66BFF\" opacity=\"0.35\"/><ellipse cx=\"62\" cy=\"34\" rx=\"2.2\" ry=\"3\" fill=\"#C66BFF\"/><rect x=\"60.7\" y=\"30.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"74\" cy=\"35\" r=\"5\" fill=\"#FF4D5E\" opacity=\"0.35\"/><ellipse cx=\"74\" cy=\"35\" rx=\"2.2\" ry=\"3\" fill=\"#FF4D5E\"/><rect x=\"72.7\" y=\"31.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"86\" cy=\"33\" r=\"5\" fill=\"#FFC933\" opacity=\"0.35\"/><ellipse cx=\"86\" cy=\"33\" rx=\"2.2\" ry=\"3\" fill=\"#FFC933\"/><rect x=\"84.7\" y=\"29.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"97\" cy=\"30\" r=\"5\" fill=\"#3FCF6B\" opacity=\"0.35\"/><ellipse cx=\"97\" cy=\"30\" rx=\"2.2\" ry=\"3\" fill=\"#3FCF6B\"/><rect x=\"95.7\" y=\"26.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"16\" cy=\"63\" r=\"5\" fill=\"#4D8BFF\" opacity=\"0.35\"/><ellipse cx=\"16\" cy=\"63\" rx=\"2.2\" ry=\"3\" fill=\"#4D8BFF\"/><rect x=\"14.7\" y=\"59.2\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"28\" cy=\"67.7\" r=\"5\" fill=\"#C66BFF\" opacity=\"0.35\"/><ellipse cx=\"28\" cy=\"67.7\" rx=\"2.2\" ry=\"3\" fill=\"#C66BFF\"/><rect x=\"26.7\" y=\"63.900000000000006\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"40\" cy=\"70.7\" r=\"5\" fill=\"#FF4D5E\" opacity=\"0.35\"/><ellipse cx=\"40\" cy=\"70.7\" rx=\"2.2\" ry=\"3\" fill=\"#FF4D5E\"/><rect x=\"38.7\" y=\"66.9\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"52\" cy=\"71.9\" r=\"5\" fill=\"#FFC933\" opacity=\"0.35\"/><ellipse cx=\"52\" cy=\"71.9\" rx=\"2.2\" ry=\"3\" fill=\"#FFC933\"/><rect x=\"50.7\" y=\"68.10000000000001\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"64\" cy=\"71.5\" r=\"5\" fill=\"#3FCF6B\" opacity=\"0.35\"/><ellipse cx=\"64\" cy=\"71.5\" rx=\"2.2\" ry=\"3\" fill=\"#3FCF6B\"/><rect x=\"62.7\" y=\"67.7\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"76\" cy=\"69.4\" r=\"5\" fill=\"#4D8BFF\" opacity=\"0.35\"/><ellipse cx=\"76\" cy=\"69.4\" rx=\"2.2\" ry=\"3\" fill=\"#4D8BFF\"/><rect x=\"74.7\" y=\"65.60000000000001\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/><circle cx=\"88\" cy=\"65.6\" r=\"5\" fill=\"#C66BFF\" opacity=\"0.35\"/><ellipse cx=\"88\" cy=\"65.6\" rx=\"2.2\" ry=\"3\" fill=\"#C66BFF\"/><rect x=\"86.7\" y=\"61.800000000000004\" width=\"2.6\" height=\"1.8\" fill=\"#2D4A2D\"/>",
+    swatchBg: "radial-gradient(circle at 25% 35%,#FF4D5E 3px,transparent 4px),radial-gradient(circle at 55% 28%,#FFC933 3px,transparent 4px),radial-gradient(circle at 75% 62%,#3FCF6B 3px,transparent 4px),radial-gradient(circle at 38% 70%,#4D8BFF 3px,transparent 4px),#2F7A4A" },
+  { id: "sweater", label: "Sweater", from: XMAS_B.from, until: XMAS_B.until, plaid: { svg: "<pattern id=\"XMPID\" width=\"20\" height=\"26\" patternUnits=\"userSpaceOnUse\"><rect width=\"20\" height=\"26\" fill=\"#C8303A\"/><rect y=\"0\" width=\"20\" height=\"4\" fill=\"#1F6B3E\"/><path d=\"M0,10 L5,6 L10,10 L15,6 L20,10\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" fill=\"none\"/><path d=\"M10,15 l3,3 l-3,3 l-3,-3 Z\" fill=\"#FFFFFF\"/><circle cx=\"0\" cy=\"18\" r=\"1.2\" fill=\"#FFFFFF\"/><circle cx=\"20\" cy=\"18\" r=\"1.2\" fill=\"#FFFFFF\"/><path d=\"M0,25 L20,25\" stroke=\"#FFFFFF\" stroke-width=\"0.8\" stroke-dasharray=\"1.5 1.5\"/></pattern>", base: "#C8303A", crease: "#7A1A20", blush: "#FFC0C0", done: ["#F2B0B4", "#C8303A"],
+    swatch: "repeating-linear-gradient(0deg,#C8303A 0 6px,#1F6B3E 6px 8px,#C8303A 8px 12px,#FFFFFF 12px 13.5px)" } }
 ];
 function plaidSwatchCSS(pl, scale) {
+  if (pl.swatch) return pl.swatch;
   var k = scale || 1, px = function (n) { return (n * k) + "px"; };
   var bands = "repeating-linear-gradient(90deg," + pl.band + "55 0 " + px(7) + ",transparent " + px(7) + " " + px(18) + ")," +
     "repeating-linear-gradient(0deg," + pl.band + "55 0 " + px(7) + ",transparent " + px(7) + " " + px(18) + ")";
@@ -1530,15 +1552,27 @@ function plaidSwatchCSS(pl, scale) {
 // Seasonal items (face designs, costumes, colors, specials) carry a `season` month (0 = Jan ... 9 = Oct, 10 = Nov).
 // They only show up in the Closet - and on the bao - during that month. Each kid's pick is kept,
 // so it comes back automatically next year.
+// Items can instead carry a date window: from/until = [month (0-11), day, hour]. Used for the
+// fall -> Christmas switch the morning after Thanksgiving, and the second Christmas drop on Dec 14.
+// (Thanksgiving moves each year - update FALL_WINDOW / XMAS_A before next November.)
 function inSeason(item, d) {
-  if (!item || item.season === undefined) return true;
-  return (d || new Date()).getMonth() === item.season;
+  if (!item) return true;
+  d = d || new Date();
+  if (item.from) {
+    var y = d.getFullYear();
+    var start = new Date(y, item.from[0], item.from[1], item.from[2] || 0);
+    var end = new Date(y, item.until[0], item.until[1], item.until[2] || 0);
+    return d >= start && d < end;
+  }
+  if (item.season === undefined) return true;
+  return d.getMonth() === item.season;
 }
+function isSeasonal(x) { return x.season !== undefined || !!x.from; }
 // While a season has its own colors/specials, the Closet shows only those (the everyday ones are
 // hidden for now, not deleted - they come back when the season ends). A kid's current pick is untouched.
 function shownInCloset(list, item) {
-  var seasonalNow = list.some(function (x) { return x.season !== undefined && inSeason(x); });
-  if (seasonalNow) return item.season !== undefined && inSeason(item);
+  var seasonalNow = list.some(function (x) { return isSeasonal(x) && inSeason(x); });
+  if (seasonalNow) return isSeasonal(item) && inSeason(item);
   return inSeason(item);
 }
 
@@ -1668,7 +1702,7 @@ var FACE_DESIGNS = [
   },
   // ---- November costumes (original designs) ----
   {
-    id: "turkey", season: 10, label: "Turkey", emoji: "🦃",
+    id: "turkey", from: FALL_WINDOW.from, until: FALL_WINDOW.until, label: "Turkey", emoji: "🦃",
     swatchBg: "linear-gradient(135deg,#E3B07A,#9C6A3A)",
     // Turns the bao turkey-brown while it's on, with a fan of tail feathers and little feet.
     bodyColor: { bodyStart: "#C9965F", bodyEnd: "#9C6A3A", highlight: "#E3BE8E", crease: "#7A4E26", blush: "#FF8A5B" },
@@ -1691,18 +1725,68 @@ var FACE_DESIGNS = [
       '</g>'
   },
   {
-    id: "pilgrim-boy", season: 10, label: "Pilgrim", emoji: "🎩",
+    id: "pilgrim-boy", from: FALL_WINDOW.from, until: FALL_WINDOW.until, label: "Pilgrim", emoji: "🎩",
     swatchBg: "linear-gradient(135deg,#5A5455,#2E2A2B)",
     hideAccessory: true, // the hat replaces the cap/bow
     front: PILGRIM_HAT_SVG,
     frontFixed: PILGRIM_COLLAR_SVG
   },
   {
-    id: "pilgrim-girl", season: 10, label: "Bonnet", emoji: "👒",
+    id: "pilgrim-girl", from: FALL_WINDOW.from, until: FALL_WINDOW.until, label: "Bonnet", emoji: "👒",
     swatchBg: "linear-gradient(135deg,#FFFDF7,#E8DFCC)",
     hideAccessory: true,
     front: PILGRIM_BONNET_SVG,
     frontFixed: PILGRIM_COLLAR_SVG
+  },
+  // ---- Christmas costumes (original designs). First drop Nov 27, second drop Dec 14. ----
+  {
+    id: "snowman", from: XMAS_A.from, until: XMAS_A.until, label: "Snowman", emoji: "\u26C4",
+    swatchBg: "linear-gradient(135deg,#FFFFFF,#DCE4EC)", hideAccessory: true,
+    bodyColor: { bodyStart: "#FFFFFF", bodyEnd: "#E4EAF0", highlight: "#FFFFFF", crease: "#C2CCD6", blush: "#FFB3C6" },
+    svg: "<circle cx=\"40\" cy=\"54\" r=\"3.6\" fill=\"#2A2A2E\"/><circle cx=\"41.2\" cy=\"52.8\" r=\"1\" fill=\"#fff\" opacity=\"0.8\"/><circle cx=\"70\" cy=\"54\" r=\"3.6\" fill=\"#2A2A2E\"/><circle cx=\"71.2\" cy=\"52.8\" r=\"1\" fill=\"#fff\" opacity=\"0.8\"/><path d=\"M52,58 Q55,56 58,58 L68,61.5 Q56,62.8 52,60.6 Z\" fill=\"#FF8A1E\" stroke=\"#D96A00\" stroke-width=\"1\" stroke-linejoin=\"round\"/><ellipse cx=\"31\" cy=\"62\" rx=\"4\" ry=\"2.3\" fill=\"#FFAEC0\" opacity=\"0.8\"/><ellipse cx=\"79\" cy=\"62\" rx=\"4\" ry=\"2.3\" fill=\"#FFAEC0\" opacity=\"0.8\"/><g class=\"bao-mouth\" style=\"transform-box:fill-box;transform-origin:center\"><circle cx=\"45\" cy=\"65\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"50\" cy=\"67.6\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"55\" cy=\"68.4\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"60\" cy=\"67.6\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"65\" cy=\"65\" r=\"1.5\" fill=\"#2A2A2E\"/></g>",
+    sleepSvg: "<path d=\"M 35,55 Q 40,59 45,55\" stroke=\"#2A2A2E\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M 65,55 Q 70,59 75,55\" stroke=\"#2A2A2E\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M52,58 Q55,56 58,58 L68,61.5 Q56,62.8 52,60.6 Z\" fill=\"#FF8A1E\" stroke=\"#D96A00\" stroke-width=\"1\" stroke-linejoin=\"round\"/><ellipse cx=\"31\" cy=\"62\" rx=\"4\" ry=\"2.3\" fill=\"#FFAEC0\" opacity=\"0.8\"/><ellipse cx=\"79\" cy=\"62\" rx=\"4\" ry=\"2.3\" fill=\"#FFAEC0\" opacity=\"0.8\"/><g class=\"bao-mouth\" style=\"transform-box:fill-box;transform-origin:center\"><circle cx=\"45\" cy=\"65\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"50\" cy=\"67.6\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"55\" cy=\"68.4\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"60\" cy=\"67.6\" r=\"1.5\" fill=\"#2A2A2E\"/><circle cx=\"65\" cy=\"65\" r=\"1.5\" fill=\"#2A2A2E\"/></g>",
+    front: "<defs><radialGradient id=\"xm-hc8\" cx=\"45%\" cy=\"18%\" r=\"75%\"><stop offset=\"0\" stop-color=\"#7FA2FF\"/><stop offset=\"1\" stop-color=\"#3F67E8\"/></radialGradient></defs><path d=\"M10,44 C8,14 26,7 55,7 C84,7 102,14 100,44 Q55,26 10,44 Z\" fill=\"url(#xm-hc8)\"/><path d=\"M18,23.25 L18,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M27,21 L27,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M36,18.75 L36,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M45,16.5 L45,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M54,14.25 L54,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M63,16 L63,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M72,18.25 L72,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M81,20.5 L81,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M90,22.75 L90,40\" stroke=\"rgba(0,0,0,0.10)\" stroke-width=\"2.2\"/><path d=\"M3,50 Q55,30 107,50 L103,37 Q55,18 7,37 Z\" fill=\"#FFFFFF\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1\" transform=\"translate(0,0)\"/><path d=\"M12,34.7 L12,43.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M18,31.9 L18,40.9\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M24,29.5 L24,38.5\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M30,27.6 L30,36.6\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M36,26.1 L36,35.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M42,25.0 L42,34.0\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M48,24.3 L48,33.3\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M54,24.0 L54,33.0\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M60,24.1 L60,33.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M66,24.7 L66,33.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M72,25.7 L72,34.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M78,27.1 L78,36.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M84,28.9 L84,37.9\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M90,31.1 L90,40.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M96,33.7 L96,42.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><circle cx=\"55\" cy=\"4\" r=\"8\" fill=\"#FFFFFF\" stroke=\"rgba(0,0,0,0.1)\" stroke-width=\"1\"/><circle cx=\"52.6\" cy=\"1.6\" r=\"2.8\" fill=\"#FFFFFF\" opacity=\"0.5\"/>",
+    frontFixed: "<path d=\"M28,70 Q55,80 82,70 L83,76 Q55,86 27,76 Z\" fill=\"#4D8BFF\" stroke=\"rgba(0,0,0,0.20)\" stroke-width=\"1\"/><path d=\"M38,73.5 L37,79 M48,76 L47,81.5 M58,76.5 L58,82 M68,75 L69,80.5\" stroke=\"#FFFFFF\" stroke-width=\"2.4\"/><path d=\"M70,75 L74,90 L82,88 L78,73 Z\" fill=\"#4D8BFF\" stroke=\"rgba(0,0,0,0.20)\" stroke-width=\"1\"/>"
+  },
+  {
+    id: "reindeer", from: XMAS_A.from, until: XMAS_A.until, label: "Reindeer", emoji: "\uD83E\uDD8C",
+    swatchBg: "linear-gradient(135deg,#C79A78,#8A5A3B)", hideAccessory: true,
+    bodyColor: { bodyStart: "#C79A78", bodyEnd: "#8A5A3B", highlight: "#E6C7AE", crease: "#6A4129", blush: "#F29A86" },
+    back: "<g transform=\"\"><g transform=\"translate(36,24) scale(1) translate(-36,-24)\"><path d=\"M36,24 C30,16 26,10 24,0 M29,13 C23,13 18,10 15,4 M27,6 C30,2 33,0 36,0\" stroke=\"#7A4E26\" stroke-width=\"4.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M36,24 C30,16 26,10 24,0 M29,13 C23,13 18,10 15,4 M27,6 C30,2 33,0 36,0\" stroke=\"#B07A44\" stroke-width=\"2.2\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"translate(110,0) scale(-1,1)\"><g transform=\"translate(36,24) scale(1) translate(-36,-24)\"><path d=\"M36,24 C30,16 26,10 24,0 M29,13 C23,13 18,10 15,4 M27,6 C30,2 33,0 36,0\" stroke=\"#7A4E26\" stroke-width=\"4.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M36,24 C30,16 26,10 24,0 M29,13 C23,13 18,10 15,4 M27,6 C30,2 33,0 36,0\" stroke=\"#B07A44\" stroke-width=\"2.2\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"\"><ellipse cx=\"19\" cy=\"33\" rx=\"8\" ry=\"4.4\" transform=\"rotate(-28 19 33)\" fill=\"#8A5A3B\" stroke=\"#6A4129\" stroke-width=\"1\"/><ellipse cx=\"19\" cy=\"33\" rx=\"4.5\" ry=\"2\" transform=\"rotate(-28 19 33)\" fill=\"#F2B3A0\"/></g><g transform=\"translate(110,0) scale(-1,1)\"><ellipse cx=\"19\" cy=\"33\" rx=\"8\" ry=\"4.4\" transform=\"rotate(-28 19 33)\" fill=\"#8A5A3B\" stroke=\"#6A4129\" stroke-width=\"1\"/><ellipse cx=\"19\" cy=\"33\" rx=\"4.5\" ry=\"2\" transform=\"rotate(-28 19 33)\" fill=\"#F2B3A0\"/></g>",
+    svg: "<ellipse cx=\"38\" cy=\"56\" rx=\"4.8\" ry=\"5.8\" fill=\"#1C1818\"/><ellipse cx=\"72\" cy=\"56\" rx=\"4.8\" ry=\"5.8\" fill=\"#1C1818\"/><circle cx=\"39.8\" cy=\"54\" r=\"1.7\" fill=\"#FFFFFF\"/><circle cx=\"73.8\" cy=\"54\" r=\"1.7\" fill=\"#FFFFFF\"/><circle cx=\"36.8\" cy=\"57.5\" r=\"0.9\" fill=\"#FFFFFF\"/><circle cx=\"70.8\" cy=\"57.5\" r=\"0.9\" fill=\"#FFFFFF\"/><g stroke=\"VAR_BL\" stroke-width=\"1.7\" stroke-linecap=\"round\" opacity=\"0.95\"><line x1=\"25\" y1=\"60\" x2=\"27.5\" y2=\"64\"/><line x1=\"29.5\" y1=\"60\" x2=\"31.5\" y2=\"64\"/><line x1=\"33\" y1=\"60\" x2=\"35.5\" y2=\"64\"/><line x1=\"74\" y1=\"60\" x2=\"76.5\" y2=\"64\"/><line x1=\"78\" y1=\"60\" x2=\"80.5\" y2=\"64\"/><line x1=\"82\" y1=\"60\" x2=\"84.5\" y2=\"64\"/></g><path d=\"M49,60 Q55,68 61,60 Z\" fill=\"#1C1818\"/><path d=\"M52,62 Q55,67 58,62 Z\" fill=\"#FF758F\"/><ellipse cx=\"55\" cy=\"60\" rx=\"5.2\" ry=\"4.16\" fill=\"#6B3E1F\"/><ellipse cx=\"53.18\" cy=\"58.44\" rx=\"1.6640000000000001\" ry=\"1.04\" fill=\"#fff\" opacity=\"0.7\"/><g class=\"bao-mouth\" style=\"transform-box:fill-box;transform-origin:center\"><path d=\"M 49,67 Q 55,72 61,67\" stroke=\"#1C1818\" stroke-width=\"2.3\" fill=\"none\" stroke-linecap=\"round\"/></g>",
+    sleepSvg: "<path d=\"M 33,55 Q 39,60 45,55\" stroke=\"#1C1818\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M 65,55 Q 71,60 77,55\" stroke=\"#1C1818\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"55\" cy=\"60\" rx=\"5.2\" ry=\"4.16\" fill=\"#6B3E1F\"/><ellipse cx=\"53.18\" cy=\"58.44\" rx=\"1.6640000000000001\" ry=\"1.04\" fill=\"#fff\" opacity=\"0.7\"/><g class=\"bao-mouth\" style=\"transform-box:fill-box;transform-origin:center\"><path d=\"M 50,67 Q 55,70.5 60,67\" stroke=\"#1C1818\" stroke-width=\"2.1\" fill=\"none\" stroke-linecap=\"round\"/></g>"
+  },
+  {
+    id: "santa-hat", from: XMAS_A.from, until: XMAS_A.until, label: "Santa", emoji: "\uD83C\uDF85",
+    swatchBg: "linear-gradient(135deg,#F06A6E,#B82830)", hideAccessory: true,
+    front: "<defs><radialGradient id=\"xm-hs0g\" cx=\"40%\" cy=\"20%\" r=\"85%\"><stop offset=\"0\" stop-color=\"#F06A6E\"/><stop offset=\"1\" stop-color=\"#B82830\"/></radialGradient><clipPath id=\"xm-hs0c\"><path d=\"M8,44 C6,16 26,2 54,2 C76,2 94,8 102,18 C108,26 110,38 107,49 C104,44 101,38 99,33 C100,37 101,40 102,44 Q55,26 8,44 Z\"/></clipPath></defs><path d=\"M8,44 C6,16 26,2 54,2 C76,2 94,8 102,18 C108,26 110,38 107,49 C104,44 101,38 99,33 C100,37 101,40 102,44 Q55,26 8,44 Z\" fill=\"url(#xm-hs0g)\"/><g clip-path=\"url(#xm-hs0c)\"><path d=\"M84,8 C94,14 100,24 101,34\" stroke=\"rgba(0,0,0,0.16)\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g><path d=\"M3,50 Q55,30 107,50 L103,38 Q55,19 7,38 Z\" fill=\"#FFFFFF\" transform=\"translate(0,0)\"/><circle cx=\"6\" cy=\"43.0\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"13\" cy=\"39.8\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"20\" cy=\"37.1\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"27\" cy=\"34.9\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"34\" cy=\"33.2\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"41\" cy=\"32.0\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"48\" cy=\"31.2\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"55\" cy=\"31.0\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"62\" cy=\"31.2\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"69\" cy=\"32.0\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"76\" cy=\"33.2\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"83\" cy=\"34.9\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"90\" cy=\"37.1\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"97\" cy=\"39.8\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"104\" cy=\"43.0\" r=\"6\" fill=\"#FFFFFF\" stroke=\"#E3E7EC\" stroke-width=\"0.7\"/><circle cx=\"107\" cy=\"50\" r=\"7\" fill=\"#FFFFFF\" stroke=\"rgba(0,0,0,0.1)\" stroke-width=\"1\"/><circle cx=\"104.9\" cy=\"47.9\" r=\"2.4499999999999997\" fill=\"#FFFFFF\" opacity=\"0.5\"/>"
+  },
+  {
+    id: "elf", from: XMAS_A.from, until: XMAS_A.until, label: "Elf", emoji: "\uD83E\uDDDD",
+    swatchBg: "linear-gradient(135deg,#4DB873,#1F7A42)", hideAccessory: true,
+    back: function (c) { return "<path d=\"M12,48 L-2,38 L12,58 Z\" fill=\"VARC\" stroke=\"VARK\" stroke-width=\"1\"/><path d=\"M98,48 L112,38 L98,58 Z\" fill=\"VARC\" stroke=\"VARK\" stroke-width=\"1\"/>".replace(/VARC/g, c.bodyEnd).replace(/VARK/g, c.crease); }, // ears in the bao's own color
+    front: "<defs><radialGradient id=\"xm-hs4g\" cx=\"40%\" cy=\"20%\" r=\"85%\"><stop offset=\"0\" stop-color=\"#4DB873\"/><stop offset=\"1\" stop-color=\"#1F7A42\"/></radialGradient><clipPath id=\"xm-hs4c\"><path d=\"M8,44 C6,22 22,10 38,8 C58,5 76,0 90,-9 C95,-13 99,-18 102,-23 C101,-8 99,8 97,20 C99,28 101,36 102,44 Q55,26 8,44 Z\"/></clipPath></defs><path d=\"M8,44 C6,22 22,10 38,8 C58,5 76,0 90,-9 C95,-13 99,-18 102,-23 C101,-8 99,8 97,20 C99,28 101,36 102,44 Q55,26 8,44 Z\" fill=\"url(#xm-hs4g)\"/><g clip-path=\"url(#xm-hs4c)\"><path d=\"M60,8 C76,4 90,-4 99,-16\" stroke=\"rgba(0,0,0,0.14)\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g><path d=\"M3,50 Q55,30 107,50 L103,37 Q55,18 7,37 Z\" fill=\"#E5434B\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1\" transform=\"translate(0,0)\"/><path d=\"M12,34.7 L12,43.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M18,31.9 L18,40.9\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M24,29.5 L24,38.5\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M30,27.6 L30,36.6\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M36,26.1 L36,35.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M42,25.0 L42,34.0\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M48,24.3 L48,33.3\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M54,24.0 L54,33.0\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M60,24.1 L60,33.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M66,24.7 L66,33.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M72,25.7 L72,34.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M78,27.1 L78,36.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M84,28.9 L84,37.9\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M90,31.1 L90,40.1\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><path d=\"M96,33.7 L96,42.7\" stroke=\"rgba(0,0,0,0.12)\" stroke-width=\"1.6\"/><g transform=\"translate(102,-23) scale(1)\"><circle r=\"4.4\" fill=\"#F5C842\" stroke=\"#C99A12\" stroke-width=\"1\"/><path d=\"M-2,1 l4,0\" stroke=\"#8A6A0A\" stroke-width=\"1\"/></g>"
+  },
+  {
+    id: "cozy-muffs", from: XMAS_A.from, until: XMAS_A.until, label: "Cozy", emoji: "\uD83E\uDDE3",
+    swatchBg: "linear-gradient(135deg,#FFFFFF,#F0B4B6)", hideAccessory: true,
+    front: "<path d=\"M14,50 C12,10 98,10 96,50\" stroke=\"#C8303A\" stroke-width=\"4\" fill=\"none\"/><circle cx=\"14\" cy=\"52\" r=\"9\" fill=\"#FFFFFF\" stroke=\"rgba(0,0,0,0.13)\" stroke-width=\"1\"/><circle cx=\"96\" cy=\"52\" r=\"9\" fill=\"#FFFFFF\" stroke=\"rgba(0,0,0,0.13)\" stroke-width=\"1\"/><circle cx=\"14\" cy=\"52\" r=\"5\" fill=\"#FFFFFF\" opacity=\"0.4\"/><circle cx=\"96\" cy=\"52\" r=\"5\" fill=\"#FFFFFF\" opacity=\"0.4\"/>",
+    frontFixed: "<path d=\"M28,70 Q55,80 82,70 L83,76 Q55,86 27,76 Z\" fill=\"#2F7A4A\" stroke=\"rgba(0,0,0,0.20)\" stroke-width=\"1\"/><path d=\"M38,73.5 L37,79 M48,76 L47,81.5 M58,76.5 L58,82 M68,75 L69,80.5\" stroke=\"#FFFFFF\" stroke-width=\"2.4\"/><path d=\"M70,75 L74,90 L82,88 L78,73 Z\" fill=\"#2F7A4A\" stroke=\"rgba(0,0,0,0.20)\" stroke-width=\"1\"/>"
+  },
+  {
+    id: "gingerbread", from: XMAS_B.from, until: XMAS_B.until, label: "Cookie", emoji: "\uD83C\uDF6A",
+    swatchBg: "linear-gradient(135deg,#E3A869,#B8743A)", hideAccessory: true,
+    bodyColor: { bodyStart: "#E3A869", bodyEnd: "#B8743A", highlight: "#F2C795", crease: "#8E5222", blush: "#FF6B8A" },
+    svg: "<circle cx=\"40\" cy=\"54\" r=\"3.4\" fill=\"#3A2416\"/><circle cx=\"70\" cy=\"54\" r=\"3.4\" fill=\"#3A2416\"/><path d=\"M 34,47 Q 40,44 46,47\" stroke=\"#FFFFFF\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M 64,47 Q 70,44 76,47\" stroke=\"#FFFFFF\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"30\" cy=\"62\" r=\"3.3\" fill=\"#FF6B8A\" opacity=\"0.85\"/><circle cx=\"80\" cy=\"62\" r=\"3.3\" fill=\"#FF6B8A\" opacity=\"0.85\"/><g class=\"bao-mouth\" style=\"transform-box:fill-box;transform-origin:center\"><path d=\"M 46,62 Q 48.5,66 51,62 Q 53.5,66 56,62 Q 58.5,66 61,62 Q 63.5,66 64,62.5\" stroke=\"#FFFFFF\" stroke-width=\"2.2\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g>",
+    sleepSvg: "<path d=\"M 35,55 Q 40,59 45,55\" stroke=\"#3A2416\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M 65,55 Q 70,59 75,55\" stroke=\"#3A2416\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"30\" cy=\"62\" r=\"3.3\" fill=\"#FF6B8A\" opacity=\"0.85\"/><circle cx=\"80\" cy=\"62\" r=\"3.3\" fill=\"#FF6B8A\" opacity=\"0.85\"/><g class=\"bao-mouth\" style=\"transform-box:fill-box;transform-origin:center\"><path d=\"M 49,63 Q 55,67 61,63\" stroke=\"#FFFFFF\" stroke-width=\"2.2\" fill=\"none\" stroke-linecap=\"round\"/></g>",
+    front: '<g transform="translate(0,-3)">' + "<path d=\"M20,40 Q24,36 28,40 Q32,44 36,40 Q40,36 44,40 Q48,44 52,40 Q56,36 60,40 Q64,44 68,40 Q72,36 76,40 Q80,44 84,40 Q88,36 90,40\" stroke=\"#FFFFFF\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/>" + '</g>',
+    frontFixed: "<circle cx=\"55\" cy=\"72.5\" r=\"2.4\" fill=\"#2FA35A\"/><circle cx=\"46\" cy=\"71.5\" r=\"2.2\" fill=\"#E5434B\"/><circle cx=\"64\" cy=\"71.5\" r=\"2.2\" fill=\"#F5B731\"/>"
+  },
+  {
+    id: "angel", from: XMAS_B.from, until: XMAS_B.until, label: "Angel", emoji: "\uD83D\uDE07",
+    swatchBg: "linear-gradient(135deg,#FFF6D6,#F5C842)", hideAccessory: true,
+    back: "<g transform=\"\"><path d=\"M16,52 C2,44 -6,30 -2,22 C6,28 10,26 14,30 C8,34 10,42 16,46 Z\" fill=\"#FFFFFF\" stroke=\"#D9DEE5\" stroke-width=\"1.2\"/></g><g transform=\"translate(110,0) scale(-1,1)\"><path d=\"M16,52 C2,44 -6,30 -2,22 C6,28 10,26 14,30 C8,34 10,42 16,46 Z\" fill=\"#FFFFFF\" stroke=\"#D9DEE5\" stroke-width=\"1.2\"/></g>",
+    front: "<g transform=\"rotate(0 55 4)\"><ellipse cx=\"55\" cy=\"4\" rx=\"20\" ry=\"5.5\" fill=\"none\" stroke=\"#F5C842\" stroke-width=\"3.4\"/><ellipse cx=\"55\" cy=\"4\" rx=\"20\" ry=\"5.5\" fill=\"none\" stroke=\"#FFF1B8\" stroke-width=\"1.2\"/></g>"
   }
 ];
 // Card header color for a kid = the deeper shade of the bao color they picked (plaid -> its base color).
@@ -1955,7 +2039,9 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   if (specialLive) {
     var specDef = SPECIALS.filter(function (sp) { return sp.id === activeSpec.id; })[0];
     if (specDef && !inSeason(specDef)) specDef = null;
-    if (specDef && specDef.plaid) {
+    if (specDef && specDef.art) {
+      c = Object.assign({}, baseColor, { artOverlay: specDef.art }); // snowfall / lights on top of the kid's color
+    } else if (specDef && specDef.plaid) {
       c = Object.assign({}, baseColor, { plaid: specDef.plaid, crease: specDef.plaid.crease, blush: specDef.plaid.blush, highlight: "#ffffff88", bodyStart: specDef.plaid.base });
     } else if (specDef && specDef.id === "glitter") {
       c = Object.assign({}, baseColor, { glitter: true });
@@ -2103,14 +2189,16 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
   var faceFilterAttr = "";
   if (c.plaid) {
     var pl = c.plaid, pid = "plaid-" + uid, psh = "plaidshine-" + uid, phalo = "plaidhalo-" + uid;
-    var pat = '<pattern id="' + pid + '" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="' + pl.base + '"/>';
-    if (pl.check) {
+    var pat = pl.svg ? "" : '<pattern id="' + pid + '" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="' + pl.base + '"/>';
+    if (pl.svg) {
+      pat = pl.svg.replace(/XMPID/g, pid); // custom pattern (candy cane, sweater) - already a full <pattern>
+    } else if (pl.check) {
       pat += '<rect width="12" height="24" fill="' + pl.band + '" opacity="0.32"/><rect width="24" height="12" fill="' + pl.band + '" opacity="0.32"/>';
     } else {
       pat += '<rect width="8" height="24" fill="' + pl.band + '" opacity="0.3"/><rect width="24" height="8" fill="' + pl.band + '" opacity="0.3"/>' +
         '<rect x="15" width="1.6" height="24" fill="' + pl.thin + '" opacity="0.6"/><rect y="15" width="24" height="1.6" fill="' + pl.thin + '" opacity="0.6"/>';
     }
-    pat += '</pattern>';
+    if (!pl.svg) pat += '</pattern>';
     extraDefs += pat +
       '<radialGradient id="' + psh + '" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"/><stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.22"/></radialGradient>' +
       // thin outline in the plaid's base color so the eyes and mouth don't sit on the stripes
@@ -2120,10 +2208,12 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
     faceFilterAttr = ' filter="url(#' + phalo + ')"';
   }
   var costumeOffset = 'transform="translate(0,' + (s.accOffsetY || 0).toFixed(1) + ')"';
-  var costumeBack = faceDef ? ((faceDef.backFixed || "") + (faceDef.back ? '<g ' + costumeOffset + '>' + faceDef.back + '</g>' : "")) : "";
+  var costumeBackArt = faceDef && faceDef.back ? (typeof faceDef.back === "function" ? faceDef.back(c) : faceDef.back) : "";
+  var costumeBack = faceDef ? ((faceDef.backFixed || "") + (costumeBackArt ? '<g ' + costumeOffset + '>' + costumeBackArt + '</g>' : "")) : "";
   var costumeFront = faceDef ? ((faceDef.frontFixed || "") + (faceDef.front ? '<g ' + costumeOffset + '>' + faceDef.front + '</g>' : "")) : "";
 
-  var needsBodyClip = c.glitter || c.jelly;
+  var needsBodyClip = c.glitter || c.jelly || c.artOverlay;
+  var artOverlayHtml = c.artOverlay ? '<g clip-path="url(#bodyclip-' + uid + ')">' + c.artOverlay + '</g>' : "";
 
   return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + (size * 85 / 110).toFixed(1) + '" viewBox="0 0 110 85"' + (costumeBack || costumeFront ? ' style="overflow:visible"' : '') + '>' +
     '<defs>' +
@@ -2144,6 +2234,7 @@ function mascotSVG(kidId, size, phase, progressTier, draftPreview) {
     plaidOverlay +
     rainbowDepthOverlay +
     glitterOverlay +
+    artOverlayHtml +
     pleats + (faceFilterAttr ? '<g' + faceFilterAttr + '>' + face + '</g>' : face) +
     costumeFront +
     accessoryHtml(accessory, c.bodyStart, s.accOffsetY, uid) +
@@ -3196,7 +3287,7 @@ function renderKidChores(kidId, textOnSky, activePeriod, squishSwitcherKid, squi
             SPECIALS.map(function (sp) {
               if (!shownInCloset(SPECIALS, sp)) return "";
               var isThisActive = specialLiveNow && activeSpec.id === sp.id;
-              var swatchBg = sp.plaid ? plaidSwatchCSS(sp.plaid) : sp.id === "rainbow"
+              var swatchBg = sp.swatchBg ? sp.swatchBg : sp.plaid ? plaidSwatchCSS(sp.plaid) : sp.id === "rainbow"
                 ? "radial-gradient(circle at 38% 26%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 55%), radial-gradient(circle at 50% 42%, rgba(28,15,46,0) 60%, rgba(28,15,46,0.28) 100%), linear-gradient(107deg, #F04141 0%, #F0954B 20%, #F0D341 40%, #4FBF63 60%, #3E86D8 80%, #8A5CD6 100%)"
                 : sp.id === "swirl"
                 ? "radial-gradient(circle at 38% 26%, " + currentColor.highlight + " 0%, " + currentColor.bodyStart + " 35%, #6FA8FF 78%, " + darkenColorPct("#6FA8FF", 0.18) + " 100%)"
