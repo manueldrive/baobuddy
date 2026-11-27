@@ -31,6 +31,18 @@
     100% { transform: translateX(120vw); }
   }
   .drift-cloud { animation: driftCloud linear infinite; animation-fill-mode: both; left: 0; }
+  /* Winter: falling snow (a persistent layer, so it never restarts when the screen redraws) */
+  #snow-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  @keyframes snowFall { 0% { transform: translate3d(0, -6vh, 0); } 100% { transform: translate3d(0, 106vh, 0); } }
+  @keyframes snowSway { 0%, 100% { margin-left: 0; } 50% { margin-left: 18px; } }
+  .snowflake { position: absolute; top: 0; border-radius: 50%; background: #FFFFFF; will-change: transform;
+    animation: snowFall linear infinite, snowSway ease-in-out infinite; }
+  /* Snow piling up along the bottom edge of the screen: grows over the first couple of minutes, then stays */
+  #snow-bank { position: fixed; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none; z-index: 5; }
+  #snow-bank svg { display: block; width: 100%; height: 100%; transform-origin: 50% 100%; animation: snowPile 120s cubic-bezier(.2,.7,.3,1) both;
+    filter: drop-shadow(0 -3px 4px rgba(60,90,140,0.28)); }
+  @keyframes snowPile { 0% { transform: scaleY(0.12); } 100% { transform: scaleY(1); } }
+  @media (prefers-reduced-motion: reduce) { .snowflake { animation: none; } #snow-bank svg { animation: none; } }
   @media (min-width: 480px) { #root { padding: 24px 24px 200px; } }
   button { font-family: inherit; }
 
@@ -433,7 +445,9 @@
 </head>
 <body>
 <div id="sky-bg"></div>
+<div id="snow-layer"></div>
 <div id="root"></div>
+<div id="snow-bank"></div>
 
 <script>
 "use strict";
@@ -1226,7 +1240,69 @@ function treeHtml(leftPercent, treeColor) {
     '</svg>' +
     '</div>';
 }
+// Winter look (same dates as the first Christmas drop): snowy hills, snow-capped pine trees, falling snow.
+function winterNow() { return inSeason(XMAS_A); }
+var WINTER_PALETTE = {
+  morning:   { back: "#DCE6F2", front: "#F6F9FC", tree: "#2E5C52" },
+  afternoon: { back: "#E3EEF8", front: "#FFFFFF", tree: "#2F6B4A" },
+  evening:   { back: "#7E8DBD", front: "#AEBBDF", tree: "#1C2E52" }
+};
+function pineHtml(leftPercent, treeColor, scale) {
+  var k = scale || 1, w = Math.round(40 * k), h = Math.round(60 * k);
+  return '<div style="position:fixed;left:' + leftPercent + '%;bottom:36px;width:' + w + 'px;height:' + h + 'px;transform:translateX(-50%);pointer-events:none;z-index:0">' +
+    '<svg width="' + w + '" height="' + h + '" viewBox="0 0 40 60">' +
+    '<rect x="18" y="48" width="4" height="12" fill="#5A4030"/>' +
+    '<path d="M20,2 L33,20 L27,20 L37,34 L30,34 L39,49 L1,49 L10,34 L3,34 L13,20 L7,20 Z" fill="' + treeColor + '"/>' +
+    '<path d="M20,2 L26,11 Q20,14 14,11 Z M13,20 L27,20 L30,24 Q20,28 10,24 Z M10,34 L30,34 L33,38 Q20,42 7,38 Z" fill="#FFFFFF" opacity="0.92"/>' +
+    '</svg></div>';
+}
+var SNOW_FLAKES = (function () {
+  // fixed "random" layout so every redraw looks identical
+  var out = [], seed = 7;
+  function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  for (var i = 0; i < 36; i++) out.push({ x: rnd() * 100, size: 2 + rnd() * 4, dur: 9 + rnd() * 9, sway: 3 + rnd() * 3, delay: -rnd() * 18, op: 0.55 + rnd() * 0.4 });
+  return out;
+})();
+function updateSnowLayer() {
+  var layer = document.getElementById("snow-layer");
+  if (!layer) return;
+  var on = winterNow();
+  if (on && !layer.childElementCount) {
+    layer.innerHTML = SNOW_FLAKES.map(function (f) {
+      return '<div class="snowflake" style="left:' + f.x.toFixed(1) + '%;width:' + f.size.toFixed(1) + 'px;height:' + f.size.toFixed(1) + 'px;opacity:' + f.op.toFixed(2) +
+        ';animation-duration:' + f.dur.toFixed(1) + 's,' + f.sway.toFixed(1) + 's;animation-delay:' + f.delay.toFixed(1) + 's,' + (f.delay / 3).toFixed(1) + 's"></div>';
+    }).join("");
+  } else if (!on && layer.childElementCount) {
+    layer.innerHTML = "";
+  }
+  // a soft, lumpy pile of snow along the bottom of the screen (in front, but never catches taps)
+  var bank = document.getElementById("snow-bank");
+  if (bank) {
+    if (on && !bank.childElementCount) {
+      bank.innerHTML = '<svg viewBox="0 0 400 30" preserveAspectRatio="none">' +
+        '<path d="M0,14 C18,8 30,16 48,11 C66,6 78,15 98,12 C120,9 132,4 152,10 C172,16 186,8 206,9 C228,10 240,15 262,11 C282,7 296,12 316,13 C338,14 350,6 372,9 C386,11 394,13 400,12 L400,30 L0,30 Z" fill="#FFFFFF"/>' +
+        '<path d="M0,20 C40,17 80,22 120,19 C170,16 210,22 260,19 C310,16 350,21 400,19 L400,30 L0,30 Z" fill="#EEF4FA"/>' +
+        '<path d="M0,14 C18,8 30,16 48,11 C66,6 78,15 98,12 C120,9 132,4 152,10 C172,16 186,8 206,9 C228,10 240,15 262,11 C282,7 296,12 316,13 C338,14 350,6 372,9 C386,11 394,13 400,12" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.9"/>' +
+        '</svg>';
+    } else if (!on && bank.childElementCount) {
+      bank.innerHTML = "";
+    }
+  }
+}
 function landscapeHtml(vp) {
+  if (winterNow()) {
+    var w = WINTER_PALETTE[vp] || WINTER_PALETTE.evening;
+    return '<div style="position:fixed;bottom:0;left:0;right:0;height:150px;pointer-events:none;overflow:hidden;z-index:0">' +
+      '<svg width="100%" height="150" viewBox="0 0 400 150" preserveAspectRatio="none">' +
+      '<path d="M0,90 C60,60 120,100 200,75 C280,50 340,90 400,70 L400,150 L0,150 Z" fill="' + w.back + '"/>' +
+      '<path d="M0,112 C80,82 160,120 240,95 C300,80 360,110 400,100 L400,150 L0,150 Z" fill="' + w.front + '"/>' +
+      '<path d="M0,112 C80,82 160,120 240,95 C300,80 360,110 400,100" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.8"/>' +
+      '</svg>' +
+      '</div>' +
+      pineHtml(17.5, w.tree, 0.85) +
+      pineHtml(80, w.tree, 1.05) +
+      pineHtml(47.5, w.tree, 0.95);
+  }
   var p = LANDSCAPE_PALETTE[vp] || LANDSCAPE_PALETTE.evening;
   return '<div style="position:fixed;bottom:0;left:0;right:0;height:150px;pointer-events:none;overflow:hidden;z-index:0">' +
     '<svg width="100%" height="150" viewBox="0 0 400 150" preserveAspectRatio="none">' +
@@ -3665,6 +3741,7 @@ function render() {
   html += renderTimingsModal();
 
   document.getElementById("root").innerHTML = html;
+  updateSnowLayer();
 }
 
 /* ---------------- actions & streak check ---------------- */
